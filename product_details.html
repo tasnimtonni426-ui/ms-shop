@@ -7,170 +7,68 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { 
-            --primary: #00d2ff; 
-            --secondary: #3a7bd5; 
-            --glass: rgba(255, 255, 255, 0.05); 
-            --border: rgba(255, 255, 255, 0.1); 
-            --success: #2ecc71;
-        }
+        :root { --primary: #00d2ff; --secondary: #3a7bd5; --glass: rgba(255, 255, 255, 0.05); --border: rgba(255, 255, 255, 0.1); --success: #2ecc71; }
         body { font-family: 'Poppins', sans-serif; margin: 0; background: #0f172a; color: white; padding-bottom: 90px; overflow-x: hidden; }
-        
-        /* Product UI */
         .p-image { width: 100%; height: 320px; object-fit: cover; border-bottom: 1px solid var(--border); }
         .p-content { padding: 20px; }
         .meta-row { display: flex; justify-content: space-between; align-items: center; background: var(--glass); padding: 15px; border-radius: 18px; border: 1px solid var(--border); margin: 15px 0; }
         .section-box { margin-top: 25px; }
         .section-label { font-size: 16px; font-weight: 600; color: var(--primary); margin-bottom: 10px; display: block; }
-        .review-card { background: rgba(255,255,255,0.03); padding: 10px; border-radius: 10px; margin-top: 10px; border-left: 3px solid var(--primary); }
-        
-        /* Bottom Bar */
         .bottom-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #1e293b; display: flex; padding: 12px 20px; gap: 12px; box-sizing: border-box; border-top: 1px solid var(--border); z-index: 1000; }
-        .btn-cart { flex: 1; padding: 12px; border-radius: 12px; border: 1px solid var(--border); background: var(--glass); color: white; cursor: pointer; }
         .btn-order { flex: 2; padding: 12px; border-radius: 12px; border: none; background: linear-gradient(45deg, var(--primary), var(--secondary)); color: white; cursor: pointer; font-weight: bold; font-size: 16px; }
-
-        /* Overlay & Popups */
-        .overlay { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); 
-            display: none; justify-content: center; align-items: center; z-index: 2000; 
-            animation: fadeIn 0.3s ease;
-        }
-        .popup { 
-            background: #1e293b; width: 90%; max-width: 400px; padding: 25px; 
-            border-radius: 25px; border: 1px solid var(--border); 
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5); transform: scale(0.8); animation: popIn 0.3s forwards;
-        }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes popIn { to { transform: scale(1); } }
-
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 2000; animation: fadeIn 0.3s ease; }
+        .popup { background: #1e293b; width: 90%; max-width: 400px; padding: 25px; border-radius: 25px; border: 1px solid var(--border); position: relative; }
         .form-group { margin-bottom: 15px; }
         label { font-size: 12px; color: #94a3b8; display: block; margin-bottom: 5px; }
-        input, select { 
-            width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border); 
-            background: rgba(0,0,0,0.2); color: white; box-sizing: border-box; outline: none;
-        }
-        input:focus { border-color: var(--primary); }
-
-        .payment-box { 
-            background: var(--glass); border: 1px dashed var(--primary); 
-            padding: 15px; border-radius: 15px; text-align: center; cursor: pointer;
-        }
-
-        .btn-confirm { 
-            width: 100%; padding: 14px; background: var(--success); color: white; 
-            border: none; border-radius: 12px; font-weight: bold; margin-top: 10px; cursor: pointer;
-        }
-        .btn-close { position: absolute; top: 15px; right: 15px; color: #94a3b8; cursor: pointer; }
-
-        /* Success Message */
-        .success-msg { text-align: center; }
-        .success-msg i { font-size: 60px; color: var(--success); margin-bottom: 15px; }
+        input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: rgba(0,0,0,0.2); color: white; box-sizing: border-box; outline: none; }
+        .btn-confirm { width: 100%; padding: 14px; background: var(--success); color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 10px; }
     </style>
 </head>
 <body>
 
     <img id="p-img" class="p-image" src="">
     <div class="p-content">
-        <h1 id="p-name" style="margin:0; font-size:24px;">Loading...</h1>
+        <h1 id="p-name" style="margin:0; font-size:24px;">লোড হচ্ছে...</h1>
         <div class="meta-row">
-            <div class="meta-left">
-                <span id="p-stock" style="color:var(--success); font-weight:bold;">📦 স্টক: ..</span>
-                <span style="color:#f1c40f; font-size:13px; display:block;">⭐ 4.8 (রিভিউ পয়েন্ট)</span>
-            </div>
-            <div class="meta-right" style="display:flex; gap:10px;">
-                <i class="fa fa-heart" style="background:var(--glass); padding:10px; border-radius:50%; cursor:pointer;"></i>
-                <i class="fa fa-share-alt" onclick="shareProd()" style="background:var(--glass); padding:10px; border-radius:50%; cursor:pointer;"></i>
-            </div>
+            <span id="p-stock" style="color:var(--success); font-weight:bold;">📦 স্টক: ..</span>
+            <i class="fa fa-share-alt" onclick="shareProd()" style="cursor:pointer;"></i>
         </div>
         <div class="section-box">
             <span class="section-label">বিস্তারিত বর্ণনা</span>
             <p id="p-desc" style="color:#94a3b8; font-size:14px; line-height:1.6;"></p>
         </div>
-        <div id="rev-list" class="section-box"></div>
     </div>
 
     <div class="bottom-bar">
-        <button class="btn-cart">Add to Cart</button>
         <button class="btn-order" onclick="openOrderForm()">Order Now</button>
     </div>
 
     <div class="overlay" id="orderOverlay">
-        <div class="popup" style="position:relative;">
-            <i class="fa fa-times btn-close" onclick="closePopup('orderOverlay')"></i>
-            <h3 style="margin-top:0; color:var(--primary);">অর্ডার ফরম</h3>
-            
-            <div class="form-group">
-                <label>আপনার নাম</label>
-                <input type="text" id="orderName" placeholder="নাম লিখুন">
-            </div>
-            <div class="form-group" style="display:flex; gap:10px;">
-                <div style="flex:1;">
-                    <label>জেলা</label>
-                    <input type="text" id="orderDistrict" placeholder="ঢাকা">
-                </div>
-                <div style="flex:1;">
-                    <label>উপজেলা</label>
-                    <input type="text" id="orderUpazila" placeholder="সাভার">
-                </div>
-            </div>
-            <div class="form-group">
-                <label>বিস্তারিত ঠিকানা (হোল্ডিং নং, রোড নং)</label>
-                <input type="text" id="orderAddress" placeholder="যেমন: বাসা নং ১০, রোড নং ০৫">
-            </div>
-            
-            <div class="form-group">
-                <label>পেমেন্ট মেথড</label>
-                <div class="payment-box" onclick="openPaymentPopup()">
-                    <i class="fa fa-truck"></i> ক্যাশ অন ডেলিভারি <br>
-                    <small style="color:var(--primary);">(ডেলিভারি চার্জ অগ্রিম দিন)</small>
-                </div>
-            </div>
-
-            <div id="trxInfo" style="display:none; background:rgba(46, 204, 113, 0.1); padding:10px; border-radius:10px; font-size:12px; border:1px solid var(--success); margin-bottom:10px;">
-                <i class="fa fa-check-circle"></i> ডেলিভারি চার্জ পেমেন্ট সফল!
-            </div>
-
-            <button class="btn-confirm" onclick="finalOrder()">কনফার্ম অর্ডার</button>
-        </div>
-    </div>
-
-    <div class="overlay" id="paymentOverlay" style="z-index:3000;">
         <div class="popup">
-            <h3 style="margin-top:0; color:#f1c40f;">ডেলিভারি চার্জ পেমেন্ট</h3>
-            <p style="font-size:13px; color:#cbd5e1;">নিচের নাম্বারে <b>৮০ টাকা</b> পাঠিয়ে ট্রানজেকশন আইডি দিন।</p>
-            
-            <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:12px; margin-bottom:15px;">
-                <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-                    <span><i class="fa fa-mobile-alt"></i> বিকাশ (পার্সোনাল)</span>
-                    <b>017XXXXXXXX</b>
-                </div>
-                <div style="display:flex; justify-content:space-between;">
-                    <span><i class="fa fa-mobile-alt"></i> নগদ (পার্সোনাল)</span>
-                    <b>018XXXXXXXX</b>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Transaction ID</label>
-                <input type="text" id="trxID" placeholder="যেমন: 8N7X2W3Q">
-            </div>
-            
-            <button class="btn-confirm" onclick="saveTrx()">সেভ করুন</button>
+            <h3 style="color:var(--primary);">অর্ডার ফরম</h3>
+            <div class="form-group"><label>নাম</label><input type="text" id="orderName"></div>
+            <div class="form-group"><label>জেলা</label><input type="text" id="orderDist"></div>
+            <div class="form-group"><label>উপজেলা</label><input type="text" id="orderUpz"></div>
+            <div class="form-group"><label>বিস্তারিত ঠিকানা</label><input type="text" id="orderAddr"></div>
+            <div class="form-group" onclick="openPayment()"><label>পেমেন্ট মেথড</label><div style="padding:10px; background:var(--glass); border-radius:10px; border:1px dashed var(--primary); text-align:center; cursor:pointer;">ক্যাশ অন ডেলিভারি (চার্জ দিন)</div></div>
+            <div id="isPaidTxt" style="display:none; color:var(--success); font-size:12px; margin-bottom:10px;">✓ চার্জ পেমেন্ট সফল!</div>
+            <button class="btn-confirm" onclick="finalOrder()">কনফার্ম অর্ডার</button>
+            <button onclick="closePop('orderOverlay')" style="background:none; border:none; color:white; width:100%; margin-top:10px;">বন্ধ করুন</button>
         </div>
     </div>
 
-    <div class="overlay" id="successOverlay">
-        <div class="popup success-msg">
-            <i class="fa fa-check-circle"></i>
-            <h2>অভিনন্দন!</h2>
-            <p>আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে।</p>
-            <button class="btn-confirm" onclick="location.reload()">ঠিক আছে</button>
+    <div class="overlay" id="paymentOverlay">
+        <div class="popup">
+            <h3 style="color:#f1c40f;">ডেলিভারি চার্জ</h3>
+            <p style="font-size:12px;">বিকাশ/নগদ (পার্সোনাল): 017XXXXXXXX</p>
+            <div class="form-group"><label>Transaction ID</label><input type="text" id="trxID"></div>
+            <button class="btn-confirm" onclick="saveTrx()">সেভ করুন</button>
         </div>
     </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getDatabase, ref, onValue, push, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
     const firebaseConfig = {
@@ -183,73 +81,53 @@
     };
 
     const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
     const db = getDatabase(app);
     const pid = new URLSearchParams(window.location.search).get('id');
 
-    // Load Product Data
+    let currentUID = "";
+    onAuthStateChanged(auth, (user) => { if(user) currentUID = user.uid; });
+
     if(pid) {
         onValue(ref(db, 'products/' + pid), (s) => {
             const p = s.val();
             if(p) {
                 document.getElementById('p-img').src = p.img;
                 document.getElementById('p-name').innerText = p.name;
-                document.getElementById('p-stock').innerText = "📦 স্টক: " + (p.stock || 0) + " পিস";
-                document.getElementById('p-desc').innerText = p.description || "No description.";
+                document.getElementById('p-stock').innerText = "📦 স্টক: " + (p.stock || 0);
+                document.getElementById('p-desc').innerText = p.description;
             }
         });
     }
 
-    // Popup Controls
-    window.openOrderForm = () => document.getElementById('orderOverlay').style.display = 'flex';
-    window.closePopup = (id) => document.getElementById(id).style.display = 'none';
-    window.openPaymentPopup = () => document.getElementById('paymentOverlay').style.display = 'flex';
+    window.openOrderForm = () => document.getElementById('orderOverlay').style.display='flex';
+    window.closePop = (id) => document.getElementById(id).style.display='none';
+    window.openPayment = () => document.getElementById('paymentOverlay').style.display='flex';
 
-    // Save TRX ID
     let isPaid = false;
     window.saveTrx = () => {
-        const trx = document.getElementById('trxID').value;
-        if(trx.length < 5) {
-            alert("সঠিক ট্রানজেকশন আইডি দিন!");
-            return;
+        if(document.getElementById('trxID').value.length > 4) {
+            isPaid = true;
+            document.getElementById('isPaidTxt').style.display = 'block';
+            closePop('paymentOverlay');
         }
-        isPaid = true;
-        document.getElementById('trxInfo').style.display = 'block';
-        closePopup('paymentOverlay');
     };
 
-    // Final Order Submit
     window.finalOrder = () => {
         const name = document.getElementById('orderName').value;
-        const dist = document.getElementById('orderDistrict').value;
-        const upz = document.getElementById('orderUpazila').value;
-        const addr = document.getElementById('orderAddress').value;
-
-        if(!name || !dist || !upz || !addr) {
-            alert("দয়া করে সব তথ্য পূরণ করুন!");
-            return;
-        }
-        if(!isPaid) {
-            alert("দয়া করে ডেলিভারি চার্জ পরিশোধ করুন!");
-            return;
-        }
-
-        // Save to Firebase
-        const orderRef = ref(db, 'orders');
-        const newOrder = push(orderRef);
-        set(newOrder, {
-            productID: pid,
+        if(!name || !isPaid) { alert("সব তথ্য দিন এবং চার্জ দিন!"); return; }
+        
+        const newOrderRef = push(ref(db, 'orders'));
+        set(newOrderRef, {
+            uid: currentUID,
+            productName: document.getElementById('p-name').innerText,
             userName: name,
-            address: `${addr}, ${upz}, ${dist}`,
+            address: document.getElementById('orderAddr').value + ", " + document.getElementById('orderUpz').value + ", " + document.getElementById('orderDist').value,
             trxID: document.getElementById('trxID').value,
             status: 'Pending',
             date: new Date().toLocaleString()
-        }).then(() => {
-            closePopup('orderOverlay');
-            document.getElementById('successOverlay').style.display = 'flex';
-        });
+        }).then(() => { alert("অর্ডার সফল!"); location.href='shop.html'; });
     };
-
-    window.shareProd = () => navigator.share ? navigator.share({url: location.href}) : alert("Link Copied!");
 </script>
 </body>
 </html>
