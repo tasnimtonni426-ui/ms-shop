@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>অর্ডার নিশ্চিত করুন - SportX</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #00d2ff; --dark: #0f172a; --glass: rgba(255, 255, 255, 0.05); --border: rgba(255, 255, 255, 0.1); }
+        body { font-family: 'Poppins', sans-serif; margin: 0; background: #0f172a; color: white; padding: 20px; }
+        
+        .confirm-card { background: var(--glass); border: 1px solid var(--border); padding: 20px; border-radius: 20px; margin-top: 50px; text-align: center; }
+        .p-info { margin: 20px 0; padding: 15px; background: rgba(0,0,0,0.2); border-radius: 12px; }
+        
+        input { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 10px; border: 1px solid var(--border); background: #1e293b; color: white; box-sizing: border-box; }
+        
+        .submit-btn { width: 100%; padding: 15px; background: var(--primary); border: none; border-radius: 12px; font-weight: bold; color: #0f172a; cursor: pointer; font-size: 16px; }
+        .back-link { display: block; margin-top: 15px; color: #94a3b8; text-decoration: none; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+<div class="confirm-card">
+    <h2 style="color: var(--primary);">অর্ডার নিশ্চিত করুন</h2>
+    
+    <div class="p-info">
+        <div id="pName" style="font-weight: 600;">লোড হচ্ছে...</div>
+        <div id="pPrice" style="color: var(--primary); font-weight: bold;">0 ৳</div>
+    </div>
+
+    <input type="text" id="uAddress" placeholder="আপনার পূর্ণ ঠিকানা লিখুন">
+    <input type="tel" id="uPhone" placeholder="আপনার মোবাইল নম্বর">
+    
+    <button class="submit-btn" onclick="placeOrder()">অর্ডার সম্পন্ন করুন</button>
+    <a href="index.html" class="back-link">হোম পেজে ফিরে যান</a>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, onValue, push, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCu8lgGs3Q-qLeedhngQAVXtt8BHOAlWDg",
+        authDomain: "ms-sp-97f78.firebaseapp.com",
+        databaseURL: "https://ms-sp-97f78-default-rtdb.firebaseio.com",
+        projectId: "ms-sp-97f78",
+        storageBucket: "ms-sp-97f78.appspot.com",
+        appId: "1:880638162029:web:b99af5b5518b3e16a13b64"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const auth = getAuth(app);
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get('id');
+    let currentUser = null;
+    let productData = null;
+
+    onAuthStateChanged(auth, (user) => { if(user) currentUser = user; else location.href="index.html"; });
+
+    if (productId) {
+        onValue(ref(db, 'products/' + productId), (snap) => {
+            productData = snap.val();
+            if(productData) {
+                document.getElementById('pName').innerText = productData.name;
+                document.getElementById('pPrice').innerText = productData.price + " ৳";
+            }
+        });
+    }
+
+    window.placeOrder = () => {
+        const address = document.getElementById('uAddress').value;
+        const phone = document.getElementById('uPhone').value;
+
+        if(!address || !phone) { alert("ঠিকানা এবং ফোন নম্বর দিন!"); return; }
+
+        const orderRef = push(ref(db, 'orders'));
+        set(orderRef, {
+            productId: productId,
+            productName: productData.name,
+            price: productData.price,
+            userName: currentUser.displayName || "User",
+            userEmail: currentUser.email,
+            address: address,
+            phone: phone,
+            status: "Pending",
+            timestamp: Date.now()
+        }).then(() => {
+            alert("অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে!");
+            location.href = "my_orders.html";
+        });
+    };
+</script>
+</body>
+</html>
