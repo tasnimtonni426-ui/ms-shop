@@ -9,15 +9,12 @@
         :root { --primary: #00d2ff; --secondary: #3a7bd5; --dark: #0f172a; --danger: #ff4757; --bg: #f1f5f9; --success: #2ecc71; }
         body { font-family: 'Poppins', sans-serif; background: var(--bg); margin: 0; padding: 15px; color: #334155; }
         
-        /* স্ট্যাটাস গ্রিড */
         .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
         .stat-box { background: var(--dark); color: white; padding: 15px; border-radius: 18px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .stat-box b { font-size: 24px; display: block; color: var(--primary); }
         .stat-box span { font-size: 12px; opacity: 0.8; }
 
-        /* নেভিগেশন বাটন গ্রিড */
         .nav-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px; }
-        
         .nav-btn { 
             border: none; padding: 15px; border-radius: 15px; font-weight: bold; cursor: pointer; 
             display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
@@ -26,14 +23,13 @@
         .btn-orders { background: linear-gradient(135deg, #6366f1, #a855f7); box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); }
         .btn-users { background: linear-gradient(135deg, #0ea5e9, #22d3ee); box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3); }
         .nav-btn i { font-size: 20px; }
-        .nav-btn:active { transform: scale(0.95); }
 
         .card { background: white; padding: 20px; border-radius: 20px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         h3 { margin-top: 0; color: var(--dark); border-left: 4px solid var(--primary); padding-left: 10px; font-size: 17px; margin-bottom: 15px; }
         
         input, textarea, select { width: 100%; padding: 12px; margin: 8px 0; border: 1.5px solid #e2e8f0; border-radius: 12px; box-sizing: border-box; outline: none; font-size: 14px; }
         
-        .btn-main { background: var(--dark); color: white; border: none; padding: 14px; width: 100%; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 15px; }
+        .btn-main { background: var(--dark); color: white; border: none; padding: 14px; width: 100%; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 15px; margin-top: 10px; }
         
         .p-item { display: flex; align-items: center; gap: 12px; background: #fff; padding: 10px; border-radius: 16px; margin-bottom: 10px; border: 1px solid #f1f5f9; }
         .p-item img { width: 50px; height: 50px; border-radius: 10px; object-fit: cover; }
@@ -58,12 +54,10 @@
 
     <div class="nav-grid">
         <button class="nav-btn btn-orders" onclick="location.href='orders.html'">
-            <i class="fa fa-shopping-cart"></i>
-            অর্ডার রিকোয়েস্ট
+            <i class="fa fa-shopping-cart"></i>অর্ডার রিকোয়েস্ট
         </button>
         <button class="nav-btn btn-users" onclick="location.href='user_details.html'">
-            <i class="fa fa-user-check"></i>
-            ইউজার সার্চ
+            <i class="fa fa-user-check"></i>ইউজার সার্চ
         </button>
     </div>
 
@@ -72,13 +66,18 @@
         <input type="hidden" id="edit-id"> 
         <input type="text" id="p-name" placeholder="প্রোডাক্টের নাম">
         
-        <select id="p-category">
-            <option value="" disabled selected>ক্যাটাগরি সিলেক্ট করুন</option>
-            <option value="Jersey">Jersey (জার্সি)</option>
-            <option value="Boots">Boots (বুট)</option>
-            <option value="Gadgets">Gadgets (গ্যাজেট)</option>
-            <option value="Others">Others</option>
-        </select>
+        <div style="display: flex; gap: 10px;">
+            <select id="p-main-category" onchange="updateSubCats()">
+                <option value="" disabled selected>মেইন ক্যাটাগরি</option>
+                <option value="Sports">Sports</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Fashion">Fashion</option>
+            </select>
+
+            <select id="p-category">
+                <option value="" disabled selected>সাব-ক্যাটাগরি</option>
+            </select>
+        </div>
 
         <input type="number" id="p-price" placeholder="দাম (টাকা)">
         <input type="number" id="p-stock" placeholder="স্টক পরিমাণ">
@@ -110,6 +109,30 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
+
+    // ক্যাটাগরি ডাটা
+    const subCategories = {
+        'Sports': ['Jersey', 'Boots', 'Sports Equipment'],
+        'Electronics': ['Mobile Accessories', 'Gadgets', 'Headphones'],
+        'Fashion': ["Men's Fashion", "Women's Fashion", "Shoes"]
+    };
+
+    // সাব-ক্যাটাগরি ড্রপডাউন আপডেট করার ফাংশন
+    window.updateSubCats = (selectedSub = "") => {
+        const mainCat = document.getElementById('p-main-category').value;
+        const subCatSelect = document.getElementById('p-category');
+        subCatSelect.innerHTML = '<option value="" disabled selected>সাব-ক্যাটাগরি</option>';
+        
+        if (mainCat && subCategories[mainCat]) {
+            subCategories[mainCat].forEach(sub => {
+                const option = document.createElement('option');
+                option.value = sub;
+                option.innerText = sub;
+                if(sub === selectedSub) option.selected = true;
+                subCatSelect.appendChild(option);
+            });
+        }
+    };
 
     function showToast(m) {
         const t = document.getElementById('toast');
@@ -162,7 +185,15 @@
             const p = s.val();
             document.getElementById('edit-id').value = id;
             document.getElementById('p-name').value = p.name;
-            document.getElementById('p-category').value = p.category;
+            
+            // মেইন ক্যাটাগরি অটো সিলেক্ট করা
+            let foundMain = "";
+            for(let main in subCategories) {
+                if(subCategories[main].includes(p.category)) foundMain = main;
+            }
+            document.getElementById('p-main-category').value = foundMain;
+            updateSubCats(p.category);
+
             document.getElementById('p-price').value = p.price;
             document.getElementById('p-stock').value = p.stock;
             document.getElementById('p-img').value = p.img;
