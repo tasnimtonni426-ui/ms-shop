@@ -7,69 +7,72 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --primary: #00d2ff; --secondary: #3a7bd5; --glass: rgba(255, 255, 255, 0.05); --border: rgba(255, 255, 255, 0.1); --success: #2ecc71; }
-        body { font-family: 'Poppins', sans-serif; margin: 0; background: #0f172a; color: white; padding-bottom: 90px; overflow-x: hidden; }
-        .p-image { width: 100%; height: 320px; object-fit: cover; border-bottom: 1px solid var(--border); }
-        .p-content { padding: 20px; }
-        .meta-row { display: flex; justify-content: space-between; align-items: center; background: var(--glass); padding: 15px; border-radius: 18px; border: 1px solid var(--border); margin: 15px 0; }
-        .section-box { margin-top: 25px; }
-        .section-label { font-size: 16px; font-weight: 600; color: var(--primary); margin-bottom: 10px; display: block; }
-        .bottom-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #1e293b; display: flex; padding: 12px 20px; gap: 12px; box-sizing: border-box; border-top: 1px solid var(--border); z-index: 1000; }
-        .btn-order { flex: 2; padding: 12px; border-radius: 12px; border: none; background: linear-gradient(45deg, var(--primary), var(--secondary)); color: white; cursor: pointer; font-weight: bold; font-size: 16px; }
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 2000; animation: fadeIn 0.3s ease; }
-        .popup { background: #1e293b; width: 90%; max-width: 400px; padding: 25px; border-radius: 25px; border: 1px solid var(--border); position: relative; }
-        .form-group { margin-bottom: 15px; }
-        label { font-size: 12px; color: #94a3b8; display: block; margin-bottom: 5px; }
-        input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: rgba(0,0,0,0.2); color: white; box-sizing: border-box; outline: none; }
-        .btn-confirm { width: 100%; padding: 14px; background: var(--success); color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        :root { --primary: #00d2ff; --dark: #0f172a; --glass: rgba(255, 255, 255, 0.05); --border: rgba(255, 255, 255, 0.1); }
+        body { font-family: 'Poppins', sans-serif; margin: 0; background: #0f172a; color: white; padding-bottom: 80px; }
+        
+        .top-nav { display: flex; justify-content: space-between; padding: 15px; position: sticky; top: 0; z-index: 100; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); }
+        .back-btn { font-size: 20px; color: white; cursor: pointer; }
+        .action-btns { display: flex; gap: 15px; font-size: 20px; }
+        .action-btns i { cursor: pointer; color: var(--primary); }
+
+        .p-img { width: 100%; height: 350px; object-fit: contain; background: white; border-radius: 0 0 30px 30px; }
+        .details-box { padding: 20px; }
+        .p-title { font-size: 22px; font-weight: 600; margin-bottom: 5px; }
+        .p-price { font-size: 24px; font-weight: bold; color: var(--primary); margin-bottom: 15px; }
+        
+        /* রিভিউ সেকশন */
+        .review-section { margin-top: 30px; background: var(--glass); padding: 15px; border-radius: 20px; border: 1px solid var(--border); }
+        .rev-form input { width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 10px; color: white; margin-bottom: 10px; box-sizing: border-box; }
+        .rev-btn { background: var(--primary); border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        
+        .rev-card { border-bottom: 1px solid var(--border); padding: 10px 0; }
+        .rev-user { font-size: 13px; color: var(--primary); font-weight: bold; }
+        .rev-id { font-size: 10px; color: #94a3b8; margin-left: 5px; }
+        .rev-text { font-size: 14px; margin-top: 5px; color: #cbd5e1; }
+
+        .buy-footer { position: fixed; bottom: 0; width: 100%; background: #1e293b; padding: 15px; display: flex; gap: 10px; border-top: 1px solid var(--border); box-sizing: border-box; }
+        .buy-now { flex: 1; background: var(--primary); color: #0f172a; text-align: center; padding: 12px; border-radius: 12px; font-weight: bold; text-decoration: none; }
     </style>
 </head>
 <body>
 
-    <img id="p-img" class="p-image" src="">
-    <div class="p-content">
-        <h1 id="p-name" style="margin:0; font-size:24px;">লোড হচ্ছে...</h1>
-        <div class="meta-row">
-            <span id="p-stock" style="color:var(--success); font-weight:bold;">📦 স্টক: ..</span>
-            <i class="fa fa-share-alt" onclick="shareProd()" style="cursor:pointer;"></i>
-        </div>
-        <div class="section-box">
-            <span class="section-label">বিস্তারিত বর্ণনা</span>
-            <p id="p-desc" style="color:#94a3b8; font-size:14px; line-height:1.6;"></p>
-        </div>
+<div class="top-nav">
+    <i class="fa fa-arrow-left back-btn" onclick="history.back()"></i>
+    <div class="action-btns">
+        <i class="fa-regular fa-heart" id="favIcon" onclick="toggleFav()"></i>
+        <i class="fa fa-share-nodes" onclick="shareProduct()"></i>
     </div>
+</div>
 
-    <div class="bottom-bar">
-        <button class="btn-order" onclick="openOrderForm()">Order Now</button>
-    </div>
+<img id="pImg" class="p-img" src="" alt="">
 
-    <div class="overlay" id="orderOverlay">
-        <div class="popup">
-            <h3 style="color:var(--primary);">অর্ডার ফরম</h3>
-            <div class="form-group"><label>নাম</label><input type="text" id="orderName"></div>
-            <div class="form-group"><label>জেলা</label><input type="text" id="orderDist"></div>
-            <div class="form-group"><label>উপজেলা</label><input type="text" id="orderUpz"></div>
-            <div class="form-group"><label>বিস্তারিত ঠিকানা</label><input type="text" id="orderAddr"></div>
-            <div class="form-group" onclick="openPayment()"><label>পেমেন্ট মেথড</label><div style="padding:10px; background:var(--glass); border-radius:10px; border:1px dashed var(--primary); text-align:center; cursor:pointer;">ক্যাশ অন ডেলিভারি (চার্জ দিন)</div></div>
-            <div id="isPaidTxt" style="display:none; color:var(--success); font-size:12px; margin-bottom:10px;">✓ চার্জ পেমেন্ট সফল!</div>
-            <button class="btn-confirm" onclick="finalOrder()">কনফার্ম অর্ডার</button>
-            <button onclick="closePop('orderOverlay')" style="background:none; border:none; color:white; width:100%; margin-top:10px;">বন্ধ করুন</button>
+<div class="details-box">
+    <div class="p-title" id="pName">লোড হচ্ছে...</div>
+    <div class="p-price" id="pPrice">0 ৳</div>
+    <p style="color: #94a3b8; font-size: 14px;" id="pDesc">প্রোডাক্টের বিবরণ এখানে দেখা যাবে...</p>
+
+    <div class="review-section">
+        <h3>রিভিউ সমূহ</h3>
+        <div id="revList">রিভিউ নেই</div>
+        
+        <hr style="border: 0.5px solid var(--border); margin: 20px 0;">
+        
+        <div class="rev-form">
+            <h4>একটি রিভিউ দিন</h4>
+            <input type="text" id="revInput" placeholder="আপনার মন্তব্য লিখুন...">
+            <button class="rev-btn" onclick="postReview()">রিভিউ সাবমিট</button>
         </div>
     </div>
+</div>
 
-    <div class="overlay" id="paymentOverlay">
-        <div class="popup">
-            <h3 style="color:#f1c40f;">ডেলিভারি চার্জ</h3>
-            <p style="font-size:12px;">বিকাশ/নগদ (পার্সোনাল): 017XXXXXXXX</p>
-            <div class="form-group"><label>Transaction ID</label><input type="text" id="trxID"></div>
-            <button class="btn-confirm" onclick="saveTrx()">সেভ করুন</button>
-        </div>
-    </div>
+<div class="buy-footer">
+    <a href="#" class="buy-now" id="buyBtn">অর্ডার করুন</a>
+</div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getDatabase, ref, onValue, push, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCu8lgGs3Q-qLeedhngQAVXtt8BHOAlWDg",
@@ -81,52 +84,81 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
     const db = getDatabase(app);
-    const pid = new URLSearchParams(window.location.search).get('id');
+    const auth = getAuth(app);
 
-    let currentUID = "";
-    onAuthStateChanged(auth, (user) => { if(user) currentUID = user.uid; });
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get('id');
+    let currentUser = null;
 
-    if(pid) {
-        onValue(ref(db, 'products/' + pid), (s) => {
-            const p = s.val();
+    onAuthStateChanged(auth, (user) => { if(user) currentUser = user; });
+
+    // ১. প্রোডাক্ট ডিটেইলস লোড (দাম সহ)
+    if (productId) {
+        onValue(ref(db, 'products/' + productId), (snap) => {
+            const p = snap.val();
             if(p) {
-                document.getElementById('p-img').src = p.img;
-                document.getElementById('p-name').innerText = p.name;
-                document.getElementById('p-stock').innerText = "📦 স্টক: " + (p.stock || 0);
-                document.getElementById('p-desc').innerText = p.description;
+                document.getElementById('pName').innerText = p.name;
+                document.getElementById('pPrice').innerText = p.price + " ৳";
+                document.getElementById('pImg').src = p.img;
+                document.getElementById('pDesc').innerText = p.desc || "No description available.";
+                document.getElementById('buyBtn').href = "order_confirm.html?id=" + productId;
+            }
+        });
+
+        // ২. রিভিউ লোড করা (নাম ও আইডি সহ)
+        onValue(ref(db, 'reviews/' + productId), (snap) => {
+            const list = document.getElementById('revList');
+            if(snap.exists()){
+                let html = '';
+                snap.forEach(child => {
+                    const r = child.val();
+                    html += `
+                        <div class="rev-card">
+                            <span class="rev-user">${r.userName}</span>
+                            <span class="rev-id">#${r.userId}</span>
+                            <div class="rev-text">${r.text}</div>
+                        </div>`;
+                });
+                list.innerHTML = html;
             }
         });
     }
 
-    window.openOrderForm = () => document.getElementById('orderOverlay').style.display='flex';
-    window.closePop = (id) => document.getElementById(id).style.display='none';
-    window.openPayment = () => document.getElementById('paymentOverlay').style.display='flex';
+    // ৩. রিভিউ পোস্ট করা
+    window.postReview = () => {
+        const text = document.getElementById('revInput').value;
+        if(!currentUser) { alert("রিভিউ দিতে লগইন করুন!"); return; }
+        if(!text) return;
 
-    let isPaid = false;
-    window.saveTrx = () => {
-        if(document.getElementById('trxID').value.length > 4) {
-            isPaid = true;
-            document.getElementById('isPaidTxt').style.display = 'block';
-            closePop('paymentOverlay');
+        const newRevRef = push(ref(db, 'reviews/' + productId));
+        set(newRevRef, {
+            userName: currentUser.displayName || "User",
+            userId: currentUser.uid.slice(-6).toUpperCase(),
+            text: text
+        }).then(() => {
+            document.getElementById('revInput').value = "";
+        });
+    };
+
+    // ৪. শেয়ার ফাংশন
+    window.shareProduct = () => {
+        if (navigator.share) {
+            navigator.share({
+                title: document.getElementById('pName').innerText,
+                url: window.location.href
+            });
+        } else {
+            alert("লিঙ্ক কপি করা হয়েছে: " + window.location.href);
         }
     };
 
-    window.finalOrder = () => {
-        const name = document.getElementById('orderName').value;
-        if(!name || !isPaid) { alert("সব তথ্য দিন এবং চার্জ দিন!"); return; }
-        
-        const newOrderRef = push(ref(db, 'orders'));
-        set(newOrderRef, {
-            uid: currentUID,
-            productName: document.getElementById('p-name').innerText,
-            userName: name,
-            address: document.getElementById('orderAddr').value + ", " + document.getElementById('orderUpz').value + ", " + document.getElementById('orderDist').value,
-            trxID: document.getElementById('trxID').value,
-            status: 'Pending',
-            date: new Date().toLocaleString()
-        }).then(() => { alert("অর্ডার সফল!"); location.href='shop.html'; });
+    // ৫. ফেভারিট বাটন
+    window.toggleFav = () => {
+        const icon = document.getElementById('favIcon');
+        icon.classList.toggle('fa-regular');
+        icon.classList.toggle('fa-solid');
+        icon.style.color = icon.classList.contains('fa-solid') ? '#ef4444' : var(--primary);
     };
 </script>
 </body>
