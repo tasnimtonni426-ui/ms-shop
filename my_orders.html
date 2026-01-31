@@ -7,15 +7,79 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { font-family: 'Poppins', sans-serif; background: #0f172a; color: white; padding: 20px; }
-        .order-card { background: rgba(255,255,255,0.05); border-radius: 15px; padding: 15px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1); }
-        .status { float: right; padding: 2px 10px; border-radius: 10px; font-size: 12px; font-weight: bold; }
-        .Pending { background: #f1c40f; color: black; }
-        .Confirmed { background: #2ecc71; color: white; }
+        :root {
+            --pending: #f1c40f;
+            --shipped: #3498db;
+            --delivered: #2ecc71;
+            --cancelled: #e74c3c;
+        }
+        body { font-family: 'Poppins', sans-serif; background: #0f172a; color: white; padding: 20px; margin: 0; }
+        
+        .header { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; cursor: pointer; }
+        .header h2 { margin: 0; font-size: 20px; }
+
+        .order-card { 
+            background: rgba(255, 255, 255, 0.05); 
+            border-radius: 20px; 
+            padding: 18px; 
+            margin-bottom: 20px; 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* ইউনিক আইডি সেকশন */
+        .id-badge {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            color: #00d2ff;
+        }
+        .copy-icon { cursor: pointer; color: #fff; opacity: 0.6; }
+        .copy-icon:hover { opacity: 1; }
+
+        .status-tag { 
+            float: right; 
+            padding: 4px 12px; 
+            border-radius: 8px; 
+            font-size: 11px; 
+            font-weight: bold; 
+            text-transform: uppercase;
+        }
+
+        /* ডাইনামিক স্ট্যাটাস কালার */
+        .Pending { background: var(--pending); color: #000; }
+        .Shipped { background: var(--shipped); color: #fff; }
+        .Delivered { background: var(--delivered); color: #fff; }
+        .Cancelled { background: var(--cancelled); color: #fff; }
+
+        .p-info b { font-size: 16px; display: block; margin-bottom: 5px; color: #f8fafc; }
+        .p-info small { color: #94a3b8; display: block; margin-bottom: 3px; }
+
+        .help-text {
+            margin-top: 15px;
+            font-size: 11px;
+            color: #94a3b8;
+            padding-top: 10px;
+            border-top: 1px dashed rgba(255,255,255,0.1);
+        }
+
+        #empty-msg { text-align: center; padding: 50px 20px; color: #64748b; }
     </style>
 </head>
 <body>
-    <h2 onclick="location.href='shop.html'"><i class="fa fa-arrow-left"></i> My Orders</h2>
+
+    <div class="header" onclick="location.href='shop.html'">
+        <i class="fa fa-arrow-left"></i>
+        <h2>আমার অর্ডারসমূহ</h2>
+    </div>
+
     <div id="order-list">লোড হচ্ছে...</div>
 
 <script type="module">
@@ -42,22 +106,54 @@
                 const list = document.getElementById('order-list');
                 list.innerHTML = "";
                 let found = false;
+
+                const ordersData = [];
                 snap.forEach(c => {
                     const o = c.val();
                     if(o.uid === user.uid) {
                         found = true;
-                        list.innerHTML += `<div class="order-card">
-                            <span class="status ${o.status}">${o.status}</span>
-                            <b>${o.productName}</b><br>
-                            <small>${o.date}</small><br>
-                            <small>ঠিকানা: ${o.address}</small>
-                        </div>`;
+                        // অর্ডারের আইডি বের করা (শেষ ৬ ক্যারেক্টার)
+                        const shortId = c.key.slice(-6).toUpperCase();
+                        ordersData.push({ ...o, shortId });
                     }
                 });
-                if(!found) list.innerHTML = "কোনো অর্ডার পাওয়া যায়নি।";
+
+                // নতুন অর্ডারগুলো উপরে দেখানোর জন্য রিভার্স করা
+                ordersData.reverse().forEach(o => {
+                    list.innerHTML += `
+                        <div class="order-card">
+                            <span class="status-tag ${o.status}">${o.status}</span>
+                            <div class="id-badge">
+                                ID: #${o.shortId} 
+                                <i class="fa fa-copy copy-icon" onclick="copyToClipboard('${o.shortId}')"></i>
+                            </div>
+                            <div class="p-info">
+                                <b>${o.productName}</b>
+                                <small><i class="fa fa-calendar-alt"></i> ${o.date}</small>
+                                <small><i class="fa fa-map-marker-alt"></i> ${o.address}</small>
+                                <small><i class="fa fa-money-bill-wave"></i> মোট: ${o.totalPrice} ৳</small>
+                            </div>
+                            <div class="help-text">
+                                <i class="fa fa-info-circle"></i> কোনো সমস্যা হলে এই আইডিটি অ্যাডমিনকে দিন।
+                            </div>
+                        </div>`;
+                });
+
+                if(!found) {
+                    list.innerHTML = `<div id="empty-msg"><i class="fa fa-shopping-bag" style="font-size:40px; margin-bottom:10px;"></i><p>আপনি এখনো কোনো অর্ডার করেননি।</p></div>`;
+                }
             });
+        } else {
+            location.href = 'login.html'; // লগইন না থাকলে পাঠিয়ে দিবে
         }
     });
+
+    // আইডি কপি করার ফাংশন
+    window.copyToClipboard = (text) => {
+        navigator.clipboard.writeText(text).then(() => {
+            alert("অর্ডার আইডি কপি হয়েছে: #" + text);
+        });
+    }
 </script>
 </body>
 </html>
