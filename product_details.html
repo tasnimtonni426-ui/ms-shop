@@ -3,131 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Details - SportX</title>
+    <title>Product Details</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root {
-            --primary: #00d2ff;
-            --secondary: #3a7bd5;
-            --dark: #0f172a;
-            --glass: rgba(255, 255, 255, 0.05);
-            --border: rgba(255, 255, 255, 0.1);
-        }
-        body {
-            font-family: 'Poppins', sans-serif;
-            margin: 0; background: #0f172a; color: white;
-            padding-bottom: 90px;
-        }
-        /* ইমেজ ও টাইটেল */
-        .p-image { width: 100%; height: 350px; object-fit: cover; border-bottom: 1px solid var(--border); }
+        :root { --primary: #00d2ff; --secondary: #3a7bd5; --glass: rgba(255, 255, 255, 0.05); --border: rgba(255, 255, 255, 0.1); }
+        body { font-family: 'Poppins', sans-serif; margin: 0; background: #0f172a; color: white; padding-bottom: 90px; }
+        .p-image { width: 100%; height: 320px; object-fit: cover; }
         .p-content { padding: 20px; }
-        .p-title { font-size: 24px; font-weight: 600; margin-bottom: 15px; }
-
-        /* মেটা রো (বামে স্টক/রিভিউ, ডানে ফেভারিট/শেয়ার) */
-        .meta-row {
-            display: flex; justify-content: space-between; align-items: center;
-            background: var(--glass); padding: 15px; border-radius: 18px;
-            border: 1px solid var(--border); margin-bottom: 25px;
-        }
-        .meta-left { display: flex; flex-direction: column; gap: 4px; }
-        .stock-info { color: #2ecc71; font-weight: bold; font-size: 14px; }
-        .rating-info { color: #f1c40f; font-size: 14px; }
-
-        .meta-right { display: flex; gap: 12px; }
-        .icon-btn {
-            width: 45px; height: 45px; background: rgba(255,255,255,0.08);
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; border: 1px solid var(--border); transition: 0.3s;
-        }
-        .icon-btn:hover { background: var(--primary); }
-        .fav-active i { color: #ff4757; }
-
-        /* সেকশন ডিজাইন */
-        .section-box { margin-bottom: 30px; }
-        .section-label { font-size: 18px; font-weight: 600; color: var(--primary); margin-bottom: 12px; display: block; }
-        
-        /* রিভিউ সিস্টেম */
-        .review-input-box {
-            background: var(--glass); padding: 15px; border-radius: 15px; margin-bottom: 15px;
-        }
-        .review-input-box textarea {
-            width: 100%; background: transparent; border: 1px solid var(--border);
-            color: white; border-radius: 10px; padding: 10px; box-sizing: border-box; resize: none;
-        }
-        .btn-review {
-            background: var(--primary); color: white; border: none; padding: 8px 20px;
-            border-radius: 10px; margin-top: 10px; cursor: pointer; font-weight: 600;
-        }
-        .review-list-item {
-            background: rgba(255,255,255,0.02); padding: 12px; border-radius: 12px;
-            margin-bottom: 10px; border-left: 3px solid var(--primary);
-        }
-
-        /* ডেসক্রিপশন */
-        .desc-text { color: #94a3b8; line-height: 1.6; font-size: 15px; }
-
-        /* বটম মেনু ট্যাব */
-        .bottom-bar {
-            position: fixed; bottom: 0; left: 0; width: 100%;
-            background: rgba(15, 23, 42, 0.98); backdrop-filter: blur(10px);
-            display: flex; padding: 15px 20px; gap: 15px; box-sizing: border-box;
-            border-top: 1px solid var(--border); z-index: 1000;
-        }
-        .btn-cart { flex: 1; padding: 14px; border-radius: 12px; border: 1px solid var(--border); background: var(--glass); color: white; cursor: pointer; font-weight: 600; }
-        .btn-order { flex: 2; padding: 14px; border-radius: 12px; border: none; background: linear-gradient(45deg, var(--primary), var(--secondary)); color: white; cursor: pointer; font-weight: 600; }
+        .meta-row { display: flex; justify-content: space-between; align-items: center; background: var(--glass); padding: 15px; border-radius: 18px; border: 1px solid var(--border); margin: 15px 0; }
+        .meta-left { display: flex; flex-direction: column; }
+        .meta-right { display: flex; gap: 10px; }
+        .icon-btn { width: 40px; height: 40px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid var(--border); }
+        .section-box { margin-top: 25px; }
+        .section-label { font-size: 16px; font-weight: 600; color: var(--primary); margin-bottom: 10px; display: block; }
+        .review-input { background: var(--glass); padding: 12px; border-radius: 12px; }
+        textarea { width: 100%; background: transparent; border: 1px solid var(--border); color: white; border-radius: 8px; padding: 8px; box-sizing: border-box; outline: none; }
+        .review-card { background: rgba(255,255,255,0.03); padding: 10px; border-radius: 10px; margin-top: 10px; border-left: 3px solid var(--primary); }
+        .bottom-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #1e293b; display: flex; padding: 12px 20px; gap: 12px; box-sizing: border-box; border-top: 1px solid var(--border); z-index: 1000; }
+        .btn-cart { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--glass); color: white; cursor: pointer; }
+        .btn-order { flex: 2; padding: 12px; border-radius: 10px; border: none; background: linear-gradient(45deg, var(--primary), var(--secondary)); color: white; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
-
-    <img id="p-img" class="p-image" src="">
-
+    <img id="p-img" class="p-image" src="https://via.placeholder.com/400">
     <div class="p-content">
-        <h1 id="p-name" class="p-title">লোড হচ্ছে...</h1>
-
+        <h1 id="p-name" style="margin:0; font-size:22px;">লোড হচ্ছে...</h1>
         <div class="meta-row">
             <div class="meta-left">
-                <span id="p-stock" class="stock-info">📦 স্টক: লোড হচ্ছে...</span>
-                <span id="p-rating" class="rating-info">⭐ 4.8 (রিভিউ পয়েন্ট)</span>
+                <span id="p-stock" style="color:#2ecc71; font-weight:bold; font-size:14px;">📦 স্টক: ..</span>
+                <span id="p-rating" style="color:#f1c40f; font-size:13px;">⭐ 4.8 (রিভিউ পয়েন্ট)</span>
             </div>
             <div class="meta-right">
-                <div class="icon-btn" id="favBtn" onclick="toggleFav()">
-                    <i class="fa fa-heart"></i>
-                </div>
-                <div class="icon-btn" onclick="shareProduct()">
-                    <i class="fa fa-share-alt"></i>
-                </div>
+                <div class="icon-btn" onclick="this.style.color='#ff4757'"><i class="fa fa-heart"></i></div>
+                <div class="icon-btn" onclick="shareProd()"><i class="fa fa-share-alt"></i></div>
             </div>
         </div>
-
         <div class="section-box">
             <span class="section-label">প্রোডাক্ট রিভিউ</span>
-            <div class="review-input-box">
-                <textarea id="reviewInput" rows="2" placeholder="আপনার মতামত লিখুন..."></textarea>
-                <button class="btn-review" onclick="submitReview()">রিভিউ দিন</button>
+            <div class="review-input">
+                <textarea id="revIn" rows="2" placeholder="আপনার মতামত লিখুন..."></textarea>
+                <button onclick="sendRev()" style="margin-top:8px; background:var(--primary); border:none; color:white; padding:6px 15px; border-radius:5px; cursor:pointer;">Post Review</button>
             </div>
-            <div id="review-display">
-                <div class="review-list-item">
-                    <div style="color:#f1c40f; font-size: 12px;">⭐⭐⭐⭐⭐</div>
-                    <p style="margin:5px 0; font-size:14px;">অসাধারণ কোয়ালিটি!</p>
-                </div>
-            </div>
+            <div id="rev-list"></div>
         </div>
-
         <div class="section-box">
             <span class="section-label">বিস্তারিত বর্ণনা</span>
-            <p id="p-desc" class="desc-text"></p>
+            <p id="p-desc" style="color:#94a3b8; font-size:14px; line-height:1.5;"></p>
         </div>
     </div>
-
     <div class="bottom-bar">
         <button class="btn-cart" onclick="alert('কার্টে যোগ করা হয়েছে!')">Add to Cart</button>
-        <button class="btn-order" onclick="window.location.href='order_confirm.html'">Order Now</button>
+        <button class="btn-order" onclick="alert('অর্ডার প্রসেস হচ্ছে...')">Order Now</button>
     </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, onValue, push, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { getDatabase, ref, onValue, push } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCu8lgGs3Q-qLeedhngQAVXtt8BHOAlWDg",
@@ -140,68 +72,47 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
+    const pid = new URLSearchParams(window.location.search).get('id');
 
-    const params = new URLSearchParams(window.location.search);
-    const productId = params.get('id');
-
-    if(productId) {
-        // প্রোডাক্ট ডাটা লোড
-        onValue(ref(db, 'products/' + productId), (snap) => {
-            const p = snap.val();
+    if(pid) {
+        onValue(ref(db, 'products/' + pid), (s) => {
+            const p = s.val();
             if(p) {
                 document.getElementById('p-img').src = p.img;
                 document.getElementById('p-name').innerText = p.name;
                 document.getElementById('p-stock').innerText = "📦 স্টক: " + (p.stock || 0) + " পিস";
                 document.getElementById('p-desc').innerText = p.description || "কোনো ডেসক্রিপশন নেই।";
-                document.getElementById('p-rating').innerText = "⭐ " + (p.rating || "4.5") + " পয়েন্ট";
             }
         });
-
-        // রিভিউ ডাটা লোড
-        onValue(ref(db, 'reviews/' + productId), (snap) => {
-            const display = document.getElementById('review-display');
-            display.innerHTML = "";
-            if(snap.exists()){
-                Object.values(snap.val()).reverse().forEach(r => {
-                    display.innerHTML += `
-                        <div class="review-list-item">
-                            <p style="margin:0; font-size:14px;">${r.text}</p>
-                            <small style="color:#94a3b8; font-size:11px;">${r.date}</small>
-                        </div>`;
+        onValue(ref(db, 'reviews/' + pid), (s) => {
+            const list = document.getElementById('rev-list');
+            list.innerHTML = "";
+            if(s.exists()) {
+                Object.values(s.val()).reverse().forEach(r => {
+                    list.innerHTML += `<div class="review-card"><p style="margin:0; font-size:13px;">${r.text}</p></div>`;
                 });
-            } else {
-                display.innerHTML = "<p style='color:#64748b; font-size:13px;'>এখনো কোনো রিভিউ নেই।</p>";
             }
         });
     }
 
-    // রিভিউ জমা দেওয়া
-    window.submitReview = () => {
-        const text = document.getElementById('reviewInput').value;
-        if(!text) return alert("কিছু লিখুন!");
-        
-        const reviewRef = ref(db, 'reviews/' + productId);
-        push(reviewRef, {
-            text: text,
-            date: new Date().toLocaleDateString()
-        }).then(() => {
-            document.getElementById('reviewInput').value = "";
-            alert("রিভিউ সফলভাবে জমা হয়েছে!");
-        });
+    window.sendRev = () => {
+        const text = document.getElementById('revIn').value;
+        if(text) {
+            push(ref(db, 'reviews/' + pid), { text, date: new Date().toLocaleDateString() })
+            .then(() => {
+                document.getElementById('revIn').value = "";
+                alert("রিভিউ যোগ হয়েছে!");
+            });
+        }
     };
 
-    // শেয়ার ফাংশন
-    window.shareProduct = () => {
+    window.shareProd = () => {
         if (navigator.share) {
             navigator.share({ title: document.getElementById('p-name').innerText, url: window.location.href });
         } else {
             navigator.clipboard.writeText(window.location.href);
             alert("লিঙ্ক কপি হয়েছে!");
         }
-    };
-
-    window.toggleFav = () => {
-        document.getElementById('favBtn').classList.toggle('fav-active');
     };
 </script>
 </body>
