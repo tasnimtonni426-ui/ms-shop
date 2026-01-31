@@ -3,128 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SportX - Home</title>
+    <title>SportX - Shop</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root {
-            --primary: #00d2ff;
-            --secondary: #3a7bd5;
-            --dark: #0f172a;
-            --glass: rgba(255, 255, 255, 0.05);
-            --border: rgba(255, 255, 255, 0.1);
-        }
-        body { font-family: 'Poppins', sans-serif; margin: 0; background: #0f172a; color: white; min-height: 100vh; overflow-x: hidden; }
-        
-        /* হেডার ডিজাইন */
-        header { 
-            background: rgba(15, 23, 42, 0.95); 
-            backdrop-filter: blur(15px); 
-            padding: 10px 15px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            position: sticky; 
-            top: 0; 
-            z-index: 2000; 
-            border-bottom: 1px solid var(--border); 
-            height: 60px;
-        }
-
-        .logo { font-size: 20px; font-weight: bold; color: var(--primary); flex-shrink: 0; }
-
-        /* ডানদিকের সার্চ ও প্রোফাইল কন্টেইনার */
-        .header-controls {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .search-box { 
-            position: relative; 
-            width: 140px; /* মোবাইলে ছোট রাখা হয়েছে */
-        }
-        .search-box input { 
-            width: 100%; padding: 7px 30px 7px 10px; 
-            border-radius: 12px; border: 1px solid var(--border); 
-            background: var(--glass); color: white; font-size: 13px; outline: none; 
-        }
-        .search-box i { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--primary); pointer-events: none; }
-        
-        /* প্রোফাইল বাটন */
-        .profile-trigger { 
-            font-size: 32px; 
-            cursor: pointer; 
-            color: var(--primary); 
-            z-index: 2001; /* সার্চ বক্সের চেয়ে উপরে রাখা হয়েছে */
-            padding: 5px;
-        }
-
-        /* প্রোফাইল মেনু পপ-আপ */
-        .profile-menu { 
-            display: none; position: fixed; top: 70px; right: 15px; 
-            width: 260px; background: #1e293b; border-radius: 20px; 
-            padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.6); 
-            z-index: 3000; border: 1px solid var(--border); 
-        }
+        :root { --primary: #00d2ff; --glass: rgba(255, 255, 255, 0.05); --border: rgba(255, 255, 255, 0.1); }
+        body { font-family: 'Poppins', sans-serif; margin: 0; background: #0f172a; color: white; }
+        header { padding: 15px; display: flex; justify-content: space-between; align-items: center; background: rgba(15,23,42,0.9); position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--border); }
+        .profile-menu { display: none; position: fixed; top: 70px; right: 15px; width: 250px; background: #1e293b; border-radius: 20px; padding: 20px; border: 1px solid var(--border); z-index: 2000; }
         .profile-menu.active { display: block; }
-        
-        .user-label { font-size: 11px; color: #94a3b8; margin-top: 12px; font-weight: 600; text-transform: uppercase; }
-        .user-data { 
-            font-size: 14px; color: #fff; background: rgba(0,0,0,0.2); 
-            padding: 10px; border-radius: 10px; margin-top: 5px; border: 1px solid var(--border); 
-        }
-        
-        .btn-logout { 
-            width: 100%; margin-top: 20px; padding: 12px; 
-            background: #e74c3c; color: white; border: none; 
-            border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 15px;
-        }
-
-        /* প্রোডাক্ট লিস্ট গ্রিড */
-        .container { padding: 15px; }
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
-        .p-card { background: var(--glass); border-radius: 18px; border: 1px solid var(--border); overflow: hidden; cursor: pointer; }
-        .p-card img { width: 100%; height: 140px; object-fit: cover; }
-        .p-info { padding: 12px; }
-        .p-name { font-size: 14px; font-weight: 600; margin-bottom: 3px; color: #f1f5f9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .p-price { color: var(--primary); font-weight: bold; font-size: 16px; }
-        .p-stock { font-size: 11px; color: #2ecc71; }
-
-        @media (max-width: 480px) { .product-grid { grid-template-columns: 1fr 1fr; } }
+        .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; }
+        .p-card { background: var(--glass); border-radius: 15px; border: 1px solid var(--border); overflow: hidden; }
+        .p-card img { width: 100%; height: 130px; object-fit: cover; }
+        .btn-orders { width: 100%; margin-top: 15px; padding: 10px; background: var(--primary); border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="logo">SportX</div>
-    <div class="header-controls">
-        <div class="search-box">
-            <input type="text" id="searchInput" placeholder="Search..." onkeyup="searchFn()">
-            <i class="fa fa-search"></i>
-        </div>
-        <i class="fa fa-user-circle profile-trigger" id="profileIcon"></i>
-    </div>
+    <div style="font-weight:bold; color:var(--primary);">SportX</div>
+    <i class="fa fa-user-circle" style="font-size:25px; cursor:pointer;" onclick="toggleMenu(event)"></i>
 </header>
 
-<div class="profile-menu" id="profileMenu">
-    <h3 style="margin:0 0 15px 0; font-size: 18px; color:var(--primary); text-align: center; border-bottom: 1px solid var(--border); padding-bottom: 10px;">My Profile</h3>
-    
-    <div class="user-label">ইউনিক আইডি:</div>
-    <div class="user-data" id="u-id">...</div>
-    
-    <div class="user-label">আপনার নাম:</div>
-    <div class="user-data" id="u-name">...</div>
-    
-    <div class="user-label">জিমেইল:</div>
-    <div class="user-data" id="u-email" style="font-size: 12px; word-break: break-all;">...</div>
-    
-    <button class="btn-logout" onclick="logout()">লগআউট করুন</button>
+<div class="profile-menu" id="pMenu">
+    <h4 style="margin:0;">প্রোফাইল</h4>
+    <p id="uName" style="font-size:14px; color:#94a3b8;"></p>
+    <button class="btn-orders" onclick="location.href='my_orders.html'">My Orders</button>
+    <button onclick="logout()" style="width:100%; margin-top:10px; background:red; color:white; border:none; padding:8px; border-radius:10px;">Logout</button>
 </div>
 
-<div class="container">
-    <div class="product-grid" id="p-list"></div>
-</div>
+<div class="product-grid" id="p-list"></div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -144,66 +52,25 @@
     const auth = getAuth(app);
     const db = getDatabase(app);
 
-    // প্রোফাইল তথ্য লোড করা
     onAuthStateChanged(auth, (user) => {
-        if (user) {
-            document.getElementById('u-id').innerText = "SPX-" + user.uid.substring(0, 8).toUpperCase();
-            document.getElementById('u-name').innerText = user.displayName || "ব্যবহারকারী";
-            document.getElementById('u-email').innerText = user.email;
-        } else {
-            window.location.href = "index.html";
-        }
+        if (user) document.getElementById('uName').innerText = user.displayName || "User";
+        else location.href = "index.html";
     });
 
-    // প্রোডাক্ট লিস্ট লোড
-    let pArray = [];
     onValue(ref(db, 'products'), (snap) => {
-        pArray = [];
-        if(snap.exists()){
-            snap.forEach(c => {
-                let data = c.val();
-                data.id = c.key;
-                pArray.push(data);
-            });
-            render(pArray);
-        }
+        const list = document.getElementById('p-list');
+        list.innerHTML = "";
+        snap.forEach(c => {
+            const p = c.val();
+            list.innerHTML += `<div class="p-card" onclick="location.href='product_details.html?id=${c.key}'">
+                <img src="${p.img}"><div style="padding:10px;"><b>${p.name}</b><br>${p.price}৳</div>
+            </div>`;
+        });
     });
 
-    function render(data) {
-        document.getElementById('p-list').innerHTML = data.map(p => `
-            <div class="p-card" onclick="location.href='product_details.html?id=${p.id}'">
-                <img src="${p.img}" onerror="this.src='https://via.placeholder.com/150'">
-                <div class="p-info">
-                    <div class="p-name">${p.name}</div>
-                    <div class="p-price">${p.price} ৳</div>
-                    <span class="p-stock">Stock: ${p.stock || 0}</span>
-                </div>
-            </div>`).join('');
-    }
-
-    // সার্চ ফাংশন
-    window.searchFn = () => {
-        let val = document.getElementById('searchInput').value.toLowerCase();
-        render(pArray.filter(p => p.name.toLowerCase().includes(val)));
-    };
-
-    // প্রোফাইল মেনু কন্ট্রোল (সঠিক ক্লিক ইভেন্ট)
-    const profileIcon = document.getElementById('profileIcon');
-    const profileMenu = document.getElementById('profileMenu');
-
-    profileIcon.addEventListener('click', (e) => {
-        e.stopPropagation();
-        profileMenu.classList.toggle('active');
-    });
-
-    // বাইরে ক্লিক করলে মেনু বন্ধ হবে
-    window.onclick = (e) => {
-        if (!profileMenu.contains(e.target) && e.target !== profileIcon) {
-            profileMenu.classList.remove('active');
-        }
-    };
-
-    window.logout = () => signOut(auth).then(() => location.href = "index.html");
+    window.toggleMenu = (e) => { e.stopPropagation(); document.getElementById('pMenu').classList.toggle('active'); };
+    window.logout = () => signOut(auth).then(() => location.href="index.html");
+    window.onclick = () => document.getElementById('pMenu').classList.remove('active');
 </script>
 </body>
 </html>
