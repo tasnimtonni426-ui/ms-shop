@@ -25,7 +25,6 @@
             overflow-x: hidden;
         }
 
-        /* প্রফেশনাল নেভিগেশন */
         nav {
             background: rgba(15, 23, 42, 0.8);
             backdrop-filter: blur(15px);
@@ -48,7 +47,6 @@
             letter-spacing: 1px;
         }
 
-        /* হিরো সেকশন এনিমেশন */
         .hero {
             text-align: center;
             padding: 80px 20px;
@@ -63,7 +61,6 @@
             -webkit-text-fill-color: transparent;
         }
 
-        /* অথ বক্স - Glassmorphism */
         .auth-box {
             background: var(--glass);
             backdrop-filter: blur(20px);
@@ -130,7 +127,6 @@
 
         .google-btn img { width: 20px; }
 
-        /* ড্রপডাউন ডিজাইন */
         .dropdown {
             display: none;
             position: absolute;
@@ -153,10 +149,8 @@
         }
 
         .dropdown a:hover { background: var(--primary); }
-
         .three-dots:hover .dropdown { display: block; }
 
-        /* এনিমেশন কি-ফ্রেম */
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideUp { 
             from { opacity: 0; transform: translateY(30px); } 
@@ -179,7 +173,7 @@
 
 <div class="hero">
     <h1>Elevate Your Game</h1>
-    <p style="color: #94a3b8;">উচ্চমানের অনলাইন শপিং এক্সপেরিয়েন্স দিতে এসেছি আমরা সাথে থাকুন MS STORE এর </p>
+    <p style="color: #94a3b8;">উচ্চমানের অনলাইন শপিং এক্সপেরিয়েন্স দিতে এসেছি আমরা, সাথে থাকুন MS STORE এর।</p>
 </div>
 
 <div class="auth-box">
@@ -202,20 +196,25 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, updateProfile, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCu8lgGs3Q-qLeedhngQAVXtt8BHOAlWDg",
         authDomain: "ms-sp-97f78.firebaseapp.com",
+        databaseURL: "https://ms-sp-97f78-default-rtdb.firebaseio.com",
         projectId: "ms-sp-97f78",
         storageBucket: "ms-sp-97f78.appspot.com",
-        messagingSenderId: "880638162029",
         appId: "1:880638162029:web:b99af5b5518b3e16a13b64"
     };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
+
+    // অলরেডি লগইন থাকলে শপে পাঠিয়ে দিবে
+    onAuthStateChanged(auth, (user) => {
+        if (user) window.location.href = "shop.html";
+    });
 
     let isRegisterMode = false;
 
@@ -237,10 +236,12 @@
         if(!email || !pass) return alert("সব ঘর পূরণ করুন");
 
         if(isRegisterMode) {
+            if(!name) return alert("আপনার নাম লিখুন");
             createUserWithEmailAndPassword(auth, email, pass).then((res) => {
-                updateProfile(res.user, { displayName: name });
-                window.location.href = "shop.html";
-            }).catch(e => alert(e.message));
+                updateProfile(res.user, { displayName: name }).then(() => {
+                    window.location.href = "shop.html";
+                });
+            }).catch(e => alert("ভুল তথ্য অথবা ইমেইলটি আগে ব্যবহার হয়েছে"));
         } else {
             signInWithEmailAndPassword(auth, email, pass)
                 .then(() => window.location.href = "shop.html")
@@ -251,7 +252,7 @@
     window.googleLogin = () => {
         signInWithPopup(auth, provider)
             .then(() => window.location.href = "shop.html")
-            .catch(e => alert(e.message));
+            .catch(e => alert("Google লগইন বাতিল হয়েছে"));
     };
 </script>
 </body>
