@@ -3,36 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SportX - Shop</title>
+    <title>SportX - Home</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --primary: #00d2ff; --glass: rgba(255, 255, 255, 0.05); --border: rgba(255, 255, 255, 0.1); }
-        body { font-family: 'Poppins', sans-serif; margin: 0; background: #0f172a; color: white; }
-        header { padding: 15px; display: flex; justify-content: space-between; align-items: center; background: rgba(15,23,42,0.9); position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--border); }
-        .profile-menu { display: none; position: fixed; top: 70px; right: 15px; width: 250px; background: #1e293b; border-radius: 20px; padding: 20px; border: 1px solid var(--border); z-index: 2000; }
+        :root {
+            --primary: #00d2ff;
+            --secondary: #3a7bd5;
+            --dark: #0f172a;
+            --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+        body { font-family: 'Poppins', sans-serif; margin: 0; background: #0f172a; color: white; min-height: 100vh; overflow-x: hidden; }
+        
+        /* হেডার ডিজাইন */
+        header { 
+            background: rgba(15, 23, 42, 0.95); 
+            backdrop-filter: blur(15px); 
+            padding: 10px 15px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            position: sticky; 
+            top: 0; 
+            z-index: 2000; 
+            border-bottom: 1px solid var(--border); 
+            height: 65px;
+            box-sizing: border-box;
+        }
+
+        .logo { font-size: 22px; font-weight: bold; color: var(--primary); flex-shrink: 0; }
+
+        /* ডানদিকের কন্ট্রোল */
+        .header-controls { display: flex; align-items: center; gap: 12px; }
+
+        .search-box { position: relative; width: 150px; }
+        .search-box input { 
+            width: 100%; padding: 8px 35px 8px 12px; 
+            border-radius: 12px; border: 1px solid var(--border); 
+            background: var(--glass); color: white; font-size: 13px; outline: none; 
+        }
+        .search-box i { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--primary); font-size: 14px; pointer-events: none; }
+        
+        .profile-trigger { font-size: 32px; cursor: pointer; color: var(--primary); padding: 5px; }
+
+        /* প্রোফাইল মেনু */
+        .profile-menu { 
+            display: none; position: fixed; top: 75px; right: 15px; 
+            width: 260px; background: #1e293b; border-radius: 20px; 
+            padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.6); 
+            z-index: 3000; border: 1px solid var(--border); 
+        }
         .profile-menu.active { display: block; }
-        .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; }
-        .p-card { background: var(--glass); border-radius: 15px; border: 1px solid var(--border); overflow: hidden; }
-        .p-card img { width: 100%; height: 130px; object-fit: cover; }
-        .btn-orders { width: 100%; margin-top: 15px; padding: 10px; background: var(--primary); border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        
+        .user-label { font-size: 11px; color: #94a3b8; margin-top: 10px; font-weight: 600; text-transform: uppercase; }
+        .user-data { font-size: 14px; color: #fff; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 8px; margin-top: 4px; border: 1px solid var(--border); }
+        
+        .btn-orders { width: 100%; margin-top: 15px; padding: 12px; background: var(--primary); color: #0f172a; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-logout { width: 100%; margin-top: 10px; padding: 10px; background: #e74c3c; color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; }
+
+        /* প্রোডাক্ট গ্রিড */
+        .container { padding: 15px; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
+        .p-card { background: var(--glass); border-radius: 18px; border: 1px solid var(--border); overflow: hidden; cursor: pointer; transition: 0.3s; }
+        .p-card:hover { transform: translateY(-5px); border-color: var(--primary); }
+        .p-card img { width: 100%; height: 140px; object-fit: cover; }
+        .p-info { padding: 12px; }
+        .p-name { font-size: 14px; font-weight: 600; margin-bottom: 4px; color: #f1f5f9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .p-price { color: var(--primary); font-weight: bold; font-size: 16px; }
+
+        @media (max-width: 480px) { 
+            .product-grid { grid-template-columns: 1fr 1fr; gap: 10px; } 
+            .search-box { width: 120px; }
+        }
     </style>
 </head>
 <body>
 
 <header>
-    <div style="font-weight:bold; color:var(--primary);">SportX</div>
-    <i class="fa fa-user-circle" style="font-size:25px; cursor:pointer;" onclick="toggleMenu(event)"></i>
+    <div class="logo">SportX</div>
+    <div class="header-controls">
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="খুঁজুন..." onkeyup="searchFn()">
+            <i class="fa fa-search"></i>
+        </div>
+        <i class="fa fa-user-circle profile-trigger" id="profileIcon"></i>
+    </div>
 </header>
 
-<div class="profile-menu" id="pMenu">
-    <h4 style="margin:0;">প্রোফাইল</h4>
-    <p id="uName" style="font-size:14px; color:#94a3b8;"></p>
-    <button class="btn-orders" onclick="location.href='my_orders.html'">My Orders</button>
-    <button onclick="logout()" style="width:100%; margin-top:10px; background:red; color:white; border:none; padding:8px; border-radius:10px;">Logout</button>
+<div class="profile-menu" id="profileMenu">
+    <h3 style="margin:0 0 10px 0; font-size: 18px; color:var(--primary);">My Profile</h3>
+    <div class="user-label">নাম:</div>
+    <div class="user-data" id="u-name">লোড হচ্ছে...</div>
+    <div class="user-label">জিমেইল:</div>
+    <div class="user-data" id="u-email" style="font-size: 12px;">লোড হচ্ছে...</div>
+    
+    <button class="btn-orders" onclick="location.href='my_orders.html'">
+        <i class="fa fa-shopping-bag"></i> My Orders
+    </button>
+    
+    <button class="btn-logout" onclick="logout()">লগআউট</button>
 </div>
 
-<div class="product-grid" id="p-list"></div>
+<div class="container">
+    <div class="product-grid" id="p-list"></div>
+</div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -53,24 +128,52 @@
     const db = getDatabase(app);
 
     onAuthStateChanged(auth, (user) => {
-        if (user) document.getElementById('uName').innerText = user.displayName || "User";
-        else location.href = "index.html";
+        if (user) {
+            document.getElementById('u-name').innerText = user.displayName || "ব্যবহারকারী";
+            document.getElementById('u-email').innerText = user.email;
+        } else {
+            location.href = "index.html";
+        }
     });
 
+    let pArray = [];
     onValue(ref(db, 'products'), (snap) => {
-        const list = document.getElementById('p-list');
-        list.innerHTML = "";
-        snap.forEach(c => {
-            const p = c.val();
-            list.innerHTML += `<div class="p-card" onclick="location.href='product_details.html?id=${c.key}'">
-                <img src="${p.img}"><div style="padding:10px;"><b>${p.name}</b><br>${p.price}৳</div>
-            </div>`;
-        });
+        pArray = [];
+        if(snap.exists()){
+            snap.forEach(c => {
+                let d = c.val(); d.id = c.key;
+                pArray.push(d);
+            });
+            render(pArray);
+        }
     });
 
-    window.toggleMenu = (e) => { e.stopPropagation(); document.getElementById('pMenu').classList.toggle('active'); };
-    window.logout = () => signOut(auth).then(() => location.href="index.html");
-    window.onclick = () => document.getElementById('pMenu').classList.remove('active');
+    function render(data) {
+        document.getElementById('p-list').innerHTML = data.map(p => `
+            <div class="p-card" onclick="location.href='product_details.html?id=${p.id}'">
+                <img src="${p.img}" onerror="this.src='https://via.placeholder.com/150'">
+                <div class="p-info">
+                    <div class="p-name">${p.name}</div>
+                    <div class="p-price">${p.price} ৳</div>
+                </div>
+            </div>`).join('');
+    }
+
+    // সার্চ ফাংশন ঠিক করা হয়েছে
+    window.searchFn = () => {
+        let val = document.getElementById('searchInput').value.toLowerCase();
+        let filtered = pArray.filter(p => p.name.toLowerCase().includes(val));
+        render(filtered);
+    };
+
+    const pIcon = document.getElementById('profileIcon');
+    const pMenu = document.getElementById('profileMenu');
+
+    pIcon.onclick = (e) => { e.stopPropagation(); pMenu.classList.toggle('active'); };
+    window.onclick = () => pMenu.classList.remove('active');
+    pMenu.onclick = (e) => e.stopPropagation();
+
+    window.logout = () => signOut(auth).then(() => location.href = "index.html");
 </script>
 </body>
 </html>
