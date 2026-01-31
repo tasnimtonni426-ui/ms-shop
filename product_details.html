@@ -10,28 +10,33 @@
         :root { --primary: #00d2ff; --dark: #0f172a; --glass: rgba(255, 255, 255, 0.05); --border: rgba(255, 255, 255, 0.1); }
         body { font-family: 'Poppins', sans-serif; margin: 0; background: #0f172a; color: white; padding-bottom: 80px; }
         
-        .top-nav { display: flex; justify-content: space-between; padding: 15px; position: sticky; top: 0; z-index: 100; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); }
+        .top-nav { display: flex; justify-content: space-between; padding: 15px; position: sticky; top: 0; z-index: 100; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); align-items: center;}
         .back-btn { font-size: 20px; color: white; cursor: pointer; }
-        .action-btns { display: flex; gap: 15px; font-size: 20px; }
+        .action-btns { display: flex; gap: 20px; font-size: 20px; align-items: center;}
         .action-btns i { cursor: pointer; color: var(--primary); }
 
-        .p-img { width: 100%; height: 350px; object-fit: contain; background: white; border-radius: 0 0 30px 30px; }
+        .p-img-container { width: 100%; background: white; border-radius: 0 0 30px 30px; overflow: hidden; display: flex; justify-content: center; align-items: center; min-height: 300px; }
+        .p-img { width: 100%; height: auto; max-height: 400px; object-fit: contain; }
+        
         .details-box { padding: 20px; }
-        .p-title { font-size: 22px; font-weight: 600; margin-bottom: 5px; }
-        .p-price { font-size: 24px; font-weight: bold; color: var(--primary); margin-bottom: 15px; }
+        .p-title { font-size: 22px; font-weight: 600; margin-bottom: 8px; }
+        .p-price { font-size: 24px; font-weight: bold; color: var(--primary); margin-bottom: 15px; display: block;}
+        .p-desc { color: #94a3b8; font-size: 14px; line-height: 1.6; margin-bottom: 25px;}
         
         /* রিভিউ সেকশন */
         .review-section { margin-top: 30px; background: var(--glass); padding: 15px; border-radius: 20px; border: 1px solid var(--border); }
-        .rev-form input { width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 10px; color: white; margin-bottom: 10px; box-sizing: border-box; }
-        .rev-btn { background: var(--primary); border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        .review-section h3 { font-size: 18px; margin-bottom: 15px; color: var(--primary); }
+        .rev-form input { width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 12px; color: white; margin-bottom: 10px; box-sizing: border-box; outline: none;}
+        .rev-btn { background: var(--primary); border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; cursor: pointer; width: 100%;}
         
-        .rev-card { border-bottom: 1px solid var(--border); padding: 10px 0; }
-        .rev-user { font-size: 13px; color: var(--primary); font-weight: bold; }
-        .rev-id { font-size: 10px; color: #94a3b8; margin-left: 5px; }
+        #revList { margin-bottom: 20px; max-height: 300px; overflow-y: auto; }
+        .rev-card { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; margin-bottom: 10px; border: 1px solid var(--border); }
+        .rev-user { font-size: 13px; color: var(--primary); font-weight: 600; }
+        .rev-id { font-size: 10px; color: #64748b; margin-left: 5px; }
         .rev-text { font-size: 14px; margin-top: 5px; color: #cbd5e1; }
 
-        .buy-footer { position: fixed; bottom: 0; width: 100%; background: #1e293b; padding: 15px; display: flex; gap: 10px; border-top: 1px solid var(--border); box-sizing: border-box; }
-        .buy-now { flex: 1; background: var(--primary); color: #0f172a; text-align: center; padding: 12px; border-radius: 12px; font-weight: bold; text-decoration: none; }
+        .buy-footer { position: fixed; bottom: 0; width: 100%; background: #1e293b; padding: 15px; display: flex; gap: 10px; border-top: 1px solid var(--border); box-sizing: border-box; z-index: 1000; }
+        .buy-now { flex: 1; background: var(--primary); color: #0f172a; text-align: center; padding: 14px; border-radius: 12px; font-weight: bold; text-decoration: none; font-size: 16px; }
     </style>
 </head>
 <body>
@@ -44,23 +49,22 @@
     </div>
 </div>
 
-<img id="pImg" class="p-img" src="" alt="">
+<div class="p-img-container">
+    <img id="pImg" class="p-img" src="https://via.placeholder.com/400x400?text=Loading..." alt="Product">
+</div>
 
 <div class="details-box">
     <div class="p-title" id="pName">লোড হচ্ছে...</div>
     <div class="p-price" id="pPrice">0 ৳</div>
-    <p style="color: #94a3b8; font-size: 14px;" id="pDesc">প্রোডাক্টের বিবরণ এখানে দেখা যাবে...</p>
+    <div class="p-desc" id="pDesc">প্রোডাক্টের বিস্তারিত তথ্য এখানে দেখা যাবে।</div>
 
     <div class="review-section">
-        <h3>রিভিউ সমূহ</h3>
-        <div id="revList">রিভিউ নেই</div>
-        
-        <hr style="border: 0.5px solid var(--border); margin: 20px 0;">
+        <h3>ইউজার রিভিউ</h3>
+        <div id="revList">লোড হচ্ছে...</div>
         
         <div class="rev-form">
-            <h4>একটি রিভিউ দিন</h4>
             <input type="text" id="revInput" placeholder="আপনার মন্তব্য লিখুন...">
-            <button class="rev-btn" onclick="postReview()">রিভিউ সাবমিট</button>
+            <button class="rev-btn" onclick="postReview()">রিভিউ দিন</button>
         </div>
     </div>
 </div>
@@ -93,20 +97,22 @@
 
     onAuthStateChanged(auth, (user) => { if(user) currentUser = user; });
 
-    // ১. প্রোডাক্ট ডিটেইলস লোড (দাম সহ)
     if (productId) {
+        // ১. প্রোডাক্ট ডেটা লোড করা
         onValue(ref(db, 'products/' + productId), (snap) => {
             const p = snap.val();
             if(p) {
-                document.getElementById('pName').innerText = p.name;
-                document.getElementById('pPrice').innerText = p.price + " ৳";
-                document.getElementById('pImg').src = p.img;
-                document.getElementById('pDesc').innerText = p.desc || "No description available.";
+                document.getElementById('pName').innerText = p.name || "No Name";
+                document.getElementById('pPrice').innerText = (p.price || 0) + " ৳";
+                document.getElementById('pImg').src = p.img || p.pImage || "https://via.placeholder.com/400";
+                document.getElementById('pDesc').innerText = p.desc || p.description || "এই প্রোডাক্টের কোনো বর্ণনা দেওয়া নেই।";
                 document.getElementById('buyBtn').href = "order_confirm.html?id=" + productId;
+            } else {
+                document.getElementById('pName').innerText = "প্রোডাক্ট পাওয়া যায়নি";
             }
         });
 
-        // ২. রিভিউ লোড করা (নাম ও আইডি সহ)
+        // ২. রিভিউ ডেটা লোড করা
         onValue(ref(db, 'reviews/' + productId), (snap) => {
             const list = document.getElementById('revList');
             if(snap.exists()){
@@ -121,44 +127,49 @@
                         </div>`;
                 });
                 list.innerHTML = html;
+            } else {
+                list.innerHTML = "<p style='font-size:12px; color:#64748b;'>এখনো কোনো রিভিউ নেই।</p>";
             }
         });
     }
 
-    // ৩. রিভিউ পোস্ট করা
+    // রিভিউ পোস্ট করা
     window.postReview = () => {
         const text = document.getElementById('revInput').value;
-        if(!currentUser) { alert("রিভিউ দিতে লগইন করুন!"); return; }
-        if(!text) return;
+        if(!currentUser) { alert("রিভিউ দিতে আগে লগইন করুন!"); return; }
+        if(!text.trim()) { alert("কিছু লিখুন!"); return; }
 
         const newRevRef = push(ref(db, 'reviews/' + productId));
         set(newRevRef, {
             userName: currentUser.displayName || "User",
             userId: currentUser.uid.slice(-6).toUpperCase(),
-            text: text
+            text: text,
+            timestamp: Date.now()
         }).then(() => {
             document.getElementById('revInput').value = "";
         });
     };
 
-    // ৪. শেয়ার ফাংশন
+    // শেয়ার ফাংশন
     window.shareProduct = () => {
         if (navigator.share) {
             navigator.share({
                 title: document.getElementById('pName').innerText,
+                text: 'SportX-এ এই প্রোডাক্টটি দেখুন!',
                 url: window.location.href
-            });
+            }).catch(console.error);
         } else {
-            alert("লিঙ্ক কপি করা হয়েছে: " + window.location.href);
+            navigator.clipboard.writeText(window.location.href);
+            alert("লিঙ্ক কপি হয়েছে!");
         }
     };
 
-    // ৫. ফেভারিট বাটন
+    // ফেভারিট বাটন
     window.toggleFav = () => {
         const icon = document.getElementById('favIcon');
         icon.classList.toggle('fa-regular');
         icon.classList.toggle('fa-solid');
-        icon.style.color = icon.classList.contains('fa-solid') ? '#ef4444' : var(--primary);
+        icon.style.color = icon.classList.contains('fa-solid') ? '#ef4444' : '#00d2ff';
     };
 </script>
 </body>
