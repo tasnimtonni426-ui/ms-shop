@@ -8,53 +8,32 @@
     <style>
         :root { --primary: #2ecc71; --dark: #1e293b; --danger: #ff4757; --accent: #3498db; --bg: #f8fafc; }
         body { font-family: 'Poppins', sans-serif; background: var(--bg); margin: 0; padding: 15px; color: #334155; }
-
         .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .stat-box { background: var(--dark); color: white; padding: 20px; border-radius: 20px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .stat-box { background: var(--dark); color: white; padding: 20px; border-radius: 20px; text-align: center; }
         .stat-box b { font-size: 28px; display: block; color: var(--primary); }
-
-        .order-nav-btn { background: var(--accent); color: white; border: none; padding: 16px; width: 100%; border-radius: 15px; font-weight: bold; cursor: pointer; margin-bottom: 25px; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2); }
-
-        .card { background: white; padding: 25px; border-radius: 20px; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #f1f5f9; }
-        h3 { margin-top: 0; color: var(--dark); border-left: 4px solid var(--primary); padding-left: 10px; font-size: 18px; }
-
-        input, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1.5px solid #e2e8f0; border-radius: 12px; box-sizing: border-box; outline: none; font-family: inherit; transition: 0.3s; }
-        input:focus, textarea:focus { border-color: var(--primary); }
-        
-        .btn-main { background: var(--primary); color: white; border: none; padding: 15px; width: 100%; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.3s; }
+        .order-nav-btn { background: var(--accent); color: white; border: none; padding: 16px; width: 100%; border-radius: 15px; font-weight: bold; cursor: pointer; margin-bottom: 25px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .card { background: white; padding: 25px; border-radius: 20px; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        h3 { margin-top: 0; color: var(--dark); border-left: 4px solid var(--primary); padding-left: 10px; }
+        input, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1.5px solid #e2e8f0; border-radius: 12px; box-sizing: border-box; outline: none; }
+        .btn-main { background: var(--primary); color: white; border: none; padding: 15px; width: 100%; border-radius: 12px; font-weight: bold; cursor: pointer; }
         .btn-update { background: var(--accent); display: none; }
-        .btn-cancel { background: #94a3b8; color: white; border: none; padding: 10px; width: 100%; border-radius: 12px; margin-top: 10px; cursor: pointer; display: none; }
-
-        .p-item { display: flex; align-items: center; gap: 15px; background: #fff; padding: 15px; border-radius: 16px; margin-bottom: 12px; border: 1px solid #f1f5f9; transition: 0.3s; }
-        .p-item:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        .p-item img { width: 60px; height: 60px; border-radius: 12px; object-fit: cover; background: #f1f5f9; }
+        .btn-cancel { background: #94a3b8; color: white; border: none; padding: 10px; width: 100%; border-radius: 12px; margin-top: 5px; display: none; cursor: pointer; }
+        .p-item { display: flex; align-items: center; gap: 15px; background: #fff; padding: 15px; border-radius: 16px; margin-bottom: 12px; border: 1px solid #f1f5f9; }
+        .p-item img { width: 60px; height: 60px; border-radius: 12px; object-fit: cover; }
         .p-info { flex: 1; }
-        .p-info b { font-size: 15px; color: var(--dark); display: block; }
-        .p-info span { font-size: 13px; color: #64748b; }
-        
-        .btn-group { display: flex; gap: 8px; }
-        .action-btn { border: none; width: 38px; height: 38px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; transition: 0.3s; }
+        .action-btn { border: none; width: 35px; height: 35px; border-radius: 8px; cursor: pointer; margin-left: 5px; }
         .btn-edit { background: rgba(52, 152, 219, 0.1); color: var(--accent); }
-        .btn-edit:hover { background: var(--accent); color: white; }
         .btn-del { background: rgba(255, 71, 87, 0.1); color: var(--danger); }
-        .btn-del:hover { background: var(--danger); color: white; }
-
-        .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: var(--dark); color: white; padding: 12px 25px; border-radius: 30px; display: none; z-index: 9999; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: var(--dark); color: white; padding: 12px 25px; border-radius: 30px; display: none; z-index: 9999; }
     </style>
 </head>
 <body>
-
     <div class="toast" id="toast"></div>
-
     <div class="stat-grid">
         <div class="stat-box"><b id="p-total">0</b><span>মোট প্রোডাক্ট</span></div>
         <div class="stat-box"><b id="o-total">0</b><span>মোট অর্ডার</span></div>
     </div>
-
-    <button class="order-nav-btn" onclick="location.href='orders.html'">
-        <i class="fa fa-box-open"></i> View Order Requests
-    </button>
-
+    <button class="order-nav-btn" onclick="location.href='orders.html'"><i class="fa fa-box-open"></i> View Order Requests</button>
     <div class="card" id="form-card">
         <h3 id="form-title">🚀 নতুন প্রোডাক্ট পাবলিশ করুন</h3>
         <input type="hidden" id="edit-id"> 
@@ -63,22 +42,18 @@
         <input type="number" id="p-stock" placeholder="স্টক পরিমাণ">
         <input type="text" id="p-img" placeholder="ছবির লিঙ্ক (URL)">
         <textarea id="p-desc" placeholder="বিস্তারিত বর্ণনা..." rows="3"></textarea>
-        
         <button class="btn-main" id="uploadBtn">পাবলিশ করুন</button>
         <button class="btn-main btn-update" id="updateBtn">আপডেট সেভ করুন</button>
-        <button class="btn-cancel" id="cancelBtn">এডিট বাতিল করুন</button>
+        <button class="btn-cancel" id="cancelBtn">বাতিল করুন</button>
     </div>
-
     <div class="card">
         <h3>🛠️ প্রোডাক্ট ম্যানেজ করুন</h3>
-        <div id="admin-product-list">
-            <p style="text-align:center; color:#94a3b8;">লোড হচ্ছে...</p>
-        </div>
+        <div id="admin-product-list">লোড হচ্ছে...</div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, onValue, push, set, remove, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, onValue, push, remove, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCu8lgGs3Q-qLeedhngQAVXtt8BHOAlWDg",
@@ -88,7 +63,6 @@
             storageBucket: "ms-sp-97f78.appspot.com",
             appId: "1:880638162029:web:b99af5b5518b3e16a13b64"
         };
-
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
@@ -98,67 +72,40 @@
             setTimeout(() => t.style.display = 'none', 3000);
         }
 
-        // --- প্রোডাক্ট আপলোড ---
-        document.getElementById('uploadBtn').addEventListener('click', () => {
+        document.getElementById('uploadBtn').onclick = () => {
             const data = getFormData();
-            if(data) {
-                push(ref(db, 'products'), data).then(() => {
-                    showToast("✅ সফলভাবে পাবলিশ হয়েছে!");
-                    clearForm();
-                });
-            }
-        });
+            if(data) push(ref(db, 'products'), data).then(() => { showToast("✅ পাবলিশ হয়েছে!"); clearForm(); });
+        };
 
-        // --- এডিট মোড (ডাটা ফর্মে আনা) ---
         window.editProduct = (id) => {
             onValue(ref(db, 'products/' + id), (snap) => {
                 const p = snap.val();
-                if(!p) return;
-                
                 document.getElementById('edit-id').value = id;
                 document.getElementById('p-name').value = p.name;
                 document.getElementById('p-price').value = p.price;
                 document.getElementById('p-stock').value = p.stock;
                 document.getElementById('p-img').value = p.img;
                 document.getElementById('p-desc').value = p.description;
-
-                // UI Change
-                document.getElementById('form-title').innerText = "📝 প্রোডাক্ট এডিট করছেন";
+                document.getElementById('form-title').innerText = "📝 এডিট করুন";
                 document.getElementById('uploadBtn').style.display = 'none';
                 document.getElementById('updateBtn').style.display = 'block';
                 document.getElementById('cancelBtn').style.display = 'block';
-                
                 document.getElementById('form-card').scrollIntoView({behavior: "smooth"});
             }, { onlyOnce: true });
         };
 
-        // --- আপডেট সেভ করা ---
-        document.getElementById('updateBtn').addEventListener('click', () => {
+        document.getElementById('updateBtn').onclick = () => {
             const id = document.getElementById('edit-id').value;
             const data = getFormData();
-            if(data && id) {
-                update(ref(db, 'products/' + id), data).then(() => {
-                    showToast("♻️ প্রোডাক্ট আপডেট হয়েছে!");
-                    clearForm();
-                });
-            }
-        });
+            if(data && id) update(ref(db, 'products/' + id), data).then(() => { showToast("♻️ আপডেট সফল!"); clearForm(); });
+        };
 
-        // --- বাতিল ফাংশন ---
         document.getElementById('cancelBtn').onclick = clearForm;
 
         function getFormData() {
-            const name = document.getElementById('p-name').value;
-            const price = document.getElementById('p-price').value;
-            const stock = document.getElementById('p-stock').value;
-            const img = document.getElementById('p-img').value;
-            const desc = document.getElementById('p-desc').value;
-            
-            if(!name || !price || !stock || !img || !desc) {
-                showToast("⚠️ সবগুলো ঘর পূরণ করুন!");
-                return null;
-            }
-            return { name, price: parseInt(price), stock: parseInt(stock), img, description: desc, date: new Date().toLocaleDateString() };
+            const name = document.getElementById('p-name').value, price = document.getElementById('p-price').value, stock = document.getElementById('p-stock').value, img = document.getElementById('p-img').value, desc = document.getElementById('p-desc').value;
+            if(!name || !price || !stock || !img || !desc) { showToast("⚠️ সব তথ্য দিন!"); return null; }
+            return { name, price: parseInt(price), stock: parseInt(stock), img, description: desc };
         }
 
         function clearForm() {
@@ -167,55 +114,35 @@
             document.getElementById('uploadBtn').style.display = 'block';
             document.getElementById('updateBtn').style.display = 'none';
             document.getElementById('cancelBtn').style.display = 'none';
-            document.getElementById('edit-id').value = "";
         }
 
-        // --- প্রোডাক্ট লিস্ট প্রদর্শন ---
         onValue(ref(db, 'products'), (snapshot) => {
             const list = document.getElementById('admin-product-list');
             list.innerHTML = "";
             let count = 0;
-            if(snapshot.exists()) {
-                snapshot.forEach(child => {
-                    count++;
-                    const p = child.val();
-                    const id = child.key;
-                    list.innerHTML += `
-                        <div class="p-item">
-                            <img src="${p.img}" onerror="this.src='https://via.placeholder.com/60'">
-                            <div class="p-info">
-                                <b>${p.name}</b>
-                                <span>${p.price} ৳ | স্টক: ${p.stock}</span>
-                            </div>
-                            <div class="btn-group">
-                                <button class="action-btn btn-edit" onclick="editProduct('${id}')" title="Edit">
-                                    <i class="fa fa-pen-to-square"></i>
-                                </button>
-                                <button class="action-btn btn-del" onclick="deleteItem('${id}')" title="Delete">
-                                    <i class="fa fa-trash-can"></i>
-                                </button>
-                            </div>
+            snapshot.forEach(child => {
+                count++;
+                const p = child.val();
+                const id = child.key;
+                const isOut = p.stock <= 0;
+                list.innerHTML += `
+                    <div class="p-item" style="${isOut ? 'border-color:var(--danger); background:#fff5f5;' : ''}">
+                        <img src="${p.img}">
+                        <div class="p-info">
+                            <b>${p.name} ${isOut ? '<span style="color:red;">(Sold Out)</span>' : ''}</b>
+                            <span style="color:${p.stock <= 5 ? 'red' : ''}">দাম: ${p.price} ৳ | স্টক: ${p.stock}</span>
                         </div>
-                    `;
-                });
-            } else {
-                list.innerHTML = "<p style='text-align:center; color:#94a3b8;'>কোনো প্রোডাক্ট পাওয়া যায়নি।</p>";
-            }
+                        <div>
+                            <button class="action-btn btn-edit" onclick="editProduct('${id}')"><i class="fa fa-pen"></i></button>
+                            <button class="action-btn btn-del" onclick="deleteItem('${id}')"><i class="fa fa-trash"></i></button>
+                        </div>
+                    </div>`;
+            });
             document.getElementById('p-total').innerText = count;
         });
 
-        // --- ডিলিট ফাংশন ---
-        window.deleteItem = (id) => {
-            if(confirm("আপনি কি নিশ্চিতভাবে এই প্রোডাক্টটি ডিলিট করতে চান?")) {
-                remove(ref(db, 'products/' + id)).then(() => showToast("🗑️ ডিলিট করা হয়েছে।"));
-            }
-        };
-
-        // --- অর্ডার কাউন্ট ---
-        onValue(ref(db, 'orders'), (s) => {
-            document.getElementById('o-total').innerText = s.exists() ? Object.keys(s.val()).length : 0;
-        });
-
+        window.deleteItem = (id) => { if(confirm("ডিলিট করতে চান?")) remove(ref(db, 'products/' + id)); };
+        onValue(ref(db, 'orders'), (s) => { document.getElementById('o-total').innerText = s.exists() ? Object.keys(s.val()).length : 0; });
     </script>
 </body>
 </html>
