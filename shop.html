@@ -113,18 +113,23 @@
     <div class="user-label" style="font-size:11px; color:#94a3b8;">নাম:</div>
     <div class="user-data" id="u-name" style="background:rgba(0,0,0,0.2); padding:8px; border-radius:8px; margin-bottom:10px;">...</div>
     
-    <div class="user-label" style="font-size:11px; color:#94a3b8;">ইমেইল:</div>
+    <div class="user-label" style="font-size:11px; color:#94a3b8;">EMAIL:</div>
     <div class="user-data" id="u-email" style="background:rgba(0,0,0,0.2); padding:8px; border-radius:8px; font-size:12px;">...</div>
     
     <button style="width:100%; margin-top:20px; padding:12px; background:var(--primary); border:none; border-radius:12px; font-weight:bold; cursor:pointer;" onclick="location.href='my_orders.html'">My Orders</button>
-    <button style="width:100%; margin-top:10px; padding:10px; background:#e74c3c; border:none; border-radius:12px; color:white; cursor:pointer;" onclick="logout()">লগআউট</button>
+    <button style="width:100%; margin-top:10px; padding:10px; background:#e74c3c; border:none; border-radius:12px; color:white; cursor:pointer;" onclick="logout()">logout</button>
 </div>
 
 <div class="cat-grid">
-    <div class="cat-item active" onclick="selectMainCat('All', this)"><i class="fa fa-th-large"></i><span>সব</span></div>
-    <div class="cat-item" onclick="selectMainCat('Sports', this)"><i class="fa-solid fa-medal"></i><span>স্পোর্টস</span></div>
-    <div class="cat-item" onclick="selectMainCat('Electronics', this)"><i class="fa-solid fa-microchip"></i><span>ডিভাইস</span></div>
-    <div class="cat-item" onclick="selectMainCat('Fashion', this)"><i class="fa fa-tshirt"></i><span>ফ্যাশন</span></div>
+    <div class="cat-item active" onclick="selectMainCat('All', this)"><i class="fa fa-th-large"></i><span>ALL</span></div>
+    
+    <div class="cat-item" onclick="selectMainCat('Sports', this)">
+    <i class="fa-solid fa-baseball-bat-ball"></i>
+    <span>SPORTS</span>
+</div>
+
+    <div class="cat-item" onclick="selectMainCat('Electronics', this)"><i class="fa-solid fa-microchip"></i><span>DEVICE</span></div>
+    <div class="cat-item" onclick="selectMainCat('Fashion', this)"><i class="fa fa-tshirt"></i><span>FASHION</span></div>
 </div>
 
 <div id="subCatMenu" class="sub-cat-container"></div>
