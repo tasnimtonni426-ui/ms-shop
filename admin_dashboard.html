@@ -6,32 +6,58 @@
     <title>Admin Dashboard - SportX</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --primary: #00d2ff; --secondary: #3a7bd5; --dark: #0f172a; --danger: #ff4757; --bg: #f8fafc; }
+        :root { --primary: #00d2ff; --secondary: #3a7bd5; --dark: #0f172a; --danger: #ff4757; --bg: #f8fafc; --success: #2ecc71; }
         body { font-family: 'Poppins', sans-serif; background: var(--bg); margin: 0; padding: 15px; color: #334155; }
         
+        /* স্ট্যাটাস গ্রিড */
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        .stat-box { background: var(--dark); color: white; padding: 20px; border-radius: 20px; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .stat-box b { font-size: 28px; display: block; color: var(--primary); }
+        .stat-box span { font-size: 14px; opacity: 0.8; }
+
+        /* অর্ডার রিকোয়েস্ট বাটন */
+        .order-nav-btn { 
+            background: linear-gradient(45deg, var(--secondary), var(--primary)); 
+            color: white; border: none; padding: 16px; width: 100%; border-radius: 15px; 
+            font-weight: bold; cursor: pointer; margin-bottom: 25px; 
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            box-shadow: 0 5px 15px rgba(0, 210, 255, 0.3);
+            font-size: 16px;
+        }
+
         .card { background: white; padding: 25px; border-radius: 20px; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         h3 { margin-top: 0; color: var(--dark); border-left: 4px solid var(--primary); padding-left: 10px; font-size: 18px; }
         
         input, textarea, select { width: 100%; padding: 12px; margin: 8px 0; border: 1.5px solid #e2e8f0; border-radius: 12px; box-sizing: border-box; outline: none; font-family: inherit; }
         
-        .btn-main { background: linear-gradient(45deg, var(--primary), var(--secondary)); color: white; border: none; padding: 15px; width: 100%; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 16px; }
+        .btn-main { background: linear-gradient(45deg, var(--primary), var(--secondary)); color: white; border: none; padding: 15px; width: 100%; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.3s; }
+        .btn-main:active { transform: scale(0.98); }
         
+        /* প্রোডাক্ট লিস্ট স্টাইল */
         .p-item { display: flex; align-items: center; gap: 15px; background: #fff; padding: 12px; border-radius: 16px; margin-bottom: 12px; border: 1px solid #f1f5f9; position: relative; }
         .p-item img { width: 55px; height: 55px; border-radius: 10px; object-fit: cover; }
         .p-info { flex: 1; }
-        .p-info b { font-size: 14px; display: block; }
+        .p-info b { font-size: 14px; display: block; color: #1e293b; }
         .cat-tag { font-size: 10px; background: #e0f7fa; color: #00838f; padding: 2px 8px; border-radius: 6px; font-weight: bold; text-transform: uppercase; }
         
-        .action-btn { border: none; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; margin-left: 5px; }
-        .btn-edit { background: #e3f2fd; color: #1976d2; }
-        .btn-del { background: #ffebee; color: #c62828; }
+        .action-btn { border: none; width: 35px; height: 35px; border-radius: 10px; cursor: pointer; margin-left: 5px; transition: 0.2s; }
+        .btn-edit { background: rgba(0, 210, 255, 0.1); color: var(--secondary); }
+        .btn-del { background: rgba(255, 71, 87, 0.1); color: var(--danger); }
 
-        /* স্ট্যাটাস বাটন ও টোস্ট */
         .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: var(--dark); color: white; padding: 10px 20px; border-radius: 20px; display: none; z-index: 9999; font-size: 14px; }
     </style>
 </head>
 <body>
     <div class="toast" id="toast"></div>
+
+    <div class="stat-grid">
+        <div class="stat-box"><b id="p-total">0</b><span>প্রোডাক্ট আছে</span></div>
+        <div class="stat-box"><b id="o-total">0</b><span>অর্ডার এসেছে</span></div>
+    </div>
+
+    <button class="order-nav-btn" onclick="location.href='orders.html'">
+        <i class="fa fa-box-open"></i> View Order Requests
+    </button>
 
     <div class="card" id="form-card">
         <h3 id="form-title">🚀 নতুন প্রোডাক্ট যোগ করুন</h3>
@@ -60,17 +86,17 @@
         </select>
 
         <input type="number" id="p-price" placeholder="দাম (টাকা)">
-        <input type="number" id="p-stock" placeholder="স্টক (সংখ্যা)">
+        <input type="number" id="p-stock" placeholder="স্টক পরিমাণ">
         <input type="text" id="p-img" placeholder="ছবির লিঙ্ক (Image URL)">
-        <textarea id="p-desc" placeholder="বিস্তারিত..." rows="3"></textarea>
+        <textarea id="p-desc" placeholder="বিস্তারিত বর্ণনা..." rows="3"></textarea>
         
         <button class="btn-main" id="uploadBtn">পাবলিশ করুন</button>
-        <button class="btn-main" id="updateBtn" style="display:none; background: #3498db;">আপডেট করুন</button>
+        <button class="btn-main" id="updateBtn" style="display:none; background: var(--secondary);">আপডেট সেভ করুন</button>
         <button onclick="clearForm()" id="cancelBtn" style="display:none; width:100%; border:none; background:none; color:gray; margin-top:10px; cursor:pointer;">বাতিল করুন</button>
     </div>
 
     <div class="card">
-        <h3>🛠️ আপনার প্রোডাক্টসমূহ</h3>
+        <h3>🛠️ ইনভেন্টরি ম্যানেজমেন্ট</h3>
         <div id="admin-product-list">লোড হচ্ছে...</div>
     </div>
 
@@ -96,7 +122,38 @@
         setTimeout(() => t.style.display = 'none', 2500);
     }
 
-    // ডাটা পাবলিশ করা
+    // ১. স্ট্যাটাস আপডেট (অটোমেটিক)
+    onValue(ref(db, 'products'), (snap) => {
+        const list = document.getElementById('admin-product-list');
+        list.innerHTML = "";
+        let count = 0;
+        if(snap.exists()){
+            snap.forEach(c => {
+                count++;
+                const p = c.val();
+                list.innerHTML += `
+                    <div class="p-item">
+                        <img src="${p.img}">
+                        <div class="p-info">
+                            <span class="cat-tag">${p.category}</span>
+                            <b>${p.name}</b>
+                            <small>${p.price} ৳ | স্টক: ${p.stock}</small>
+                        </div>
+                        <div>
+                            <button class="action-btn btn-edit" onclick="editProduct('${c.key}')"><i class="fa fa-pen"></i></button>
+                            <button class="action-btn btn-del" onclick="deleteItem('${c.key}')"><i class="fa fa-trash"></i></button>
+                        </div>
+                    </div>`;
+            });
+        }
+        document.getElementById('p-total').innerText = count;
+    });
+
+    onValue(ref(db, 'orders'), (snap) => {
+        document.getElementById('o-total').innerText = snap.exists() ? Object.keys(snap.val()).length : 0;
+    });
+
+    // ২. নতুন প্রোডাক্ট পাবলিশ
     document.getElementById('uploadBtn').onclick = () => {
         const data = getFormData();
         if(data) {
@@ -107,7 +164,7 @@
         }
     };
 
-    // এডিট মোড ওপেন
+    // ৩. এডিট এবং আপডেট
     window.editProduct = (id) => {
         get(ref(db, 'products/' + id)).then((s) => {
             const p = s.val();
@@ -119,7 +176,7 @@
             document.getElementById('p-img').value = p.img;
             document.getElementById('p-desc').value = p.description;
 
-            document.getElementById('form-title').innerText = "📝 আপডেট করুন";
+            document.getElementById('form-title').innerText = "📝 প্রোডাক্ট আপডেট";
             document.getElementById('uploadBtn').style.display = 'none';
             document.getElementById('updateBtn').style.display = 'block';
             document.getElementById('cancelBtn').style.display = 'block';
@@ -127,13 +184,12 @@
         });
     };
 
-    // আপডেট সেভ করা
     document.getElementById('updateBtn').onclick = () => {
         const id = document.getElementById('edit-id').value;
         const data = getFormData();
         if(data && id) {
             update(ref(db, 'products/' + id), data).then(() => {
-                showToast("♻️ আপডেট সফল হয়েছে!");
+                showToast("♻️ আপডেট সফল!");
                 clearForm();
             });
         }
@@ -162,32 +218,8 @@
         document.getElementById('cancelBtn').style.display = 'none';
     };
 
-    // লিস্ট রেন্ডার করা
-    onValue(ref(db, 'products'), (snap) => {
-        const list = document.getElementById('admin-product-list');
-        list.innerHTML = "";
-        if(snap.exists()){
-            snap.forEach(c => {
-                const p = c.val();
-                list.innerHTML += `
-                    <div class="p-item">
-                        <img src="${p.img}">
-                        <div class="p-info">
-                            <span class="cat-tag">${p.category}</span>
-                            <b>${p.name}</b>
-                            <small>${p.price} ৳ | স্টক: ${p.stock}</small>
-                        </div>
-                        <div>
-                            <button class="action-btn btn-edit" onclick="editProduct('${c.key}')"><i class="fa fa-pen"></i></button>
-                            <button class="action-btn btn-del" onclick="deleteItem('${c.key}')"><i class="fa fa-trash"></i></button>
-                        </div>
-                    </div>`;
-            });
-        } else { list.innerHTML = "কোনো প্রোডাক্ট নেই!"; }
-    });
-
     window.deleteItem = (id) => {
-        if(confirm("আপনি কি নিশ্চিত?")) remove(ref(db, 'products/' + id));
+        if(confirm("ডিলিট করতে চান?")) remove(ref(db, 'products/' + id));
     };
 </script>
 </body>
