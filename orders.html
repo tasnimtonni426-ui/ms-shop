@@ -42,7 +42,7 @@
         .trx-box .method-info { display: flex; align-items: center; gap: 8px; }
         .trx-box img { width: 22px; height: 22px; object-fit: contain; border-radius: 4px; background: white; padding: 2px; }
 
-        .address-box { background: #f8fafc; padding: 10px; border-radius: 10px; margin-top: 10px; font-size: 12px; border: 1px solid #edf2f7; line-height: 1.6; }
+        .address-box { background: #f8fafc; padding: 12px; border-radius: 10px; margin-top: 10px; font-size: 12px; border: 1px solid #edf2f7; line-height: 1.6; }
         .total-badge { background: var(--dark); color: var(--primary); padding: 10px; border-radius: 10px; display: flex; justify-content: space-between; margin-top: 10px; font-weight: bold; }
 
         .s-btns { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 15px; border-top: 1px dashed #eee; padding-top: 10px; }
@@ -53,7 +53,6 @@
         .active-Delivered { border-color: var(--delivered) !important; color: var(--delivered); }
         .active-Cancelled { border-color: var(--danger) !important; color: var(--danger); }
 
-        .btn-invoice { background: var(--dark); color: white; border: none; padding: 10px; border-radius: 10px; margin-top: 10px; width: 100%; cursor: pointer; font-size: 13px; }
         .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 8px 16px; border-radius: 20px; font-size: 12px; display: none; z-index: 1000; }
     </style>
 </head>
@@ -131,9 +130,10 @@
         Object.keys(allOrders).reverse().forEach(id => {
             const o = allOrders[id];
             const shortId = id.slice(-6).toUpperCase();
+            const userName = o.userName ? o.userName.toUpperCase() : "";
             
             if (o.status === currentTab || filter !== "") {
-                if (shortId.includes(filter) || o.userName.toUpperCase().includes(filter)) {
+                if (shortId.includes(filter) || userName.includes(filter)) {
                     count++;
                     list.appendChild(createOrderCard(id, o));
                 }
@@ -149,37 +149,22 @@
         
         let gatewayLogo = "";
         const gatewayName = o.gateway ? o.gateway.toLowerCase() : "";
+        if (gatewayName === 'bkash') gatewayLogo = "https://www.logo.wine/a/logo/BKash/BKash-bKash-Logo.wine.svg";
+        else if (gatewayName === 'nagad') gatewayLogo = "https://www.logo.wine/a/logo/Nagad/Nagad-Logo.wine.svg";
+        else gatewayLogo = "https://cdn-icons-png.flaticon.com/512/4341/4341764.png";
 
-        if (gatewayName === 'bkash') {
-            gatewayLogo = "https://www.logo.wine/a/logo/BKash/BKash-bKash-Logo.wine.svg";
-        } else if (gatewayName === 'nagad') {
-            gatewayLogo = "https://www.logo.wine/a/logo/Nagad/Nagad-Logo.wine.svg";
-        } else {
-            gatewayLogo = "https://cdn-icons-png.flaticon.com/512/4341/4341764.png"; 
-        }
-
-        const payStatusText = o.paymentType === 'full' ? 'ফুল পেমেন্ট' : 'শুধু চার্জ';
-        const payStatusColor = o.paymentType === 'full' ? '#2ecc71' : '#f39c12';
-
-        // ল্যান্ডমার্ক খুঁজে বের করার শক্তিশালী লজিক
-        let foundLandmark = 'নেই';
-        for (let key in o) {
-            if (key.toLowerCase().includes('landmark')) {
-                if (o[key] && o[key].toString().trim() !== "") {
-                    foundLandmark = o[key];
-                    break;
-                }
-            }
-        }
+        // ঠিকানা এবং ল্যান্ডমার্ক লজিক ফিক্স
+        const displayAddress = o.address || o.area || 'N/A';
+        const displayLandmark = o.landmark || 'নেই';
 
         card.innerHTML = `
             <div class="order-id-badge">ID: #${id.slice(-6).toUpperCase()}</div>
             <div class="p-name">${o.productName || 'স্পোর্টস প্রোডাক্ট'}</div>
             
             <div class="info-grid">
-                <div class="info-item"><i class="fa fa-user"></i> ${o.userName}</div>
-                <div class="info-item" onclick="copyText('${o.userPhone}')">
-                    <i class="fa fa-phone"></i> ${o.userPhone}
+                <div class="info-item"><i class="fa fa-user"></i> ${o.userName || 'N/A'}</div>
+                <div class="info-item" onclick="copyText('${o.userPhone || ''}')">
+                    <i class="fa fa-phone"></i> ${o.userPhone || 'N/A'}
                     <i class="fa fa-copy copy-btn"></i>
                 </div>
                 <div class="info-item"><i class="fa fa-map"></i> ${o.division || 'N/A'}</div>
@@ -195,15 +180,15 @@
             </div>
 
             <div class="address-box">
-                <b>এলাকা:</b> ${o.area || 'N/A'}<br>
-                <b>ল্যান্ডমার্ক:</b> ${foundLandmark}
+                <b>এলাকা/ঠিকানা:</b> ${displayAddress}<br>
+                <b>ল্যান্ডমার্ক:</b> ${displayLandmark}
             </div>
 
             <div class="total-badge">
                 <span style="font-size:11px; font-weight:normal; color:#94a3b8;">
-                    ${o.gateway ? o.gateway : 'N/A'} (<span style="color:${payStatusColor}">${payStatusText}</span>)
+                    ${o.gateway || 'N/A'} 
                 </span>
-                <span>${o.totalAmount || '0 ৳'}</span>
+                <span>${o.totalAmount || o.totalPrice || '0'} ৳</span>
             </div>
             
             <div class="s-btns">
@@ -212,7 +197,6 @@
                 <button class="s-btn ${o.status === 'Delivered' ? 'active-Delivered' : ''}" onclick="updateStatus('${id}', 'Delivered')">Delivered</button>
                 <button class="s-btn ${o.status === 'Cancelled' ? 'active-Cancelled' : ''}" onclick="updateStatus('${id}', 'Cancelled')">Cancel</button>
             </div>
-            <button class="btn-invoice" onclick="downloadInvoice('${id}')">Download Invoice</button>
         `;
         return card;
     }
@@ -225,8 +209,6 @@
         if(s==='Delivered') return '#2ecc71';
         return '#e74c3c';
     }
-
-    window.downloadInvoice = (id) => { alert("ইনভয়েস তৈরির কাজ চলছে..."); };
 </script>
 </body>
 </html>
