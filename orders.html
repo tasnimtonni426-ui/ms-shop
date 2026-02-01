@@ -160,9 +160,17 @@
 
         const payStatusText = o.paymentType === 'full' ? 'ফুল পেমেন্ট' : 'শুধু চার্জ';
         const payStatusColor = o.paymentType === 'full' ? '#2ecc71' : '#f39c12';
-        
-        // এখানে সব সম্ভাব্য Key চেক করা হচ্ছে যাতে ল্যান্ডমার্ক মিস না হয়
-        const displayLandmark = o.landmark || o.uLandmark || o.landMark || o.userLandmark || 'নেই';
+
+        // ল্যান্ডমার্ক খুঁজে বের করার শক্তিশালী লজিক
+        let foundLandmark = 'নেই';
+        for (let key in o) {
+            if (key.toLowerCase().includes('landmark')) {
+                if (o[key] && o[key].toString().trim() !== "") {
+                    foundLandmark = o[key];
+                    break;
+                }
+            }
+        }
 
         card.innerHTML = `
             <div class="order-id-badge">ID: #${id.slice(-6).toUpperCase()}</div>
@@ -188,7 +196,7 @@
 
             <div class="address-box">
                 <b>এলাকা:</b> ${o.area || 'N/A'}<br>
-                <b>ল্যান্ডমার্ক:</b> ${displayLandmark}
+                <b>ল্যান্ডমার্ক:</b> ${foundLandmark}
             </div>
 
             <div class="total-badge">
