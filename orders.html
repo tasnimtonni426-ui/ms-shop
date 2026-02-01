@@ -38,8 +38,10 @@
         .info-item i { color: var(--primary); width: 14px; }
         .copy-btn { color: #94a3b8; font-size: 10px; margin-left: auto; }
 
+        /* Trx Box আপডেট */
         .trx-box { background: #e0f2fe; color: #0369a1; padding: 10px; border-radius: 8px; margin-top: 10px; font-size: 12px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; border: 1px dashed #0ea5e9; cursor: pointer; }
-        .trx-box img { width: 16px; margin-right: 5px; vertical-align: middle; border-radius: 3px; }
+        .trx-box .method-info { display: flex; align-items: center; gap: 8px; }
+        .trx-box img { width: 22px; height: 22px; object-fit: contain; border-radius: 4px; background: white; padding: 2px; }
 
         .address-box { background: #f8fafc; padding: 10px; border-radius: 10px; margin-top: 10px; font-size: 12px; border: 1px solid #edf2f7; line-height: 1.6; }
         .total-badge { background: var(--dark); color: var(--primary); padding: 10px; border-radius: 10px; display: flex; justify-content: space-between; margin-top: 10px; font-weight: bold; }
@@ -146,17 +148,24 @@
         card.className = 'order-card';
         card.style.borderLeftColor = getCol(o.status);
         
-        // পেমেন্ট গেটওয়ে লোগো লজিক
-        const gatewayLogo = o.gateway === 'bkash' 
-            ? 'https://admin.faraeit.com/upload/payment_getway/bkash.png' 
-            : 'https://admin.faraeit.com/upload/payment_getway/nagad.png';
+        // পেমেন্ট গেটওয়ে চেক (ছোট/বড় হাতের পার্থক্য দূর করা হয়েছে)
+        let gatewayLogo = "";
+        const gatewayName = o.gateway ? o.gateway.toLowerCase() : "";
+
+        if (gatewayName === 'bkash') {
+            gatewayLogo = "https://www.logo.wine/a/logo/BKash/BKash-bKash-Logo.wine.svg";
+        } else if (gatewayName === 'nagad') {
+            gatewayLogo = "https://www.logo.wine/a/logo/Nagad/Nagad-Logo.wine.svg";
+        } else {
+            gatewayLogo = "https://cdn-icons-png.flaticon.com/512/4341/4341764.png"; // Default icon
+        }
 
         const payStatusText = o.paymentType === 'full' ? 'ফুল পেমেন্ট' : 'শুধু চার্জ';
         const payStatusColor = o.paymentType === 'full' ? '#2ecc71' : '#f39c12';
 
         card.innerHTML = `
             <div class="order-id-badge">ID: #${id.slice(-6).toUpperCase()}</div>
-            <div class="p-name">${o.productName || 'অজানা প্রোডাক্ট'}</div>
+            <div class="p-name">${o.productName || 'স্পোর্টস প্রোডাক্ট'}</div>
             
             <div class="info-grid">
                 <div class="info-item"><i class="fa fa-user"></i> ${o.userName}</div>
@@ -169,10 +178,10 @@
             </div>
 
             <div class="trx-box" onclick="copyText('${o.transactionID || ''}')">
-                <span>
-                    <img src="${gatewayLogo}" alt="icon"> 
-                    TrxID: ${o.transactionID || 'N/A'}
-                </span>
+                <div class="method-info">
+                    <img src="${gatewayLogo}" alt="${o.gateway}"> 
+                    <span>TrxID: ${o.transactionID || 'N/A'}</span>
+                </div>
                 <i class="fa fa-copy"></i>
             </div>
 
@@ -183,7 +192,7 @@
 
             <div class="total-badge">
                 <span style="font-size:11px; font-weight:normal; color:#94a3b8;">
-                    ${o.gateway ? o.gateway.toUpperCase() : ''} (<span style="color:${payStatusColor}">${payStatusText}</span>)
+                    ${o.gateway ? o.gateway : 'N/A'} (<span style="color:${payStatusColor}">${payStatusText}</span>)
                 </span>
                 <span>${o.totalAmount || '0 ৳'}</span>
             </div>
