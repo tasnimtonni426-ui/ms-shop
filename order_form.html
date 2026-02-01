@@ -21,14 +21,19 @@
         
         /* পেমেন্ট মেথড */
         .method-container { display: flex; gap: 10px; margin-top: 10px; }
-        .method-card { flex: 1; background: #1e293b; border: 1px solid var(--border); padding: 15px 10px; border-radius: 12px; text-align: center; cursor: pointer; transition: 0.3s; }
-        .method-card img { width: 50px; height: auto; display: block; margin: 0 auto 8px; border-radius: 8px; }
-        .method-card span { font-size: 12px; font-weight: 600; display: block; line-height: 1.4; }
+        .method-card { flex: 1; background: #1e293b; border: 1px solid var(--border); padding: 15px 10px; border-radius: 12px; text-align: center; cursor: pointer; transition: 0.3s; position: relative; }
+        
+        /* লোগো সাইজ ও স্টাইল ঠিক করা হয়েছে */
+        .method-card img { width: 100%; max-width: 70px; height: 45px; object-fit: contain; display: block; margin: 0 auto 8px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
+        
+        .method-card span { font-size: 11px; font-weight: 600; display: block; line-height: 1.2; color: #e2e8f0; }
         .method-card.selected { border-color: var(--primary); background: rgba(0, 210, 255, 0.1); box-shadow: 0 0 15px rgba(0, 210, 255, 0.2); }
 
         /* নম্বর বক্স */
-        #numberDisplay { display: none; background: #0f172a; border: 1px dashed var(--primary); padding: 15px; border-radius: 12px; margin-top: 15px; text-align: center; cursor: pointer; }
+        #numberDisplay { display: none; background: #0f172a; border: 1px dashed var(--primary); padding: 15px; border-radius: 12px; margin-top: 15px; text-align: center; cursor: pointer; animation: fadeIn 0.3s; }
         #numberDisplay b { font-size: 18px; color: var(--primary); letter-spacing: 1px; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 
         /* TrxID বক্স */
         #trxSection { display: none; margin-top: 15px; border-top: 1px solid var(--border); padding-top: 15px; }
@@ -37,7 +42,8 @@
         .price-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; }
         .total-row { font-size: 18px; font-weight: bold; color: var(--primary); border-top: 1px solid var(--border); padding-top: 10px; margin-top: 5px; }
 
-        .confirm-btn { width: 100%; padding: 15px; background: var(--primary); border: none; border-radius: 15px; font-weight: bold; color: var(--dark); cursor: pointer; font-size: 16px; margin-top: 20px; }
+        .confirm-btn { width: 100%; padding: 15px; background: var(--primary); border: none; border-radius: 15px; font-weight: bold; color: var(--dark); cursor: pointer; font-size: 16px; margin-top: 20px; transition: 0.3s; }
+        .confirm-btn:active { transform: scale(0.98); }
     </style>
 </head>
 <body>
@@ -97,12 +103,12 @@
         <label style="margin-top:20px;">পেমেন্ট মেথড সিলেক্ট করুন</label>
         <div class="method-container">
             <div class="method-card" id="bkashBtn" onclick="selectMethod('bKash', '017XXXXXXXX')">
-                <img src="https://logos-download.com/wp-content/uploads/2022/01/BKash_Logo.png" alt="bKash">
-                <span>বিকাশ<br>(bKash)</span>
+                <img src="https://www.logo.wine/a/logo/BKash/BKash-bKash-Logo.wine.svg" alt="bKash">
+                <span>বিকাশ (bKash)</span>
             </div>
             <div class="method-card" id="nagadBtn" onclick="selectMethod('Nagad', '018XXXXXXXX')">
-                <img src="https://download.logo.wine/logo/Nagad/Nagad-Logo.wine.png" alt="Nagad">
-                <span>নগদ<br>(Nagad)</span>
+                <img src="https://www.logo.wine/a/logo/Nagad/Nagad-Logo.wine.svg" alt="Nagad">
+                <span>নগদ (Nagad)</span>
             </div>
         </div>
 
@@ -131,6 +137,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getDatabase, ref, onValue, push, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
+    // আপনার Firebase কনফিগারেশন
     const firebaseConfig = {
         apiKey: "AIzaSyCu8lgGs3Q-qLeedhngQAVXtt8BHOAlWDg",
         authDomain: "ms-sp-97f78.firebaseapp.com",
@@ -190,7 +197,6 @@
     window.selectMethod = (method, number) => {
         selectedMethodName = method;
         document.querySelectorAll('.method-card').forEach(c => c.classList.remove('selected'));
-        // বিকাশ বা নগদ বাটন আইডি অনুযায়ী সিলেক্ট করা
         if(method === 'bKash') document.getElementById('bkashBtn').classList.add('selected');
         if(method === 'Nagad') document.getElementById('nagadBtn').classList.add('selected');
         
