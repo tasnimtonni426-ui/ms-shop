@@ -129,6 +129,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getDatabase, ref, onValue, push, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
     const firebaseConfig = {
@@ -141,24 +142,26 @@
     };
 
     const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
     const db = getDatabase(app);
 
-    const districts = {
-        "Dhaka": ["ঢাকা", "গাজীপুর", "মানিকগঞ্জ", "নারায়ণগঞ্জ", "মুন্সিগঞ্জ", "নরসিংদী", "টাংগাইল", "কিশোরগঞ্জ", "ফারিদপুর", "গোপালগঞ্জ", "মাদারীপুর", "রাজবাড়ী", "শরীয়তপুর"],
-        "Chattogram": ["চট্টগ্রাম", "কুমিল্লা", "কক্সবাজার", "নোয়াখালী", "ব্রাহ্মণবাড়িয়া", "চাঁদপুর", "লক্ষ্মীপুর", "ফেনী", "খাগড়াছড়ি", "রাঙ্গামাটি", "বান্দরবন"],
-        "Rajshahi": ["রাজশাহী", "নাটোর", "নওগাঁ", "চাঁপাইনবাবগঞ্জ", "পাবনা", "সিরাজগঞ্জ", "বগুড়া", "জয়পুরহাট"],
-        "Khulna": ["খুলনা", "বাগেরহাট", "সাতক্ষীরা", "যশোর", "ঝিনাইদহ", "নড়াইল", "কুষ্টিয়া", "চুয়াডাঙ্গা", "মেহেরপুর"],
-        "Barishal": ["বরিশাল", "পটুয়াখালী", "ভোলা", "পিরোজপুর", "বরগুনা", "ঝালকাঠি"],
-        "Sylhet": ["সিলেট", "সুনামগঞ্জ", "মৌলভীবাজার", "হবিগঞ্জ"],
-        "Rangpur": ["রংপুর", "পঞ্চগড়", "কুড়িগ্রাম", "লালমনিরহাট", "নীলফামারী", "দিনাজপুর", "ঠাকুরগাঁও", "গাইবান্ধা"],
-        "Mymensingh": ["ময়মনসিংহ", "জামালপুর", "শেরপুর", "নেত্রকোনা"]
-    };
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const productId = urlParams.get('id');
+    let currentUser = null;
     let productPrice = 0;
     let productName = "";
     let selectedMethodName = "";
+
+    // লগইন চেক
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            currentUser = user;
+        } else {
+            alert("অর্ডার করতে লগইন থাকা আবশ্যক!");
+            window.location.href = "login.html";
+        }
+    });
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get('id');
 
     if(productId) {
         onValue(ref(db, 'products/' + productId), (snap) => {
@@ -171,6 +174,17 @@
             }
         });
     }
+
+    const districts = {
+        "Dhaka": ["ঢাকা", "গাজীপুর", "মানিকগঞ্জ", "নারায়ণগঞ্জ", "মুন্সিগঞ্জ", "নরসিংদী", "টাংগাইল", "কিশোরগঞ্জ", "ফারিদপুর", "গোপালগঞ্জ", "মাদারীপুর", "রাজবাড়ী", "শরীয়তপুর"],
+        "Chattogram": ["চট্টগ্রাম", "কুমিল্লা", "কক্সবাজার", "নোয়াখালী", "ব্রাহ্মণবাড়িয়া", "চাঁদপুর", "লক্ষ্মীপুর", "ফেনী", "খাগড়াছড়ি", "রাঙ্গামাটি", "বান্দরবন"],
+        "Rajshahi": ["রাজশাহী", "নাটোর", "নওগাঁ", "চাঁপাইনবাবগঞ্জ", "পাবনা", "সিরাজগঞ্জ", "বগুড়া", "জয়পুরহাট"],
+        "Khulna": ["খুলনা", "বাগেরহাট", "সাতক্ষীরা", "যশোর", "ঝিনাইদহ", "নড়াইল", "কুষ্টিয়া", "চুয়াডাঙ্গা", "মেহেরপুর"],
+        "Barishal": ["বরিশাল", "পটুয়াখালী", "ভোলা", "পিরোজপুর", "বরগুনা", "ঝালকাঠি"],
+        "Sylhet": ["সিলেট", "সুনামগঞ্জ", "মৌলভীবাজার", "হবিগঞ্জ"],
+        "Rangpur": ["রংপুর", "পঞ্চগড়", "কুড়িগ্রাম", "লালমনিরহাট", "নীলফামারী", "দিনাজপুর", "ঠাকুরগাঁও", "গাইবান্ধা"],
+        "Mymensingh": ["ময়মনসিংহ", "জামালপুর", "শেরপুর", "নেত্রকোনা"]
+    };
 
     window.updateDistricts = () => {
         const div = document.getElementById('uDivision').value;
@@ -198,55 +212,55 @@
         document.querySelectorAll('.method-card').forEach(c => c.classList.remove('selected'));
         if(method === 'bKash') document.getElementById('bkashBtn').classList.add('selected');
         if(method === 'Nagad') document.getElementById('nagadBtn').classList.add('selected');
-        
         document.getElementById('numberDisplay').style.display = 'block';
         document.getElementById('payNum').innerText = number;
         document.getElementById('methodLabel').innerText = method + " পার্সোনাল নম্বরে টাকা পাঠান";
     };
 
     window.copyPaymentNumber = () => {
-        const num = document.getElementById('payNum').innerText;
-        navigator.clipboard.writeText(num).then(() => {
+        navigator.clipboard.writeText(document.getElementById('payNum').innerText).then(() => {
             alert("নম্বর কপি হয়েছে! সেন্ড মানি করে TrxID দিন।");
             document.getElementById('trxSection').style.display = 'block';
         });
     };
 
     window.placeOrder = () => {
+        if(!currentUser) { alert("লগইন সেশন পাওয়া যায়নি!"); return; }
+
         const name = document.getElementById('uName').value;
         const phone = document.getElementById('uPhone').value;
-        const division = document.getElementById('uDivision').value;
-        const district = document.getElementById('uDistrict').value;
         const area = document.getElementById('uArea').value;
-        const landmark = document.getElementById('uLandmark').value;
+        const land = document.getElementById('uLandmark').value;
         const trx = document.getElementById('trxID').value;
-        const paymentType = document.getElementById('uPaymentType').value;
 
-        if(!name || !phone || !division || !district || !area || !trx || !selectedMethodName) { 
+        if(!name || !phone || !area || !trx || !selectedMethodName) { 
             alert("সবগুলো তথ্য সঠিকভাবে দিন!"); 
             return; 
         }
 
         const orderRef = push(ref(db, 'orders'));
+        const now = new Date();
+        const timeOptions = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+        const dateStr = now.toLocaleDateString('bn-BD', timeOptions);
+
         set(orderRef, {
+            uid: currentUser.uid, // এই লাইনটি "My Orders" পেজে অর্ডার দেখানোর জন্য জরুরি
             userName: name,
             userPhone: phone,
-            division: division,
-            district: district,
-            area: area,
-            landmark: landmark || "নেই",
+            division: document.getElementById('uDivision').value,
+            district: document.getElementById('uDistrict').value,
+            address: area + (land ? ", " + land : ""), // My Orders পেজের জন্য ফুল অ্যাড্রেস
+            landmark: land || "নেই",
             productName: productName || "স্পোর্টস প্রোডাক্ট",
             transactionID: trx.toUpperCase(),
-            totalAmount: document.getElementById('totalAmount').innerText,
+            totalPrice: document.getElementById('totalAmount').innerText.replace(' ৳', ''), // My Orders পেজের ফরম্যাট
             gateway: selectedMethodName,
-            paymentType: paymentType,
             status: "Pending",
+            date: dateStr, // My Orders পেজের তারিখ
             timestamp: Date.now()
         }).then(() => {
             alert("অর্ডার সফল হয়েছে!");
-            window.close();
-        }).catch((error) => {
-            alert("ত্রুটি হয়েছে: " + error.message);
+            window.location.href = "my_orders.html"; // অর্ডার শেষে সরাসরি হিস্টোরি পেজে নিয়ে যাবে
         });
     };
 </script>
