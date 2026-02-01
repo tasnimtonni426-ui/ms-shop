@@ -156,6 +156,15 @@
     const auth = getAuth(app);
     const db = getDatabase(app);
 
+    let pArray = [];
+
+    // ১. আল্ট্রা-ফাস্ট লোডিং: ক্যাশ থেকে ডাটা আগে লোড করা
+    const cachedData = localStorage.getItem('ms_products_cache');
+    if(cachedData) {
+        pArray = JSON.parse(cachedData);
+        render(pArray);
+    }
+
     onAuthStateChanged(auth, (user) => {
         if (user) {
             document.getElementById('u-name').innerText = user.displayName || "User";
@@ -178,24 +187,31 @@
         'Fashion': ["Men's Fashion", "Women's Fashion", "Shoes"]
     };
 
-    let pArray = [];
+    // ২. ডাটাবেস থেকে ডাটা আনা এবং ক্যাশ আপডেট করা
     onValue(ref(db, 'products'), (snap) => {
-        pArray = [];
+        const newArray = [];
         if(snap.exists()){
             snap.forEach(c => {
                 let d = c.val(); d.id = c.key;
-                pArray.push(d);
+                newArray.push(d);
             });
-            render(pArray);
+            
+            // যদি ডাটা পরিবর্তন হয় তবেই রেন্ডার করবে
+            if(JSON.stringify(newArray) !== JSON.stringify(pArray)) {
+                pArray = newArray;
+                localStorage.setItem('ms_products_cache', JSON.stringify(pArray));
+                render(pArray);
+            }
         }
     });
 
     function render(data) {
         const list = document.getElementById('p-list');
+        // ৩. ইমেজে loading="lazy" এবং অবজেক্ট রেন্ডারিং অপ্টিমাইজেশন
         list.innerHTML = data.map(p => `
             <div class="p-card" onclick="location.href='product_details.html?id=${p.id}'">
                 ${p.stock <= 0 ? '<div class="sold-badge">Sold Out</div>' : ''}
-                <img src="${p.img}" onerror="this.src='https://via.placeholder.com/150'">
+                <img src="${p.img}" loading="lazy" onerror="this.src='https://via.placeholder.com/150'">
                 <div class="p-info">
                     <div class="p-name">${p.name}</div>
                     <div class="p-price">${p.price} ৳</div>
@@ -255,7 +271,10 @@
     const trigger = document.getElementById('profileTrigger');
     trigger.onclick = (e) => { e.stopPropagation(); menu.classList.toggle('show'); };
     document.onclick = (e) => { if (!menu.contains(e.target)) menu.classList.remove('show'); };
-    window.logout = () => signOut(auth).then(() => location.href = "index.html");
+    window.logout = () => {
+        localStorage.removeItem('ms_products_cache'); // লগআউটে ক্যাশ ক্লিয়ার করা নিরাপদ
+        signOut(auth).then(() => location.href = "index.html");
+    };
 </script>
 </body>
 </html>
