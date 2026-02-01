@@ -21,7 +21,9 @@
         .details-box { padding: 20px; }
         .p-title { font-size: 22px; font-weight: 600; margin-bottom: 8px; }
         .p-price { font-size: 24px; font-weight: bold; color: var(--primary); margin-bottom: 15px; display: block;}
-        .p-desc { color: #94a3b8; font-size: 14px; line-height: 1.6; margin-bottom: 25px;}
+        
+        /* ডেসক্রিপশন ডিজাইন আপডেট */
+        .p-desc { color: #cbd5e1; font-size: 14px; line-height: 1.6; margin-bottom: 25px; white-space: pre-wrap; background: var(--glass); padding: 15px; border-radius: 15px; border: 1px solid var(--border); }
 
         /* রিভিউ সেকশন */
         .review-section { margin-top: 30px; background: var(--glass); padding: 15px; border-radius: 20px; border: 1px solid var(--border); }
@@ -55,7 +57,9 @@
 <div class="details-box">
     <div class="p-title" id="pName">লোড হচ্ছে...</div>
     <div class="p-price" id="pPrice">0 ৳</div>
-    <div class="p-desc" id="pDesc">প্রোডাক্টের বিস্তারিত তথ্য এখানে দেখা যাবে।</div>
+    
+    <h3 style="font-size: 16px; margin-bottom: 10px; color: var(--primary);">বিস্তারিত বিবরণ:</h3>
+    <div class="p-desc" id="pDesc">প্রোডাক্টের বিস্তারিত তথ্য লোড হচ্ছে...</div>
 
     <div class="review-section">
         <h3>ইউজার রিভিউ</h3>
@@ -101,8 +105,11 @@
             if(productData) {
                 document.getElementById('pName').innerText = productData.name;
                 document.getElementById('pPrice').innerText = productData.price + " ৳";
-                document.getElementById('pImg').src = productData.img;
-                document.getElementById('pDesc').innerText = productData.desc || "No description.";
+                document.getElementById('pImg').src = productData.img || productData.imageURL || productData.image;
+                
+                // ডেসক্রিপশন চেক: 'description' অথবা 'desc' যেকোনো একটি থেকে ডাটা নিবে
+                const fullDesc = productData.description || productData.desc;
+                document.getElementById('pDesc').innerText = fullDesc && fullDesc !== "" ? fullDesc : "এই প্রোডাক্টের কোনো বিস্তারিত বিবরণ দেওয়া নেই।";
             }
         });
 
@@ -119,13 +126,11 @@
         });
     }
 
-    // নতুন ট্যাবে অর্ডার পেজ ওপেন করার ফাংশন
     window.goToOrderPage = () => {
         if(!currentUser) { 
             alert("অর্ডার করতে লগইন করুন!"); 
             return; 
         }
-        // এখানে order_form.html হচ্ছে আপনার তৈরি করা নতুন ফাইলের নাম
         window.open('order_form.html?id=' + productId, '_blank');
     };
 
