@@ -21,11 +21,12 @@
         
         /* পেমেন্ট মেথড */
         .method-container { display: flex; gap: 10px; margin-top: 10px; }
-        .method-card { flex: 1; background: #1e293b; border: 1px solid var(--border); padding: 10px; border-radius: 12px; text-align: center; cursor: pointer; transition: 0.3s; }
-        .method-card img { width: 40px; display: block; margin: 0 auto 5px; border-radius: 5px; }
-        .method-card.selected { border-color: var(--primary); background: rgba(0, 210, 255, 0.1); }
+        .method-card { flex: 1; background: #1e293b; border: 1px solid var(--border); padding: 15px 10px; border-radius: 12px; text-align: center; cursor: pointer; transition: 0.3s; }
+        .method-card img { width: 50px; height: auto; display: block; margin: 0 auto 8px; border-radius: 8px; }
+        .method-card span { font-size: 12px; font-weight: 600; display: block; line-height: 1.4; }
+        .method-card.selected { border-color: var(--primary); background: rgba(0, 210, 255, 0.1); box-shadow: 0 0 15px rgba(0, 210, 255, 0.2); }
 
-        /* নম্বর বক্স (সবসময় দৃশ্যমান হবে) */
+        /* নম্বর বক্স */
         #numberDisplay { display: none; background: #0f172a; border: 1px dashed var(--primary); padding: 15px; border-radius: 12px; margin-top: 15px; text-align: center; cursor: pointer; }
         #numberDisplay b { font-size: 18px; color: var(--primary); letter-spacing: 1px; }
 
@@ -57,14 +58,14 @@
         <label>বিভাগ</label>
         <select id="uDivision" onchange="updateDistricts()">
             <option value="">বিভাগ সিলেক্ট করুন</option>
-            <option value="Dhaka">ঢাকা</option>
-            <option value="Chattogram">চট্টগ্রাম</option>
-            <option value="Rajshahi">রাজশাহী</option>
-            <option value="Khulna">খুলনা</option>
-            <option value="Barishal">বরিশাল</option>
-            <option value="Sylhet">সিলেট</option>
-            <option value="Rangpur">রংপুর</option>
-            <option value="Mymensingh">ময়মনসিংহ</option>
+            <option value="Dhaka">ঢাকা (Dhaka)</option>
+            <option value="Chattogram">চট্টগ্রাম (Chattogram)</option>
+            <option value="Rajshahi">রাজশাহী (Rajshahi)</option>
+            <option value="Khulna">খুলনা (Khulna)</option>
+            <option value="Barishal">বরিশাল (Barishal)</option>
+            <option value="Sylhet">সিলেট (Sylhet)</option>
+            <option value="Rangpur">রংপুর (Rangpur)</option>
+            <option value="Mymensingh">ময়মনসিংহ (Mymensingh)</option>
         </select>
 
         <label>জেলা</label>
@@ -95,13 +96,13 @@
 
         <label style="margin-top:20px;">পেমেন্ট মেথড সিলেক্ট করুন</label>
         <div class="method-container">
-            <div class="method-card" id="bkashBtn" onclick="selectMethod('bkash', '017XXXXXXXX')">
-                <img src="https://admin.faraeit.com/upload/payment_getway/bkash.png" alt="Bkash">
-                <span>বিকাশ</span>
+            <div class="method-card" id="bkashBtn" onclick="selectMethod('bKash', '017XXXXXXXX')">
+                <img src="https://logos-download.com/wp-content/uploads/2022/01/BKash_Logo.png" alt="bKash">
+                <span>বিকাশ<br>(bKash)</span>
             </div>
-            <div class="method-card" id="nagadBtn" onclick="selectMethod('nagad', '018XXXXXXXX')">
-                <img src="https://admin.faraeit.com/upload/payment_getway/nagad.png" alt="Nagad">
-                <span>নগদ</span>
+            <div class="method-card" id="nagadBtn" onclick="selectMethod('Nagad', '018XXXXXXXX')">
+                <img src="https://download.logo.wine/logo/Nagad/Nagad-Logo.wine.png" alt="Nagad">
+                <span>নগদ<br>(Nagad)</span>
             </div>
         </div>
 
@@ -189,10 +190,13 @@
     window.selectMethod = (method, number) => {
         selectedMethodName = method;
         document.querySelectorAll('.method-card').forEach(c => c.classList.remove('selected'));
-        document.getElementById(method + 'Btn').classList.add('selected');
+        // বিকাশ বা নগদ বাটন আইডি অনুযায়ী সিলেক্ট করা
+        if(method === 'bKash') document.getElementById('bkashBtn').classList.add('selected');
+        if(method === 'Nagad') document.getElementById('nagadBtn').classList.add('selected');
+        
         document.getElementById('numberDisplay').style.display = 'block';
         document.getElementById('payNum').innerText = number;
-        document.getElementById('methodLabel').innerText = method.toUpperCase() + " পার্সোনাল নম্বরে টাকা পাঠান";
+        document.getElementById('methodLabel').innerText = method + " পার্সোনাল নম্বরে টাকা পাঠান";
     };
 
     window.copyPaymentNumber = () => {
