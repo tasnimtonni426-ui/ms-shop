@@ -17,28 +17,27 @@
         .section-card { background: var(--glass); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin-bottom: 20px; }
         label { font-size: 13px; color: #94a3b8; display: block; margin: 10px 0 5px 5px; }
         input, select { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border); background: #1e293b; color: white; box-sizing: border-box; outline: none; font-size: 14px; }
+        input:focus { border-color: var(--primary); }
         
-        /* ডেলিভারি টাইপ */
         .delivery-options { display: flex; gap: 10px; margin-top: 10px; }
         .d-opt { flex: 1; padding: 12px; border-radius: 12px; text-align: center; border: 1px solid var(--border); cursor: pointer; font-size: 13px; transition: 0.3s; }
         .d-opt.active { background: var(--primary); color: var(--dark); font-weight: bold; }
         .d-opt.disabled { opacity: 0.5; cursor: not-allowed; background: #0f172a; position: relative; }
         .d-opt.disabled small { display: block; font-size: 9px; color: #ef4444; }
 
-        /* পেমেন্ট সিস্টেম */
         .payment-choice { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
         .choice-item { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 12px; border: 1px solid var(--border); cursor: pointer; }
-        .choice-item input { width: auto; margin: 0; }
+        .choice-item input { width: auto; margin: 0; cursor: pointer; }
         
         .price-summary { border-top: 1px dashed var(--border); margin-top: 15px; padding-top: 15px; }
         .price-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; }
         .total-row { font-size: 18px; font-weight: bold; color: var(--primary); border-top: 1px solid var(--border); padding-top: 10px; margin-top: 5px; }
 
-        /* পপআপ */
         .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); }
         .modal-content { background: #1e293b; margin: 30% auto; padding: 25px; border-radius: 20px; width: 80%; max-width: 350px; text-align: center; border: 1px solid var(--primary); }
         
-        .confirm-btn { width: 100%; padding: 15px; background: var(--primary); border: none; border-radius: 15px; font-weight: bold; color: var(--dark); cursor: pointer; font-size: 16px; margin-top: 20px; box-shadow: 0 4px 15px rgba(0, 210, 255, 0.3); }
+        .confirm-btn { width: 100%; padding: 15px; background: var(--primary); border: none; border-radius: 15px; font-weight: bold; color: var(--dark); cursor: pointer; font-size: 16px; margin-top: 20px; box-shadow: 0 4px 15px rgba(0, 210, 255, 0.3); transition: 0.3s; }
+        .confirm-btn:active { transform: scale(0.98); }
         
         .info-msg { font-size: 12px; color: #94a3b8; text-align: center; margin-top: 15px; }
     </style>
@@ -47,7 +46,7 @@
 
 <div class="checkout-container">
     <div class="header">
-        <i class="fa fa-arrow-left" onclick="history.back()"></i>
+        <i class="fa fa-arrow-left" onclick="history.back()" style="cursor:pointer"></i>
         <h2>অর্ডার সম্পন্ন করুন</h2>
     </div>
 
@@ -104,6 +103,12 @@
             </div>
         </div>
 
+        <div style="margin-top: 15px;">
+            <label>বিকাশ/নগদ ট্রানজেকশন আইডি (TrxID)</label>
+            <input type="text" id="trxID" placeholder="Ex: BKB1A2B3C4" maxlength="10" style="text-transform: uppercase; border-color: var(--primary);">
+            <small style="font-size: 10px; color: #94a3b8;">* পেমেন্ট করে ১০ সংখ্যার TrxID টি দিন।</small>
+        </div>
+
         <div class="price-summary">
             <div class="price-row"><span>প্রোডাক্টের দাম:</span> <span id="pPriceText">0 ৳</span></div>
             <div class="price-row"><span>ডেলিভারি চার্জ:</span> <span id="dChargeText">0 ৳</span></div>
@@ -145,16 +150,17 @@
 
     const productId = new URLSearchParams(window.location.search).get('id');
     let productPrice = 0;
+    let productName = "";
     let paymentType = 'full';
     let currentUser = null;
 
     onAuthStateChanged(auth, (user) => { if(user) currentUser = user; });
 
-    // ১. প্রোডাক্ট ডাটা লোড
     if (productId) {
         onValue(ref(db, 'products/' + productId), (snap) => {
             const data = snap.val();
             if(data) {
+                productName = data.name;
                 productPrice = parseInt(data.price);
                 document.getElementById('pPriceText').innerText = productPrice + " ৳";
                 calculatePrice();
@@ -162,7 +168,6 @@
         });
     }
 
-    // ২. ক্যালকুলেশন ফাংশন
     window.calculatePrice = () => {
         const dCharge = parseInt(document.getElementById('uRegion').value);
         document.getElementById('dChargeText').innerText = dCharge + " ৳";
@@ -182,36 +187,55 @@
         calculatePrice();
     };
 
-    // ৩. পপআপ কন্ট্রোল
     window.showChargeInfo = () => document.getElementById('chargeModal').style.display = 'block';
     window.closeModal = () => document.getElementById('chargeModal').style.display = 'none';
 
-    // ৪. অর্ডার সাবমিট
     window.placeOrder = () => {
-        const name = document.getElementById('uName').value;
-        const phone = document.getElementById('uPhone').value;
-        const address = document.getElementById('uAddress').value;
+        const name = document.getElementById('uName').value.trim();
+        const phone = document.getElementById('uPhone').value.trim();
+        const address = document.getElementById('uAddress').value.trim();
+        const trxID = document.getElementById('trxID').value.trim().toUpperCase();
         
-        if(!name || !phone || !address) { alert("দয়া করে প্রয়োজনীয় সব তথ্য পূরণ করুন!"); return; }
+        // বিকাশ/নগদ TrxID ফরম্যাট: ১০ অক্ষরের আলফানিউমেরিক
+        const trxPattern = /^[A-Z0-9]{10}$/;
+
+        if(!name || !phone || !address) { 
+            alert("দয়া করে প্রয়োজনীয় সব তথ্য পূরণ করুন!"); 
+            return; 
+        }
+
+        if(!trxID) {
+            alert("পেমেন্ট করার পর ট্রানজেকশন আইডি (TrxID) দিন!");
+            return;
+        }
+
+        if(!trxPattern.test(trxID)) {
+            alert("ভুল ট্রানজেকশন আইডি! আইডিটি অবশ্যই ১০ সংখ্যার হতে হবে।");
+            return;
+        }
 
         const orderRef = push(ref(db, 'orders'));
         set(orderRef, {
             productId: productId,
+            productName: productName,
             userName: name,
             userPhone: phone,
             address: address,
             region: document.getElementById('uRegion').options[document.getElementById('uRegion').selectedIndex].text,
             landmark: document.getElementById('uLandmark').value || "None",
             paymentType: paymentType,
+            transactionID: trxID,
             totalPayable: document.getElementById('totalAmount').innerText,
             status: "Pending",
             timestamp: Date.now()
         }).then(() => {
-            alert("অর্ডার সফল হয়েছে! আমাদের প্রতিনিধি শীঘ্রই আপনার সাথে যোগাযোগ করবেন।");
+            alert("অভিনন্দন! আপনার অর্ডারটি সফল হয়েছে।");
             window.close();
+        }).catch((err) => {
+            alert("দুঃখিত, অর্ডারটি সম্পন্ন করা যায়নি। আবার চেষ্টা করুন।");
         });
     };
 </script>
 </body>
-                                                                       </html>
-
+    </html>
+    
