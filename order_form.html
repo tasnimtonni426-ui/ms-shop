@@ -16,36 +16,24 @@
 
         .section-card { background: var(--glass); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin-bottom: 20px; }
         label { font-size: 13px; color: #94a3b8; display: block; margin: 10px 0 5px 5px; }
-        input, select { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border); background: #1e293b; color: white; box-sizing: border-box; outline: none; font-size: 14px; }
+        input, select { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border); background: #1e293b; color: white; box-sizing: border-box; outline: none; font-size: 14px; margin-bottom: 10px;}
         input:focus { border-color: var(--primary); }
         
-        /* পেমেন্ট মেথড বাটন */
         .method-container { display: flex; gap: 10px; margin-top: 10px; }
         .method-card { flex: 1; background: #1e293b; border: 1px solid var(--border); padding: 10px; border-radius: 12px; text-align: center; cursor: pointer; transition: 0.3s; }
         .method-card img { width: 40px; display: block; margin: 0 auto 5px; border-radius: 5px; }
-        .method-card span { font-size: 12px; font-weight: bold; }
         .method-card.selected { border-color: var(--primary); background: rgba(0, 210, 255, 0.1); }
 
-        /* নম্বর ডিসপ্লে বক্স */
-        #numberDisplay { display: none; background: #0f172a; border: 1px dashed var(--primary); padding: 15px; border-radius: 12px; margin-top: 15px; text-align: center; cursor: pointer; position: relative; }
-        #numberDisplay b { font-size: 18px; color: var(--primary); letter-spacing: 1px; }
-        #numberDisplay span { display: block; font-size: 10px; color: #94a3b8; margin-top: 5px; }
+        #numberDisplay { display: none; background: #0f172a; border: 1px dashed var(--primary); padding: 15px; border-radius: 12px; margin-top: 15px; text-align: center; cursor: pointer; }
+        #numberDisplay b { font-size: 18px; color: var(--primary); }
 
-        /* TrxID বক্স */
         #trxSection { display: none; margin-top: 15px; border-top: 1px solid var(--border); padding-top: 15px; }
 
-        .payment-choice { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
-        .choice-item { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 12px; border: 1px solid var(--border); cursor: pointer; }
-        
         .price-summary { border-top: 1px dashed var(--border); margin-top: 15px; padding-top: 15px; }
         .price-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; }
         .total-row { font-size: 18px; font-weight: bold; color: var(--primary); border-top: 1px solid var(--border); padding-top: 10px; margin-top: 5px; }
 
-        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); }
-        .modal-content { background: #1e293b; margin: 30% auto; padding: 25px; border-radius: 20px; width: 80%; max-width: 350px; text-align: center; border: 1px solid var(--primary); }
-        
         .confirm-btn { width: 100%; padding: 15px; background: var(--primary); border: none; border-radius: 15px; font-weight: bold; color: var(--dark); cursor: pointer; font-size: 16px; margin-top: 20px; }
-        .info-msg { font-size: 12px; color: #94a3b8; text-align: center; margin-top: 15px; }
     </style>
 </head>
 <body>
@@ -59,55 +47,70 @@
     <div class="section-card">
         <label>আপনার নাম</label>
         <input type="text" id="uName" placeholder="নাম লিখুন">
+        
         <label>মোবাইল নম্বর</label>
         <input type="tel" id="uPhone" placeholder="017XXXXXXXX">
-        <label>অঞ্চল / জেলা</label>
-        <select id="uRegion" onchange="calculatePrice()">
+
+        <label>বিভাগ</label>
+        <select id="uDivision" onchange="updateDistricts()">
+            <option value="">বিভাগ সিলেক্ট করুন</option>
+            <option value="Dhaka">ঢাকা</option>
+            <option value="Chattogram">চট্টগ্রাম</option>
+            <option value="Rajshahi">রাজশাহী</option>
+            <option value="Khulna">খুলনা</option>
+            <option value="Barishal">বরিশাল</option>
+            <option value="Sylhet">সিলেট</option>
+            <option value="Rangpur">রংপুর</option>
+            <option value="Mymensingh">ময়মনসিংহ</option>
+        </select>
+
+        <label>জেলা</label>
+        <select id="uDistrict">
+            <option value="">আগে বিভাগ সিলেক্ট করুন</option>
+        </select>
+
+        <label>এলাকা / জায়গার নাম</label>
+        <input type="text" id="uArea" placeholder="যেমন: ধানমণ্ডি বা গ্রামের নাম">
+
+        <label>ল্যান্ডমার্ক (ঐচ্ছিক)</label>
+        <input type="text" id="uLandmark" placeholder="যেমন: মসজিদের পাশে বা স্কুলের সামনে">
+    </div>
+
+    <div class="section-card">
+        <label>ডেলিভারি এরিয়া</label>
+        <select id="uDeliveryArea" onchange="calculatePrice()">
             <option value="70">ঢাকা সিটি (৳৭০)</option>
             <option value="100">সাব ঢাকা (৳১০০)</option>
             <option value="130">ঢাকার বাইরে (৳১৩০)</option>
         </select>
-        <label>বিস্তারিত ঠিকানা</label>
-        <input type="text" id="uAddress" placeholder="বাসা নং, রোড নং, এলাকা...">
-        <label>ল্যান্ডমার্ক (অপশনাল)</label>
-        <input type="text" id="uLandmark" placeholder="যেমন: স্কুলের পাশে">
-    </div>
 
-    <div class="section-card">
-        <label>পেমেন্ট অপশন</label>
-        <div class="payment-choice">
-            <div class="choice-item" onclick="setPaymentType('full')">
-                <input type="radio" name="pType" id="fullPay" checked>
-                <span>ফুল পেমেন্ট (প্রোডাক্ট + ডেলিভারি)</span>
-            </div>
-            <div class="choice-item" onclick="setPaymentType('onlyCharge')">
-                <input type="radio" name="pType" id="chargePay">
-                <span>শুধুমাত্র ডেলিভারি চার্জ আগে দিন</span>
-            </div>
-        </div>
+        <label>পেমেন্ট ধরন</label>
+        <select id="uPaymentType" onchange="calculatePrice()">
+            <option value="full">ফুল পেমেন্ট (প্রোডাক্ট + ডেলিভারি)</option>
+            <option value="onlyCharge">শুধুমাত্র ডেলিভারি চার্জ আগে দিন</option>
+        </select>
 
-        <label style="margin-top:20px;">পেমেন্ট মেথড সিলেক্ট করুন</label>
+        <label style="margin-top:15px;">পেমেন্ট মেথড</label>
         <div class="method-container">
-            <div class="method-card" id="bkashBtn" onclick="selectMethod('bkash', '01XXXXXXXXX')">
+            <div class="method-card" id="bkashBtn" onclick="selectMethod('bkash', '017XXXXXXXX')">
                 <img src="https://admin.faraeit.com/upload/payment_getway/bkash.png" alt="Bkash">
                 <span>বিকাশ</span>
             </div>
-            <div class="method-card" id="nagadBtn" onclick="selectMethod('nagad', '01XXXXXXXXX')">
+            <div class="method-card" id="nagadBtn" onclick="selectMethod('nagad', '018XXXXXXXX')">
                 <img src="https://admin.faraeit.com/upload/payment_getway/nagad.png" alt="Nagad">
                 <span>নগদ</span>
             </div>
         </div>
 
         <div id="numberDisplay" onclick="copyPaymentNumber()">
-            <span id="methodLabel">টাকা পাঠাতে নিচের নম্বরে ক্লিক করুন</span>
-            <b id="payNum">01XXXXXXXXX</b>
-            <span style="color:var(--primary);"><i class="fa fa-copy"></i> নম্বর কপি করতে ক্লিক করুন</span>
+            <span id="methodLabel"></span><br>
+            <b id="payNum"></b><br>
+            <small><i class="fa fa-copy"></i> কপি করতে ক্লিক করুন</small>
         </div>
 
         <div id="trxSection">
             <label>ট্রানজেকশন আইডি (TrxID)</label>
             <input type="text" id="trxID" placeholder="Ex: BKB1A2B3C4" maxlength="10" style="text-transform: uppercase;">
-            <small style="font-size: 10px; color: #94a3b8;">* টাকা পাঠানোর পর SMS থেকে TrxID টি দিন।</small>
         </div>
 
         <div class="price-summary">
@@ -136,81 +139,87 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    const productId = new URLSearchParams(window.location.search).get('id');
-    let productPrice = 0;
-    let productName = "";
-    let paymentType = 'full';
-    let selectedMethodName = "";
-
-    if (productId) {
-        onValue(ref(db, 'products/' + productId), (snap) => {
-            const data = snap.val();
-            if(data) {
-                productName = data.name;
-                productPrice = parseInt(data.price);
-                document.getElementById('pPriceText').innerText = productPrice + " ৳";
-                calculatePrice();
-            }
-        });
-    }
-
-    // মেথড সিলেকশন
-    window.selectMethod = (method, number) => {
-        selectedMethodName = method;
-        document.querySelectorAll('.method-card').forEach(c => c.classList.remove('selected'));
-        document.getElementById(method + 'Btn').classList.add('selected');
-        
-        document.getElementById('numberDisplay').style.display = 'block';
-        document.getElementById('payNum').innerText = number;
-        document.getElementById('methodLabel').innerText = method.toUpperCase() + " পার্সোনাল নম্বরে টাকা পাঠান";
-        
-        // রিজেট Trx বক্স
-        document.getElementById('trxSection').style.display = 'none';
+    const districts = {
+        "Dhaka": ["Dhaka", "Gazipur", "Narayanganj", "Tangail", "Faridpur", "Manikganj"],
+        "Chattogram": ["Chattogram", "Cox's Bazar", "Cumilla", "Feni", "Noakhali", "Brahmanbaria"],
+        "Rajshahi": ["Rajshahi", "Bogura", "Pabna", "Naogaon", "Sirajganj", "Chapai Nawabganj"],
+        "Khulna": ["Khulna", "Jashore", "Kushtia", "Satkhira", "Bagerhat", "Chuadanga"],
+        "Barishal": ["Barishal", "Bhola", "Patuakhali", "Pirojpur", "Jhalokati", "Barguna"],
+        "Sylhet": ["Sylhet", "Moulvibazar", "Habiganj", "Sunamganj"],
+        "Rangpur": ["Rangpur", "Dinajpur", "Kurigram", "Gaibandha", "Nilphamari", "Thakurgaon"],
+        "Mymensingh": ["Mymensingh", "Jamalpur", "Netrokona", "Sherpur"]
     };
 
-    // নম্বর কপি ফাংশন
-    window.copyPaymentNumber = () => {
-        const num = document.getElementById('payNum').innerText;
-        navigator.clipboard.writeText(num).then(() => {
-            alert("নম্বর কপি হয়েছে! সেন্ড মানি করার পর TrxID টি দিন।");
-            document.getElementById('trxSection').style.display = 'block';
-        });
+    const productId = new URLSearchParams(window.location.search).get('id');
+    let productPrice = 0;
+    let selectedMethod = "";
+
+    onValue(ref(db, 'products/' + productId), (snap) => {
+        if(snap.exists()) {
+            productPrice = parseInt(snap.val().price);
+            document.getElementById('pPriceText').innerText = productPrice + " ৳";
+            calculatePrice();
+        }
+    });
+
+    window.updateDistricts = () => {
+        const div = document.getElementById('uDivision').value;
+        const distSelect = document.getElementById('uDistrict');
+        distSelect.innerHTML = '<option value="">জেলা সিলেক্ট করুন</option>';
+        if(div && districts[div]) {
+            districts[div].forEach(d => {
+                distSelect.innerHTML += `<option value="${d}">${d}</option>`;
+            });
+        }
     };
 
     window.calculatePrice = () => {
-        const dCharge = parseInt(document.getElementById('uRegion').value);
-        document.getElementById('dChargeText').innerText = dCharge + " ৳";
-        let total = paymentType === 'full' ? (productPrice + dCharge) : dCharge;
+        const charge = parseInt(document.getElementById('uDeliveryArea').value);
+        const type = document.getElementById('uPaymentType').value;
+        document.getElementById('dChargeText').innerText = charge + " ৳";
+        
+        let total = (type === 'full') ? (productPrice + charge) : charge;
         document.getElementById('totalAmount').innerText = total + " ৳";
     };
 
-    window.setPaymentType = (type) => {
-        paymentType = type;
-        document.getElementById(type === 'full' ? 'fullPay' : 'chargePay').checked = true;
-        calculatePrice();
+    window.selectMethod = (method, number) => {
+        selectedMethod = method;
+        document.querySelectorAll('.method-card').forEach(c => c.classList.remove('selected'));
+        document.getElementById(method + 'Btn').classList.add('selected');
+        document.getElementById('numberDisplay').style.display = 'block';
+        document.getElementById('methodLabel').innerText = method.toUpperCase() + " পার্সোনাল নম্বর:";
+        document.getElementById('payNum').innerText = number;
+        document.getElementById('trxSection').style.display = 'none';
+    };
+
+    window.copyPaymentNumber = () => {
+        navigator.clipboard.writeText(document.getElementById('payNum').innerText);
+        alert("নম্বর কপি হয়েছে! পেমেন্ট করে TrxID দিন।");
+        document.getElementById('trxSection').style.display = 'block';
     };
 
     window.placeOrder = () => {
-        const name = document.getElementById('uName').value.trim();
-        const phone = document.getElementById('uPhone').value.trim();
-        const trxID = document.getElementById('trxID').value.trim().toUpperCase();
-        
-        if(!name || !phone || !selectedMethodName || !trxID) { 
-            alert("সবগুলো তথ্য সঠিকভাবে পূরণ করুন এবং নম্বর কপি করে পেমেন্ট করুন!"); 
-            return; 
+        const name = document.getElementById('uName').value;
+        const phone = document.getElementById('uPhone').value;
+        const division = document.getElementById('uDivision').value;
+        const district = document.getElementById('uDistrict').value;
+        const area = document.getElementById('uArea').value;
+        const trx = document.getElementById('trxID').value;
+
+        if(!name || !phone || !division || !district || !area || !trx) {
+            alert("সবগুলো ঘর পূরণ করুন!");
+            return;
         }
 
         const orderRef = push(ref(db, 'orders'));
         set(orderRef, {
-            productName: productName,
             userName: name,
             userPhone: phone,
-            address: document.getElementById('uAddress').value,
-            region: document.getElementById('uRegion').options[document.getElementById('uRegion').selectedIndex].text,
-            paymentType: paymentType,
-            gateway: selectedMethodName,
-            transactionID: trxID,
-            totalPayable: document.getElementById('totalAmount').innerText,
+            location: `${area}, ${district}, ${division}`,
+            landmark: document.getElementById('uLandmark').value || "None",
+            paymentMethod: selectedMethod,
+            transactionID: trx.toUpperCase(),
+            totalAmount: document.getElementById('totalAmount').innerText,
             status: "Pending",
             timestamp: Date.now()
         }).then(() => {
@@ -220,4 +229,5 @@
     };
 </script>
 </body>
-</html>
+                </html>
+    
