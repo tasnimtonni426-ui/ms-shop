@@ -28,8 +28,8 @@
 
         .section-card { background: var(--glass); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin-bottom: 20px; }
         label { font-size: 13px; color: #94a3b8; display: block; margin: 10px 0 5px 5px; }
-        input, select, textarea { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border); background: #1e293b; color: white; box-sizing: border-box; outline: none; font-size: 14px; margin-bottom: 10px; font-family: inherit;}
-        input:focus, textarea:focus { border-color: var(--primary); }
+        input, select { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border); background: #1e293b; color: white; box-sizing: border-box; outline: none; font-size: 14px; margin-bottom: 10px;}
+        input:focus { border-color: var(--primary); }
         
         .method-container { display: flex; gap: 10px; margin-top: 10px; }
         .method-card { flex: 1; background: #1e293b; border: 1px solid var(--border); padding: 15px 10px; border-radius: 12px; text-align: center; cursor: pointer; transition: 0.3s; position: relative; }
@@ -75,9 +75,9 @@
         <label>মোবাইল নম্বর</label>
         <input type="tel" id="uPhone" placeholder="017XXXXXXXX">
 
-        <label>আপনার জেলা সিলেক্ট করুন</label>
-        <select id="uDistrict">
-            <option value="" disabled selected>জেলা সিলেক্ট করুন</option>
+        <label>জেলা</label>
+        <select id="uDistrict" onchange="updateAreas()">
+            <option value="">জেলা সিলেক্ট করুন</option>
             <option value="Bagerhat">Bagerhat (বাগেরহাট)</option>
             <option value="Bandarban">Bandarban (বান্দরবান)</option>
             <option value="Barguna">Barguna (বরগুনা)</option>
@@ -86,11 +86,12 @@
             <option value="Bogra">Bogra (বগুড়া)</option>
             <option value="Brahmanbaria">Brahmanbaria (ব্রাহ্মণবাড়িয়া)</option>
             <option value="Chandpur">Chandpur (চাঁদপুর)</option>
-            <option value="Chattogram">Chattogram (চট্টগ্রাম)</option>
-            <option value="Chuadanga">Chuadanga (চুয়াডাঙ্গা)</option>
-            <option value="Cumilla">Cumilla (কুমিল্লা)</option>
+            <option value="Chapainawabganj">Chapainawabganj (চাঁপাইনবাবগঞ্জ)</option>
+            <option value="Chittagong">Chittagong (চট্টগ্রাম)</option>
             <option value="Cox's Bazar">Cox's Bazar (কক্সবাজার)</option>
-            <option value="Dhaka">Dhaka (ঢাকা)</option>
+            <option value="Cumilla">Cumilla (কুমিল্লা)</option>
+            <option value="Dhaka City">Dhaka City (ঢাকা সিটি)</option>
+            <option value="Dhaka Sub">Dhaka Sub (ঢাকা সাব-আরবান)</option>
             <option value="Dinajpur">Dinajpur (দিনাজপুর)</option>
             <option value="Faridpur">Faridpur (ফরিদপুর)</option>
             <option value="Feni">Feni (ফেনী)</option>
@@ -108,8 +109,8 @@
             <option value="Kishoreganj">Kishoreganj (কিশোরগঞ্জ)</option>
             <option value="Kurigram">Kurigram (কুড়িগ্রাম)</option>
             <option value="Kushtia">Kushtia (কুষ্টিয়া)</option>
-            <option value="Lakshmipur">Lakshmipur (লক্ষ্মীপুর)</option>
             <option value="Lalmonirhat">Lalmonirhat (লালমনিরহাট)</option>
+            <option value="Laxmipur">Laxmipur (লক্ষ্মীপুর)</option>
             <option value="Madaripur">Madaripur (মাদারীপুর)</option>
             <option value="Magura">Magura (মাগুরা)</option>
             <option value="Manikganj">Manikganj (মানিকগঞ্জ)</option>
@@ -143,11 +144,16 @@
             <option value="Thakurgaon">Thakurgaon (ঠাকুরগাঁও)</option>
         </select>
 
-        <label>আপনার বিস্তারিত অ্যাড্রেস</label>
-        <textarea id="uArea" rows="3" placeholder="বাসা নং, রোড নং, গ্রাম বা এলাকার বিস্তারিত নাম লিখুন..."></textarea>
+        <label>থানা/এলাকা</label>
+        <select id="uAreaSelect">
+            <option value="">জেলা সিলেক্ট করার পর এলাকা আসবে</option>
+        </select>
 
-        <label>স্পেশাল নোট (ঐচ্ছিক)</label>
-        <input type="text" id="uLandmark" placeholder="যেমন: ডেলিভারি ম্যানের জন্য কোনো বার্তা">
+        <label>বিস্তারিত ঠিকানা (রোড/বাসা নং)</label>
+        <input type="text" id="uFullAddress" placeholder="যেমন: বাসা নং ১২, রোড ৫">
+
+        <label>ল্যান্ডমার্ক (ঐচ্ছিক)</label>
+        <input type="text" id="uLandmark" placeholder="যেমন: মসজিদের পাশে">
     </div>
 
     <div class="section-card">
@@ -226,94 +232,27 @@
 
     document.getElementById('sumSize').innerText = selectedSize;
 
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            currentUser = user;
-        } else {
-            alert("অর্ডার করতে লগইন থাকা আবশ্যক!");
-            window.location.href = "login.html";
-        }
-    });
-
-    if(productId) {
-        onValue(ref(db, 'products/' + productId), (snap) => {
-            if(snap.exists()) {
-                const data = snap.val();
-                productPrice = parseInt(data.price);
-                productName = data.name;
-                document.getElementById('sumTitle').innerText = productName;
-                document.getElementById('sumImg').src = data.img || data.image;
-                document.getElementById('pPriceText').innerText = productPrice + " ৳";
-                calculatePrice();
-            }
-        });
-    }
-
-    window.calculatePrice = () => {
-        const charge = parseInt(document.getElementById('uDeliveryArea').value);
-        const type = document.getElementById('uPaymentType').value;
-        document.getElementById('dChargeText').innerText = charge + " ৳";
-        let total = (type === 'full') ? (productPrice + charge) : charge;
-        document.getElementById('totalAmount').innerText = total + " ৳";
-    };
-
-    window.selectMethod = (method, number) => {
-        selectedMethodName = method;
-        document.querySelectorAll('.method-card').forEach(c => c.classList.remove('selected'));
-        if(method === 'bKash') document.getElementById('bkashBtn').classList.add('selected');
-        if(method === 'Nagad') document.getElementById('nagadBtn').classList.add('selected');
-        document.getElementById('numberDisplay').style.display = 'block';
-        document.getElementById('payNum').innerText = number;
-        document.getElementById('methodLabel').innerText = method + " পার্সোনাল নম্বরে টাকা পাঠান";
-    };
-
-    window.copyPaymentNumber = () => {
-        navigator.clipboard.writeText(document.getElementById('payNum').innerText).then(() => {
-            alert("নম্বর কপি হয়েছে! সেন্ড মানি করে TrxID দিন।");
-            document.getElementById('trxSection').style.display = 'block';
-        });
-    };
-
-    window.placeOrder = () => {
-        if(!currentUser) { alert("লগইন সেশন পাওয়া যায়নি!"); return; }
-
-        const name = document.getElementById('uName').value;
-        const phone = document.getElementById('uPhone').value;
-        const area = document.getElementById('uArea').value;
-        const land = document.getElementById('uLandmark').value;
-        const trx = document.getElementById('trxID').value;
-        const dist = document.getElementById('uDistrict').value;
-
-        if(!name || !phone || !dist || !area || !trx || !selectedMethodName) { 
-            alert("সবগুলো তথ্য সঠিকভাবে দিন!"); 
-            return; 
-        }
-
-        const orderRef = push(ref(db, 'orders'));
-        const now = new Date();
-        const timeOptions = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-        const dateStr = now.toLocaleDateString('bn-BD', timeOptions);
-
-        set(orderRef, {
-            uid: currentUser.uid,
-            userName: name,
-            userPhone: phone,
-            district: dist,
-            address: area,
-            landmark: land || "নেই",
-            productName: productName,
-            productSize: selectedSize,
-            transactionID: trx.toUpperCase(),
-            totalPrice: document.getElementById('totalAmount').innerText.replace(' ৳', ''),
-            gateway: selectedMethodName,
-            status: "Pending",
-            date: dateStr,
-            timestamp: Date.now()
-        }).then(() => {
-            alert("অর্ডার সফল হয়েছে!");
-            window.location.href = "my_orders.html";
-        });
-    };
-</script>
-</body>
-</html>
+    // ৬৫টি জেলা ও তাদের স্থানসমূহ (বাংলাসহ)
+    const areaData = {
+        "Bagerhat": ["Bagerhat Sadar (বাগেরহাট সদর)", "Chitalmari (চিতলমারী)", "Fakirhat (ফকিরহাট)", "Kachua upazila (কচুয়া উপজেলা)", "Mollahat (মোল্লাহাট)", "Mongla (মোংলা)", "Morrelgamj (মোড়েলগঞ্জ)", "Rampal (রামপাল)", "Sarankhola (শরণখোলা)", "Test thana (টেস্ট থানা)"],
+        "Bandarban": ["Bandarban Sadar (বান্দরবান সদর)", "Ali kadam (আলীকদম)", "Lama (লামা)", "Naikhongchari (নাইক্ষ্যংছড়ি)", "Rowangchhari (রোয়াংছড়ি)", "Ruma (রুমা)", "Thanchi (থানচি)"],
+        "Barguna": ["Barguna Sadar (বরগুনা সদর)", "Amtali (আমতলী)", "Bamna (বামনা)", "Betagi (বেতাগী)", "Patharghata (পাথরঘাটা)", "Taltali (তালতলী)"],
+        "Barishal": ["Barishal Sadar (বরিশাল সদর)", "Agailihara (আগৈলঝাড়া)", "Babuganj (বাবুগঞ্জ)", "Bekerganj (বাকেরগঞ্জ)", "Banaripara (বানারীপাড়া)", "Gouronadi (গৌরনদী)", "Hizla (হিজলা)", "Mehendiganj (মেহেন্দিগঞ্জ)", "Muladi (মুলাদী)", "Wazirpur (উজিরপুর)"],
+        "Bhola": ["Bhola Sadar (ভোলা সদর)", "Borhanuddin (বোরহানউদ্দিন)", "Char Fasson (চরফ্যাশন)", "Daulatkhan (দৌলতখান)", "Lalmohan (লালমোহন)", "Manpura (মনপুরা)", "Tazumuddin (তজুমদ্দিন)"],
+        "Bogra": ["Alamdighi (আদমদীঘি)", "Baropur (বারোপুর)", "Bogura sadar (বগুড়া সদর)", "Dhunat (ধুনট)", "Dhupcgancia (দুপচাঁচিয়া)", "Gabtoli (গাবতলী)", "Kahaloo (কাহালু)", "Nandigram (নন্দীগ্রাম)", "Saraikandi (সারিয়াকান্দি)", "Shajahanpur (শাহজাহানপুর)", "Sherpur (শেরপুর)", "Shibganj (শিবগঞ্জ)", "Sanatoli (সোনাতলা)"],
+        "Brahmanbaria": ["Brahmanbaria Sadar (ব্রাহ্মণবাড়িয়া সদর)", "Akhaura (আখাউড়া)", "Ashuganj (আশুগঞ্জ)", "Bancharampur (বাঞ্ছারামপুর)", "Bijoynagar (বিজয়নগর)", "Kasba (কসবা)", "Nabinagar (নবীনগর)", "Nasirnagar (নাসিরনগর)", "Radhika (রাধিকা)", "Sarail (সরাইল)"],
+        "Chandpur": ["Chandpur Sadar (চাঁদপুর সদর)", "Dhankirgaon (ধনকিরগাঁও)", "Faridganj (ফরিদগঞ্জ)", "Haimchar (হাইমচর)", "Hajiganj (হাজীগঞ্জ)", "Kachua (কচুয়া)", "Matlab North (মতলব উত্তর)", "Matlab South (মতলব দক্ষিণ)", "Shahrasti (শাহরাস্তি)"],
+        "Chapainawabganj": ["Bholahat (ভোলাহাট)", "Chapainawabganj sadar (চাঁপাইনবাবগঞ্জ সদর)", "Gomastapur (গোমস্তাপুর)", "Nachole (নাচোল)", "Shibganj sadar (শিবগঞ্জ সদর)"],
+        "Chittagong": ["Akbar shah (আকবর শাহ)", "Anwara (আনোয়ারা)", "Bakolia (বাকলিয়া)", "Bandar (বন্দর)", "Banskhali (বাঁশখালী)", "Bayazid bostami (বায়েজিদ বোস্তামী)", "Bhujpur (ভুজপুর)", "Boalkhali (বোয়ালখালী)", "CEPZ (সিইপিজেড)", "Chandanaish (চন্দনাইশ)", "Chandgaon (চান্দগাঁও)", "Chawk bazar (চকবাজার)", "Chittagong sadar (চট্টগ্রাম সদর)", "Doublemooring (ডবলমুরিং)", "Fatikchori (ফটিকছড়ি)", "Halishahar (হালিশহর)", "Hathazari (হাটহাজারী)", "Karnaphuli (কর্ণফুলী)", "Keranihat (কেরানিহাট)", "Khulshi (খুলশী)", "Kotoli (কোতোয়ালী)", "Lohangara (লোহাগাড়া)", "Mirsharai (মিরসরাই)", "Phartali (পাহাড়তলী)", "Panchlaish (পাঁচলাইশ)", "Patenga (পতেঙ্গা)", "Patiya (পটিয়া)", "Rangunia (রাঙ্গুনিয়া)", "Raozan (রাউজান)", "Sadarghat (সদরঘাট)", "Sandwip (সন্দ্বীপ)", "Satkania (সাতকানিয়া)", "Shantriht (শান্তিরহাট)", "Sitakunda (সীতাকুণ্ড)", "Zorarganj (জোরারগঞ্জ)"],
+        "Cox's Bazar": ["Chakaria (চকুরিয়া)", "Cox's Bazar Sadar (কক্সবাজার সদর)", "Eidgaon (ঈদগাঁও)", "Kutubdia (কুতুবদিয়া)", "Moheskhali (মহেশখালী)", "Pwkua (পেকুয়া)", "Ramu (রামু)", "Teknaf (টেকনাফ)", "Ukhiya (উখিয়া)"],
+        "Cumilla": ["Bangora-Bazar (বাঙোরা বাজার)", "Barura (বরুড়া)", "Brahmanpara (ব্রাহ্মণপাড়া)", "Burichang (বুড়িচং)", "Chandina (চান্দিনা)", "Chauddagram (চৌদ্দগ্রাম)", "Cumilla sadar south (কুমিল্লা সদর দক্ষিণ)", "Daudkandi (দাউদকান্দি)", "Debidwar (দেবিদ্বার)", "Homna (হোমনা)", "Kandirpar (কান্দিরপাড়)", "Kotwali (কোতোয়ালী)", "Laksam (লাকসাম)", "Lalmai (লালমাই)", "Monoharaganj (মনোহরগঞ্জ)", "Muradnagar (মুরাদনগর)", "Nangalkot (নাঙ্গলকোট)", "Titas (তিতাস)"],
+        "Dhaka City": ["Adabor (আদাবর)", "Airport (এয়ারপোর্ট)", "Atibazar (আটিবাজার)", "Azompur (আজমপুর)", "Badda (বাড্ডা)", "Banani (বনানী)", "Bangshal (বংশাল)", "Bashundara R/A (বসুন্ধরা)", "Battary section (ব্যাটারি সেকশন)", "Bhashantek (ভাষানটেক)", "Cantonment (ক্যান্টনমেন্ট)", "Chalkbazar (চকবাজার)", "Dakshin khan (দক্ষিণখান)", "Darus salam (দারুস সালাম)", "Demra (ডেমরা)", "Dhanmondi (ধানমন্ডি)", "Gandaria (গেন্ডারিয়া)", "Gulistan (গুলিস্তান)", "Gylshan (গুলশান)", "Hatirjheel (হাতিরঝিল)", "Hazaribag (হাজারীবাগ)", "Jatrabari (যাত্রাবাড়ী)", "Kadamtali (কদমতলী)", "Kafrul (কাফরুল)", "Kalabagan (কলাবাগান)", "Kamrangirchar (কামরাঙ্গীরচর)", "Khilgaon (খিলগাঁও)", "Khilkhet (খিলক্ষেত)", "Kotowali (কোতোয়ালী)", "Lalbagh (লালবাগ)", "Mirpur (মিরপুর)", "Mohammadpur (মোহাম্মদপুর)", "Motijheel (মতিঝিল)", "Mugda (মুগদা)", "New market (নিউ মার্কেট)", "Pallabi (পল্লবী)", "Panthapath (পান্থপথ)", "Pirbachal (পূর্বাচল)", "Ramna (রমনা)", "Rampura (রামপুরা)", "Rupnagar (রূপনগর)", "Sabujbagh (সবুজবাগ)", "Shah ali (শাহ আলী)", "Shahbag (শাহবাগ)", "Shahjahanpur (শাহজাহানপুর)", "Sher-e-Bangla nagar (শেরেবাংলা নগর)", "Shyampur (শ্যামপুর)", "Sutrapur (সূত্রাপুর)", "Tejgaon (তেজগাঁও)", "Tejgaon industrial area (তেজগাঁও শিল্প এলাকা)", "Turag (তুরাগ)", "Uttara (উত্তরা)", "Uttarkhan (উত্তরখান)", "Vatara (ভাটারা)", "Wari (ওয়ারী)"],
+        "Dhaka Sub": ["Ashulia (আশুলিয়া)", "Dhamrai (ধামরাই)", "Dohar (দোহার)", "HemYetpur (হেমায়েতপুর)", "Keraniganj (কেরানীগঞ্জ)", "Newabganj (নবাবগঞ্জ)", "Savar (সাভার)", "South keraniganj (দক্ষিণ কেরানীগঞ্জ)"],
+        "Dinajpur": ["Biral (বিরল)", "Birampur (বিরামপুর)", "Birganj (বীরগঞ্জ)", "Chirirbandar (চিরিরবন্দর)", "Dinajpur Sadar (দিনাজপুর সদর)", "Phulbari (ফুলবাড়ী)", "Ghoraghat (ঘোড়াঘাট)", "Hakimpur (হাকিমপুর)", "Kaharole (কাহারোল)", "Khansama (খানসামা)", "Khulahati (খোলাহাটি)", "Nawabganj (নবাবগঞ্জ)", "Parbatipur (পার্বতীপুর)"],
+        "Faridpur": ["Alfadanga (আলফাডাঙ্গা)", "Bhanga (ভাঙ্গা)", "Boalmari (বোয়ালমারী)", "Charbhadrasan (চরভদ্রাসন)", "Faridpur Sadar (ফরিদপুর সদর)", "Madhukhali (মধুখালী)", "Nagarkanda (নগরকান্দা)", "Sadarpur (সদরপুর)", "Saltha (সালথা)"],
+        "Feni": ["Chhagalnaiya (ছাগলনাইয়া)", "Daganbhuiyan (দাগনভূঞা)", "Feni Sadar (ফেনী সদর)", "Fulgazi (ফুলগাজী)", "Mohipal (মহিপাল)", "Parshuram (পরশুরাম)", "Sonagazi (সোনাগাজী)"],
+        "Gaibandha": ["Fulchari (ফুলছড়ি)", "Gabindarhanj (গোবিন্দগঞ্জ)", "Gaibandha Sadar (গাইবান্ধা সদর)", "Sadullapur (সাদুল্লাপুর)", "Saghata (সাঘাটা)", "Sundarganj (সুন্দরগঞ্জ)"],
+        "Gazipur": ["Gazipur Sadar (গাজীপুর সদর)", "Kaliakair (কালিয়াকৈর)", "Kaliganj (কালীগঞ্জ)", "Kapasia (কাপাসিয়া)", "Kashimpur (কাশিমপুর)", "Rajendrapur (রাজেন্দ্রপুর)", "Sreepur (শ্রীপুর)", "Tongi (টঙ্গী)"],
+        "Gopalganj": ["Boultali (বোলতলী)", "Gopalganj Sadar (গোপালগঞ্জ সদর)", "Kashiani (কাশিয়ানী)", "Kotalipara (কোটালীপাড়া)", "Muksudpur (মুকসুদপুর)", "Tungipara (টুঙ্গিপাড়া)"],
+        "Habiganj": ["Habiganj Sadar (হবিগঞ্জ সদর)", "Ajmiriganj (আজমিরীগঞ্জ)", "Bahubal (বাহুবল)", "Baniyachong (বানিয়াচং)", "Chunarughat (চুনারুঘাট)", "Lakhai (লাখাই)", "Madhabpur (মাধবপুর)", "Nabiganj (নবীগঞ্জ)", "Shayestaganj (শায়েস্তাগঞ্জ)"],
+        "Jamalpur
