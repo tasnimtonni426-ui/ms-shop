@@ -90,6 +90,12 @@
             <option value="130">ঢাকার বাইরে (৳১৩০)</option>
         </select>
 
+        <label>পেমেন্টের ধরন</label>
+        <select id="paymentType">
+            <option value="Full Payment">ফুল পেমেন্ট করব</option>
+            <option value="Only Delivery Charge">শুধুমাত্র ডেলিভারি চার্জ অগ্রিম দেব</option>
+        </select>
+
         <label>পেমেন্ট মেথড</label>
         <div class="method-container">
             <div class="method-card" id="bkashBtn">
@@ -138,7 +144,6 @@
     const auth = getAuth(app);
     const db = getDatabase(app);
 
-    // ডেটাবেস থেকে ৬৫টি জেলার ডেটা
     const areaData = {
         "Bagerhat": ["Bagerhat Sadar (বাগেরহাট সদর)", "Chitalmari (চিতলমারী)", "Fakirhat (ফকিরহাট)", "Kachua (কচুয়া)", "Mollahat (মোল্লাহাট)", "Mongla (মোংলা)", "Morrelgamj (মোড়েলগঞ্জ)", "Rampal (রামপাল)", "Sarankhola (শরণখোলা)"],
         "Bandarban": ["Bandarban Sadar (বান্দরবান সদর)", "Ali kadam (আলীকদম)", "Lama (লামা)", "Naikhongchari (নাইক্ষ্যংছড়ি)", "Rowangchhari (রোয়াংছড়ি)", "Ruma (রুমা)", "Thanchi (থানচি)"],
@@ -149,7 +154,7 @@
         "Brahmanbaria": ["Brahmanbaria Sadar (ব্রাহ্মণবাড়িয়া সদর)", "Akhaura (আখাউড়া)", "Ashuganj (আশুগঞ্জ)", "Bancharampur (বাঞ্ছারামপুর)", "Bijoynagar (বিজয়নগর)", "Kasba (কসবা)", "Nabinagar (নবীনগর)", "Nasirnagar (নাসিরনগর)", "Sarail (সরাইল)"],
         "Chandpur": ["Chandpur Sadar (চাঁদপুর সদর)", "Faridganj (ফরিদগঞ্জ)", "Haimchar (হাইমচর)", "Hajiganj (হাজীগঞ্জ)", "Kachua (কচুয়া)", "Matlab North (মতলব উত্তর)", "Matlab South (মতলব দক্ষিণ)", "Shahrasti (শাহরাস্তি)"],
         "Chapainawabganj": ["Chapainawabganj sadar (চাঁপাইনবাবগঞ্জ সদর)", "Bholahat (ভোলাহাট)", "Gomastapur (গোমস্তাপুর)", "Nachole (নাচোল)", "Shibganj (শিবগঞ্জ)"],
-        "Chittagong": ["Chittagong City (চট্টগ্রাম সিটি)", "Anwara (আনোয়ারা)", "Banskhali (বাঁশখালী)", "Boalkhali (বোয়ালখালী)", "Chandanaish (চন্দনাইশ)", "Fatikchori (ফটিকছড়ি)", "Hathazari (হাটহাজারী)", "Lohangara (লোহাগাড়া)", "Mirsharai (মিরসরাই)", "Patiya (পটিয়া)", "Rangunia (রাঙ্গুনিয়া)", "Raozan (রাউজান)", "Sandwip (সন্দ্বীপ)", "Satkania (সাতকানিয়া)", "Sitakunda (সীতাকুণ্ড)"],
+        "Chittagong": ["Chittagong City (চট্টগ্রাম সিটি)", "Anwara (আনোয়ারা)", "Banskhali (বাঁশখালী)", "Boalkhali (বোয়ালখালী)", "Chandানাশ (চন্দনাইশ)", "Fatikchori (ফটিকছড়ি)", "Hathazari (হাটহাজারী)", "Lohangara (লোহাগাড়া)", "Mirsharai (মিরসরাই)", "Patiya (পটিয়া)", "Rangunia (রাঙ্গুনিয়া)", "Raozan (রাউজান)", "Sandwip (সন্দ্বীপ)", "Satkania (সাতকানিয়া)", "Sitakunda (সীতাকুণ্ড)"],
         "Cox's Bazar": ["Cox's Bazar Sadar (কক্সবাজার সদর)", "Chakaria (চকুরিয়া)", "Kutubdia (কুতুবদিয়া)", "Moheskhali (মহেশখালী)", "Pekua (পেকুয়া)", "Ramu (রামু)", "Teknaf (টেকনাফ)", "Ukhiya (উখিয়া)"],
         "Cumilla": ["Cumilla Sadar (কুমিল্লা সদর)", "Barura (বরুড়া)", "Brahmanpara (ব্রাহ্মণপাড়া)", "Burichang (বুড়িচং)", "Chandina (চান্দিনা)", "Chauddagram (চৌদ্দগ্রাম)", "Daudkandi (দাউদকান্দি)", "Debidwar (দেবিদ্বার)", "Homna (হোমনা)", "Laksam (লাকসাম)", "Muradnagar (মুরাদনগর)", "Nangalkot (নাঙ্গলকোট)"],
         "Dhaka City": ["Dhaka North (ঢাকা উত্তর)", "Dhaka South (ঢাকা দক্ষিণ)", "Mirpur (মিরপুর)", "Uttara (উত্তরা)", "Gulshan (গুলশান)", "Dhanmondi (ধানমন্ডি)", "Badda (বাড্ডা)", "Motijheel (মতিঝিল)", "Jatrabari (যাত্রাবাড়ী)"],
@@ -157,9 +162,9 @@
         "Dinajpur": ["Dinajpur Sadar (দিনাজপুর সদর)", "Birampur (বিরামপুর)", "Birganj (বীরগঞ্জ)", "Chirirbandar (চিরিরবন্দর)", "Phulbari (ফুলবাড়ী)", "Ghoraghat (ঘোড়াঘাট)", "Hakimpur (হাকিমপুর)", "Parbatipur (পার্বতীপুর)"],
         "Faridpur": ["Faridpur Sadar (ফরিদপুর সদর)", "Alfadanga (আলফাডাঙ্গা)", "Bhanga (ভাঙ্গা)", "Boalmari (বোয়ালমারী)", "Madhukhali (মধুখালী)", "Nagarkanda (নগরকান্দা)"],
         "Feni": ["Feni Sadar (ফেনী সদর)", "Chhagalnaiya (ছাগলনাইয়া)", "Daganbhuiyan (দাগনভূঞা)", "Parshuram (পরশুরাম)", "Sonagazi (সোনাগাজী)"],
-        "Gaibandha": ["Gaibandha Sadar (গাইবান্ধা সদর)", "Gobindaganj (গোবিন্দগঞ্জ)", "Palashbari (পলাশবাড়ী)", "Sundarganj (সুন্দরগঞ্জ)", "Saghata (সাঘাটা)"],
+        "Gaibandha": ["Gaibandha Sadar (গাইবান্ধা সদর)", "Gobindaganj (গোবিন্দগঞ্জ)", "Palashbari (পলাশবাড়ী)", "Sundارجنج (সুন্দরগঞ্জ)", "Saghata (সাঘাটা)"],
         "Gazipur": ["Gazipur Sadar (গাজীপুর সদর)", "Kaliakair (কালিয়াকৈর)", "Kaliganj (কালীগঞ্জ)", "Kapasia (কাপাসিয়া)", "Sreepur (শ্রীপুর)", "Tongi (টঙ্গী)"],
-        "Gopalganj": ["Gopalganj Sadar (গোপালগঞ্জ সদর)", "Kashiani (কাশিয়ানী)", "Kotalipara (কোটালীপাড়া)", "Muksudpur (মুকসুদপুর)", "Tungipara (টুঙ্গিপাড়া)"],
+        "Gopalganj": ["Gopalganj Sadar (গোপালগঞ্জ সদর)", "Kashiani (কাশিয়ানী)", "Kotalipara (কোটালীপাড়া)", "Muksudপুর (মুকসুদপুর)", "Tungipara (টুঙ্গিপাড়া)"],
         "Habiganj": ["Habiganj Sadar (হবিগঞ্জ সদর)", "Bahubal (বাহুবল)", "Baniyachong (বানিয়াচং)", "Chunarughat (চুনারুঘাট)", "Madhabpur (মাধবপুর)", "Nabiganj (নবীগঞ্জ)"],
         "Jamalpur": ["Jamalpur Sadar (জামালপুর সদর)", "Bakshiganj (বকশীগঞ্জ)", "Dewanganj (দেওয়ানগঞ্জ)", "Islampur (ইসলামপুর)", "Madarganj (মাদারগঞ্জ)", "Sarishabari (সরিষাবাড়ী)"],
         "Jashore": ["Jashore Sadar (যশোর সদর)", "Abhaynagar (অভয়নগর)", "Chougacha (চৌগাছা)", "Jhikargacha (ঝিকরগাছা)", "Keshabpur (কেশবপুর)", "Manirampur (মণিরামপুর)", "Sharsha (শার্শা)"],
@@ -168,7 +173,7 @@
         "Joypurhat": ["Joypurhat Sadar (জয়পুরহাট সদর)", "Akkelpur (আক্কেলপুর)", "Kalai (কালাই)", "Khetlal (ক্ষেতলাল)", "Panchbibi (পাঁচবিবি)"],
         "Khagrachari": ["Khagrachari Sadar (খাগড়াছড়ি সদর)", "Dighinala (দীঘিনালা)", "Matiranga (মাটিরাঙ্গা)", "Ramgarh (রামগড়)", "Panchari (পানছড়ি)"],
         "Khulna": ["Khulna City (খুলনা সিটি)", "Dacope (দাকোপ)", "Dumuria (ডুমুরিয়া)", "Paikgacha (পাইকগাছা)", "Phultala (ফুলতলা)", "Rupsha (রূপসা)"],
-        "Kishoreganj": ["Kishoreganj Sadar (কিশোরগঞ্জ সদর)", "Bhairab (ভৈরব)", "Bajitpur (বাজিতপুর)", "Katiadi (কটিয়াদী)", "Kuliarchar (কুলিয়ারচর)"],
+        "Kishoreganj": ["Kishoreganj Sadar (কিশোরগঞ্জ সদর)", "Bhairab (ভৈরব)", "Bajitপুর (বাজিতপুর)", "Katiadi (কটিয়াদী)", "Kuliarchar (কুলিয়ারচর)"],
         "Kurigram": ["Kurigram Sadar (কুড়িগ্রাম সদর)", "Bhurungamari (ভুরুঙ্গামারী)", "Nageshwari (নাগেশ্বরী)", "Rajarhat (রাজারহাট)", "Ulipur (উলিপুর)"],
         "Kushtia": ["Kushtia Sadar (কুষ্টিয়া সদর)", "Bheramara (ভেড়ামারা)", "Kumarkhali (কুমারখালী)", "Mirpur (মিরপুর)", "Daulatpur (দৌলতপুর)"],
         "Lalmonirhat": ["Lalmonirhat Sadar (লালমনিরহাট সদর)", "Aditmari (আদিতমারী)", "Hatibandha (হাতীবান্ধা)", "Patgram (পাটগ্রাম)"],
@@ -186,7 +191,7 @@
         "Narsingdi": ["Narsingdi Sadar (নরসিংদী সদর)", "Madhabdi (মাধবদী)", "Palash (পলাশ)", "Raipura (রায়পুরা)"],
         "Natore": ["Natore Sadar (নাটোর সদর)", "Baraigram (বড়াইগ্রাম)", "Singra (সিংড়া)", "Gurudaspur (গুরুদাসপুর)"],
         "Netrokona": ["Netrokona Sadar (নেত্রকোনা সদর)", "Mohonganj (মোহনগঞ্জ)", "Durgapur (দুর্গাপুর)", "Kendua (কেন্দুয়া)"],
-        "Nilphamari": ["Nilphamari Sadar (নীলফামারী সদর)", "Saidpur (সৈয়দপুর)", "Jaldhaka (জলঢাকা)", "Domar (ডোমার)"],
+        "Nilphamari": ["Nilphamari Sadar (নীলফামারী সদর)", "Saidপুর (সৈয়দপুর)", "Jaldhaka (জলঢাকা)", "Domar (ডোমার)"],
         "Noakhali": ["Noakhali Sadar (নোয়াখালী সদর)", "Begumganj (বেগমগঞ্জ)", "Companiganj (কোম্পানীগঞ্জ)", "Chatkhil (চাটখিল)"],
         "Pabna": ["Pabna Sadar (পাবনা সদর)", "Ishwardi (ঈশ্বরদী)", "Santhia (সাঁথিয়া)", "Chatmohar (চাটমোহর)"],
         "Panchagarh": ["Panchagarh Sadar (পঞ্চগড় সদর)", "Tetulia (তেঁতুলিয়া)", "Boda (বোদা)", "Debiganj (দেবীগঞ্জ)"],
@@ -216,16 +221,14 @@
     const pSize = urlParams.get('size') || "N/A";
     document.getElementById('sumSize').innerText = pSize;
 
-    // জেলা ড্রপডাউন লোড করা
     const distDropdown = document.getElementById('uDistrict');
     Object.keys(areaData).sort().forEach(dist => {
         let opt = document.createElement('option');
         opt.value = dist;
-        opt.innerText = dist + " (" + dist + ")";
+        opt.innerText = dist;
         distDropdown.appendChild(opt);
     });
 
-    // জেলা পরিবর্তন হলে এরিয়া লোড হওয়া
     distDropdown.onchange = function() {
         const areaDropdown = document.getElementById('uAreaSelect');
         areaDropdown.innerHTML = '<option value="">এলাকা সিলেক্ট করুন</option>';
@@ -240,7 +243,6 @@
         }
     };
 
-    // Firebase থেকে প্রোডাক্টের তথ্য ও ছবি আনা
     if(pId) {
         onValue(ref(db, 'products/' + pId), (snap) => {
             if(snap.exists()) {
@@ -249,14 +251,12 @@
                 pName = data.name;
                 document.getElementById('sumTitle').innerText = pName;
                 document.getElementById('pPriceText').innerText = productPrice + " ৳";
-                // ছবির জন্য 'img' বা 'image' কী (Key) চেক করা
                 document.getElementById('sumImg').src = data.img || data.image || "https://via.placeholder.com/100";
                 updateTotal();
             }
         });
     }
 
-    // ডেলিভারি চার্জ হিসাব
     document.getElementById('uDeliveryArea').onchange = updateTotal;
     function updateTotal() {
         const charge = parseInt(document.getElementById('uDeliveryArea').value);
@@ -264,7 +264,6 @@
         document.getElementById('totalAmount').innerText = (productPrice + charge) + " ৳";
     }
 
-    // পেমেন্ট মেথড সিলেকশন
     document.getElementById('bkashBtn').onclick = () => setPayment('bKash', '017XXXXXXXX');
     document.getElementById('nagadBtn').onclick = () => setPayment('Nagad', '018XXXXXXXX');
 
@@ -274,7 +273,7 @@
         document.getElementById('trxID').style.display = 'block';
         document.getElementById('payNum').innerText = num;
         document.getElementById('methodLabel').innerText = method + " পার্সোনাল নম্বরে টাকা পাঠান:";
-        document.getElementById('bkashBtn').classList.remove('selected');
+        document.get        document.getElementById('bkashBtn').classList.remove('selected');
         document.getElementById('nagadBtn').classList.remove('selected');
         document.getElementById(method.toLowerCase() + 'Btn').classList.add('selected');
     }
@@ -293,6 +292,7 @@
         const area = document.getElementById('uAreaSelect').value;
         const trx = document.getElementById('trxID').value;
         const fullAddr = document.getElementById('uFullAddress').value;
+        const payType = document.getElementById('paymentType').value;
 
         if(!name || !phone || !dist || !area || !selectedMethod || !trx) {
             alert("অনুগ্রহ করে সব তথ্য এবং পেমেন্ট ট্রানজেকশন আইডি দিন!");
@@ -310,6 +310,7 @@
             productSize: pSize,
             totalAmount: document.getElementById('totalAmount').innerText,
             paymentMethod: selectedMethod,
+            paymentType: payType,
             trxID: trx,
             status: "Pending",
             timestamp: Date.now()
@@ -326,4 +327,3 @@
 
 </body>
 </html>
-
