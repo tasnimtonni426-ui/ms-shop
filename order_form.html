@@ -13,7 +13,6 @@
         .header { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; }
         .header h2 { font-size: 20px; margin: 0; color: var(--primary); }
 
-        /* প্রোডাক্ট সামারি */
         .product-summary { 
             background: var(--glass); border: 1px solid var(--border); border-radius: 20px; 
             padding: 15px; margin-bottom: 20px; display: flex; align-items: center; gap: 15px;
@@ -145,70 +144,70 @@
     const db = getDatabase(app);
 
     const areaData = {
-        "Bagerhat": ["Bagerhat Sadar (বাগেরহাট সদর)", "Chitalmari (চিতলমারী)", "Fakirhat (ফকিরহাট)", "Kachua (কচুয়া)", "Mollahat (মোল্লাহাট)", "Mongla (মোংলা)", "Morrelgamj (মোড়েলগঞ্জ)", "Rampal (রামপাল)", "Sarankhola (শরণখোলা)"],
-        "Bandarban": ["Bandarban Sadar (বান্দরবান সদর)", "Ali kadam (আলীকদম)", "Lama (লামা)", "Naikhongchari (নাইক্ষ্যংছড়ি)", "Rowangchhari (রোয়াংছড়ি)", "Ruma (রুমা)", "Thanchi (থানচি)"],
-        "Barguna": ["Barguna Sadar (বরগুনা সদর)", "Amtali (আমতলী)", "Bamna (বামনা)", "Betagi (বেতাগী)", "Patharghata (পাথরঘাটা)", "Taltali (তালতলী)"],
-        "Barishal": ["Barishal Sadar (বরিশাল সদর)", "Agailihara (আগৈলঝাড়া)", "Babuganj (বাবুগঞ্জ)", "Bekerganj (বাকেরগঞ্জ)", "Banaripara (বানারীপাড়া)", "Gouronadi (গৌরনদী)", "Hizla (হিজলা)", "Mehendiganj (মেহেন্দিগঞ্জ)", "Muladi (মুলাদী)", "Wazirpur (উজিরপুর)"],
-        "Bhola": ["Bhola Sadar (ভোলা সদর)", "Borhanuddin (বোরহানউদ্দিন)", "Char Fasson (চরফ্যাশন)", "Daulatkhan (দৌলতখান)", "Lalmohan (লালমোহন)", "Manpura (মনপুরা)", "Tazumuddin (তজুমদ্দিন)"],
-        "Bogra": ["Bogura sadar (বগুড়া সদর)", "Alamdighi (আদমদীঘি)", "Dhunat (ধুনট)", "Dhupcgancia (দুপচাঁচিয়া)", "Gabtoli (গাবতলী)", "Kahaloo (কাহালু)", "Nandigram (নন্দীগ্রাম)", "Saraikandi (সারিয়াকান্দি)", "Shajahanpur (শাহজাহানপুর)", "Sherpur (শেরপুর)", "Shibganj (শিবগঞ্জ)", "Sanatoli (সোনাতলা)"],
-        "Brahmanbaria": ["Brahmanbaria Sadar (ব্রাহ্মণবাড়িয়া সদর)", "Akhaura (আখাউড়া)", "Ashuganj (আশুগঞ্জ)", "Bancharampur (বাঞ্ছারামপুর)", "Bijoynagar (বিজয়নগর)", "Kasba (কসবা)", "Nabinagar (নবীনগর)", "Nasirnagar (নাসিরনগর)", "Sarail (সরাইল)"],
-        "Chandpur": ["Chandpur Sadar (চাঁদপুর সদর)", "Faridganj (ফরিদগঞ্জ)", "Haimchar (হাইমচর)", "Hajiganj (হাজীগঞ্জ)", "Kachua (কচুয়া)", "Matlab North (মতলব উত্তর)", "Matlab South (মতলব দক্ষিণ)", "Shahrasti (শাহরাস্তি)"],
-        "Chapainawabganj": ["Chapainawabganj sadar (চাঁপাইনবাবগঞ্জ সদর)", "Bholahat (ভোলাহাট)", "Gomastapur (গোমস্তাপুর)", "Nachole (নাচোল)", "Shibganj (শিবগঞ্জ)"],
-        "Chittagong": ["Chittagong City (চট্টগ্রাম সিটি)", "Anwara (আনোয়ারা)", "Banskhali (বাঁশখালী)", "Boalkhali (বোয়ালখালী)", "Chandানাশ (চন্দনাইশ)", "Fatikchori (ফটিকছড়ি)", "Hathazari (হাটহাজারী)", "Lohangara (লোহাগাড়া)", "Mirsharai (মিরসরাই)", "Patiya (পটিয়া)", "Rangunia (রাঙ্গুনিয়া)", "Raozan (রাউজান)", "Sandwip (সন্দ্বীপ)", "Satkania (সাতকানিয়া)", "Sitakunda (সীতাকুণ্ড)"],
-        "Cox's Bazar": ["Cox's Bazar Sadar (কক্সবাজার সদর)", "Chakaria (চকুরিয়া)", "Kutubdia (কুতুবদিয়া)", "Moheskhali (মহেশখালী)", "Pekua (পেকুয়া)", "Ramu (রামু)", "Teknaf (টেকনাফ)", "Ukhiya (উখিয়া)"],
-        "Cumilla": ["Cumilla Sadar (কুমিল্লা সদর)", "Barura (বরুড়া)", "Brahmanpara (ব্রাহ্মণপাড়া)", "Burichang (বুড়িচং)", "Chandina (চান্দিনা)", "Chauddagram (চৌদ্দগ্রাম)", "Daudkandi (দাউদকান্দি)", "Debidwar (দেবিদ্বার)", "Homna (হোমনা)", "Laksam (লাকসাম)", "Muradnagar (মুরাদনগর)", "Nangalkot (নাঙ্গলকোট)"],
-        "Dhaka City": ["Dhaka North (ঢাকা উত্তর)", "Dhaka South (ঢাকা দক্ষিণ)", "Mirpur (মিরপুর)", "Uttara (উত্তরা)", "Gulshan (গুলশান)", "Dhanmondi (ধানমন্ডি)", "Badda (বাড্ডা)", "Motijheel (মতিঝিল)", "Jatrabari (যাত্রাবাড়ী)"],
-        "Dhaka Sub": ["Savar (সাভার)", "Ashulia (আশুলিয়া)", "Keraniganj (কেরানীগঞ্জ)", "Dhamrai (ধামরাই)", "Nawabganj (নবাবগঞ্জ)", "Dohar (দোহার)"],
-        "Dinajpur": ["Dinajpur Sadar (দিনাজপুর সদর)", "Birampur (বিরামপুর)", "Birganj (বীরগঞ্জ)", "Chirirbandar (চিরিরবন্দর)", "Phulbari (ফুলবাড়ী)", "Ghoraghat (ঘোড়াঘাট)", "Hakimpur (হাকিমপুর)", "Parbatipur (পার্বতীপুর)"],
-        "Faridpur": ["Faridpur Sadar (ফরিদপুর সদর)", "Alfadanga (আলফাডাঙ্গা)", "Bhanga (ভাঙ্গা)", "Boalmari (বোয়ালমারী)", "Madhukhali (মধুখালী)", "Nagarkanda (নগরকান্দা)"],
-        "Feni": ["Feni Sadar (ফেনী সদর)", "Chhagalnaiya (ছাগলনাইয়া)", "Daganbhuiyan (দাগনভূঞা)", "Parshuram (পরশুরাম)", "Sonagazi (সোনাগাজী)"],
-        "Gaibandha": ["Gaibandha Sadar (গাইবান্ধা সদর)", "Gobindaganj (গোবিন্দগঞ্জ)", "Palashbari (পলাশবাড়ী)", "Sundارجنج (সুন্দরগঞ্জ)", "Saghata (সাঘাটা)"],
-        "Gazipur": ["Gazipur Sadar (গাজীপুর সদর)", "Kaliakair (কালিয়াকৈর)", "Kaliganj (কালীগঞ্জ)", "Kapasia (কাপাসিয়া)", "Sreepur (শ্রীপুর)", "Tongi (টঙ্গী)"],
-        "Gopalganj": ["Gopalganj Sadar (গোপালগঞ্জ সদর)", "Kashiani (কাশিয়ানী)", "Kotalipara (কোটালীপাড়া)", "Muksudপুর (মুকসুদপুর)", "Tungipara (টুঙ্গিপাড়া)"],
-        "Habiganj": ["Habiganj Sadar (হবিগঞ্জ সদর)", "Bahubal (বাহুবল)", "Baniyachong (বানিয়াচং)", "Chunarughat (চুনারুঘাট)", "Madhabpur (মাধবপুর)", "Nabiganj (নবীগঞ্জ)"],
-        "Jamalpur": ["Jamalpur Sadar (জামালপুর সদর)", "Bakshiganj (বকশীগঞ্জ)", "Dewanganj (দেওয়ানগঞ্জ)", "Islampur (ইসলামপুর)", "Madarganj (মাদারগঞ্জ)", "Sarishabari (সরিষাবাড়ী)"],
-        "Jashore": ["Jashore Sadar (যশোর সদর)", "Abhaynagar (অভয়নগর)", "Chougacha (চৌগাছা)", "Jhikargacha (ঝিকরগাছা)", "Keshabpur (কেশবপুর)", "Manirampur (মণিরামপুর)", "Sharsha (শার্শা)"],
-        "Jhalokati": ["Jhalokati Sadar (ঝালকাঠি সদর)", "Kathalia (কাঁঠালিয়া)", "Nalchity (নলছিটি)", "Rajapur (রাজাপুর)"],
-        "Jhenaidah": ["Jhenaidah Sadar (ঝিনাইদহ সদর)", "Harinakunda (হরিণাকুণ্ডু)", "Kaliganj (কালীগঞ্জ)", "Kotchandpur (কোটচাঁদপুর)", "Maheshpur (মহেশপুর)", "Shailkupa (শৈলকুপা)"],
-        "Joypurhat": ["Joypurhat Sadar (জয়পুরহাট সদর)", "Akkelpur (আক্কেলপুর)", "Kalai (কালাই)", "Khetlal (ক্ষেতলাল)", "Panchbibi (পাঁচবিবি)"],
-        "Khagrachari": ["Khagrachari Sadar (খাগড়াছড়ি সদর)", "Dighinala (দীঘিনালা)", "Matiranga (মাটিরাঙ্গা)", "Ramgarh (রামগড়)", "Panchari (পানছড়ি)"],
-        "Khulna": ["Khulna City (খুলনা সিটি)", "Dacope (দাকোপ)", "Dumuria (ডুমুরিয়া)", "Paikgacha (পাইকগাছা)", "Phultala (ফুলতলা)", "Rupsha (রূপসা)"],
-        "Kishoreganj": ["Kishoreganj Sadar (কিশোরগঞ্জ সদর)", "Bhairab (ভৈরব)", "Bajitপুর (বাজিতপুর)", "Katiadi (কটিয়াদী)", "Kuliarchar (কুলিয়ারচর)"],
-        "Kurigram": ["Kurigram Sadar (কুড়িগ্রাম সদর)", "Bhurungamari (ভুরুঙ্গামারী)", "Nageshwari (নাগেশ্বরী)", "Rajarhat (রাজারহাট)", "Ulipur (উলিপুর)"],
-        "Kushtia": ["Kushtia Sadar (কুষ্টিয়া সদর)", "Bheramara (ভেড়ামারা)", "Kumarkhali (কুমারখালী)", "Mirpur (মিরপুর)", "Daulatpur (দৌলতপুর)"],
-        "Lalmonirhat": ["Lalmonirhat Sadar (লালমনিরহাট সদর)", "Aditmari (আদিতমারী)", "Hatibandha (হাতীবান্ধা)", "Patgram (পাটগ্রাম)"],
-        "Laxmipur": ["Laxmipur Sadar (লক্ষ্মীপুর সদর)", "Raipur (রায়পুর)", "Ramganj (রামগঞ্জ)", "Ramgati (রামগতি)"],
-        "Madaripur": ["Madaripur Sadar (মাদারীপুর সদর)", "Kalkini (কালকিনি)", "Rajoir (রাজৈর)", "Shibchar (শিবচর)"],
-        "Magura": ["Magura Sadar (মাগুরা সদর)", "Mohammadpur (মোহাম্মদপুর)", "Shalikha (শালিখা)", "Sreepur (শ্রীপুর)"],
-        "Manikganj": ["Manikganj Sadar (মানিকগঞ্জ সদর)", "Singair (সিংগাইর)", "Shibalaya (শিবালয়)", "Saturia (সাটুরিয়া)"],
-        "Meherpur": ["Meherpur Sadar (মেহেরপুর সদর)", "Gangni (গাংনী)", "Mujibnagar (মুজিবনগর)"],
-        "Moulvibazar": ["Moulvibazar Sadar (মৌলভীবাজার সদর)", "Sreemangal (শ্রীমঙ্গল)", "Kulaura (কুলাউড়া)", "Barlekha (বড়লেখা)"],
-        "Munshiganj": ["Munshiganj Sadar (মুন্সিগঞ্জ সদর)", "Sreenagar (শ্রীনগর)", "Lohajang (লৌহজং)", "Sirajdikhan (সিরাজদিখান)"],
-        "Mymensingh": ["Mymensingh Sadar (ময়মনসিংহ সদর)", "Bhaluka (ভালুকা)", "Gafargaon (গফরগাঁও)", "Trishal (ত্রিশাল)", "Muktagacha (মুক্তাগাছা)"],
-        "Naogaon": ["Naogaon Sadar (নওগাঁ সদর)", "Mohadevpur (মহাদেবপুর)", "Patnitala (পত্নীতলা)", "Sapahar (সাপাহার)"],
-        "Narail": ["Narail Sadar (নড়াইল সদর)", "Lohagara (লোহাগড়া)", "Kalia (কালিয়া)"],
-        "Narayanganj": ["Narayanganj Sadar (নারায়ণগঞ্জ সদর)", "Rupganj (রূপগঞ্জ)", "Sonargaon (সোনারগাঁও)", "Bandar (বন্দর)"],
-        "Narsingdi": ["Narsingdi Sadar (নরসিংদী সদর)", "Madhabdi (মাধবদী)", "Palash (পলাশ)", "Raipura (রায়পুরা)"],
-        "Natore": ["Natore Sadar (নাটোর সদর)", "Baraigram (বড়াইগ্রাম)", "Singra (সিংড়া)", "Gurudaspur (গুরুদাসপুর)"],
-        "Netrokona": ["Netrokona Sadar (নেত্রকোনা সদর)", "Mohonganj (মোহনগঞ্জ)", "Durgapur (দুর্গাপুর)", "Kendua (কেন্দুয়া)"],
-        "Nilphamari": ["Nilphamari Sadar (নীলফামারী সদর)", "Saidপুর (সৈয়দপুর)", "Jaldhaka (জলঢাকা)", "Domar (ডোমার)"],
-        "Noakhali": ["Noakhali Sadar (নোয়াখালী সদর)", "Begumganj (বেগমগঞ্জ)", "Companiganj (কোম্পানীগঞ্জ)", "Chatkhil (চাটখিল)"],
-        "Pabna": ["Pabna Sadar (পাবনা সদর)", "Ishwardi (ঈশ্বরদী)", "Santhia (সাঁথিয়া)", "Chatmohar (চাটমোহর)"],
-        "Panchagarh": ["Panchagarh Sadar (পঞ্চগড় সদর)", "Tetulia (তেঁতুলিয়া)", "Boda (বোদা)", "Debiganj (দেবীগঞ্জ)"],
-        "Patuakhali": ["Patuakhali Sadar (পটুয়াখালী সদর)", "Kalapara (কুয়াকাটা)", "Bauphal (বাউফল)", "Galachipa (গলাচিপা)"],
-        "Pirojpur": ["Pirojpur Sadar (পিরোজপুর সদর)", "Mathbaria (মঠবাড়িয়া)", "Bhandaria (ভাণ্ডারিয়া)", "Nesarabad (নেছারাবাদ)"],
-        "Rajbari": ["Rajbari Sadar (রাজবাড়ী সদর)", "Goalandanda (গোয়ালন্দ)", "Pangsha (পাংশা)", "Baliakandi (বালিয়াকান্দি)"],
-        "Rajshahi": ["Rajshahi City (রাজশাহী সিটি)", "Paba (পবা)", "Puthia (পুঠিয়া)", "Godagari (গোদাগাড়ী)", "Bagha (বাঘা)"],
-        "Rangamati": ["Rangamati Sadar (রাঙ্গামাটি সদর)", "Kaptai (কাপ্তাই)", "Naniarchar (নানিয়ারচর)", "Langadu (লংগদু)"],
-        "Rangpur": ["Rangpur City (রংপুর সিটি)", "Mithapukur (মিঠাপুকুর)", "Pirganj (পীরগঞ্জ)", "Badarganj (বদরগঞ্জ)"],
-        "Satkhira": ["Satkhira Sadar (সাতক্ষীরা সদর)", "Shyamnagar (শ্যামনগর)", "Kaliganj (কালীগঞ্জ)", "Kalaroa (কলারোয়া)"],
-        "Shariatpur": ["Shariatpur Sadar (শরীয়তপুর সদর)", "Naria (নড়িয়া)", "Zajira (জাজিরা)", "Bhedarganj (ভেদরগঞ্জ)"],
-        "Sherpur": ["Sherpur Sadar (শেরপুর সদর)", "Nalitabari (নালিতাবাড়ী)", "Nakla (নকলা)", "Sreebardi (শ্রীবরদী)"],
-        "Sirajganj": ["Sirajganj Sadar (সিরাজগঞ্জ সদর)", "Shahjadpur (শাহজাদপুর)", "Ullapara (উল্লাপাড়া)", "Belkuchi (বেলকুচি)"],
-        "Sunamganj": ["Sunamganj Sadar (সুনামগঞ্জ সদর)", "Chhatak (ছাতক)", "Jagannathpur (জগন্নাথপুর)", "Dirai (দিরাই)"],
-        "Sylhet": ["Sylhet City (সিলেট সিটি)", "Beanibazar (বিয়ানীবাজার)", "Golapganj (গোলাপগঞ্জ)", "Fenchuganj (ফেঞ্চুগঞ্জ)"],
-        "Tangail": ["Tangail Sadar (টাঙ্গাইল সদর)", "Mirzapur (মির্জাপুর)", "Madhupur (মধুপুর)", "Gopalpur (গোপালপুর)"],
-        "Thakurgaon": ["Thakurgaon Sadar (ঠাকুরগাঁও সদর)", "Pirganj (পীরগঞ্জ)", "Baliadangi (বালিয়াডাঙ্গী)", "Ranisankail (রাণীশংকৈল)"]
+        "Bagerhat": ["Bagerhat Sadar", "Chitalmari", "Fakirhat", "Kachua", "Mollahat", "Mongla", "Morrelgamj", "Rampal", "Sarankhola"],
+        "Bandarban": ["Bandarban Sadar", "Ali kadam", "Lama", "Naikhongchari", "Rowangchhari", "Ruma", "Thanchi"],
+        "Barguna": ["Barguna Sadar", "Amtali", "Bamna", "Betagi", "Patharghata", "Taltali"],
+        "Barishal": ["Barishal Sadar", "Agailihara", "Babuganj", "Bekerganj", "Banaripara", "Gouronadi", "Hizla", "Mehendiganj", "Muladi", "Wazirpur"],
+        "Bhola": ["Bhola Sadar", "Borhanuddin", "Char Fasson", "Daulatkhan", "Lalmohan", "Manpura", "Tazumuddin"],
+        "Bogra": ["Bogura sadar", "Alamdighi", "Dhunat", "Dhupcgancia", "Gabtoli", "Kahaloo", "Nandigram", "Saraikandi", "Shajahanpur", "Sherpur", "Shibganj", "Sanatoli"],
+        "Brahmanbaria": ["Brahmanbaria Sadar", "Akhaura", "Ashuganj", "Bancharampur", "Bijoynagar", "Kasba", "Nabinagar", "Nasirnagar", "Sarail"],
+        "Chandpur": ["Chandpur Sadar", "Faridganj", "Haimchar", "Hajiganj", "Kachua", "Matlab North", "Matlab South", "Shahrasti"],
+        "Chapainawabganj": ["Chapainawabganj sadar", "Bholahat", "Gomastapur", "Nachole", "Shibganj"],
+        "Chittagong": ["Chittagong City", "Anwara", "Banskhali", "Boalkhali", "Chandanash", "Fatikchori", "Hathazari", "Lohangara", "Mirsharai", "Patiya", "Rangunia", "Raozan", "Sandwip", "Satkania", "Sitakunda"],
+        "Cox's Bazar": ["Cox's Bazar Sadar", "Chakaria", "Kutubdia", "Moheskhali", "Pekua", "Ramu", "Teknaf", "Ukhiya"],
+        "Cumilla": ["Cumilla Sadar", "Barura", "Brahmanpara", "Burichang", "Chandina", "Chauddagram", "Daudkandi", "Debidwar", "Homna", "Laksam", "Muradnagar", "Nangalkot"],
+        "Dhaka City": ["Dhaka North", "Dhaka South", "Mirpur", "Uttara", "Gulshan", "Dhanmondi", "Badda", "Motijheel", "Jatrabari"],
+        "Dhaka Sub": ["Savar", "Ashulia", "Keraniganj", "Dhamrai", "Nawabganj", "Dohar"],
+        "Dinajpur": ["Dinajpur Sadar", "Birampur", "Birganj", "Chirirbandar", "Phulbari", "Ghoraghat", "Hakimpur", "Parbatipur"],
+        "Faridpur": ["Faridpur Sadar", "Alfadanga", "Bhanga", "Boalmari", "Madhukhali", "Nagarkanda"],
+        "Feni": ["Feni Sadar", "Chhagalnaiya", "Daganbhuiyan", "Parshuram", "Sonagazi"],
+        "Gaibandha": ["Gaibandha Sadar", "Gobindaganj", "Palashbari", "Sundarganj", "Saghata"],
+        "Gazipur": ["Gazipur Sadar", "Kaliakair", "Kaliganj", "Kapasia", "Sreepur", "Tongi"],
+        "Gopalganj": ["Gopalganj Sadar", "Kashiani", "Kotalipara", "Muksudpur", "Tungipara"],
+        "Habiganj": ["Habiganj Sadar", "Bahubal", "Baniyachong", "Chunarughat", "Madhabpur", "Nabiganj"],
+        "Jamalpur": ["Jamalpur Sadar", "Bakshiganj", "Dewanganj", "Islampur", "Madarganj", "Sarishabari"],
+        "Jashore": ["Jashore Sadar", "Abhaynagar", "Chougacha", "Jhikargacha", "Keshabpur", "Manirampur", "Sharsha"],
+        "Jhalokati": ["Jhalokati Sadar", "Kathalia", "Nalchity", "Rajapur"],
+        "Jhenaidah": ["Jhenaidah Sadar", "Harinakunda", "Kaliganj", "Kotchandpur", "Maheshpur", "Shailkupa"],
+        "Joypurhat": ["Joypurhat Sadar", "Akkelpur", "Kalai", "Khetlal", "Panchbibi"],
+        "Khagrachari": ["Khagrachari Sadar", "Dighinala", "Matiranga", "Ramgarh", "Panchari"],
+        "Khulna": ["Khulna City", "Dacope", "Dumuria", "Paikgacha", "Phultala", "Rupsha"],
+        "Kishoreganj": ["Kishoreganj Sadar", "Bhairab", "Bajitpur", "Katiadi", "Kuliarchar"],
+        "Kurigram": ["Kurigram Sadar", "Bhurungamari", "Nageshwari", "Rajarhat", "Ulipur"],
+        "Kushtia": ["Kushtia Sadar", "Bheramara", "Kumarkhali", "Mirpur", "Daulatpur"],
+        "Lalmonirhat": ["Lalmonirhat Sadar", "Aditmari", "Hatibandha", "Patgram"],
+        "Laxmipur": ["Laxmipur Sadar", "Raipur", "Ramganj", "Ramgati"],
+        "Madaripur": ["Madaripur Sadar", "Kalkini", "Rajoir", "Shibchar"],
+        "Magura": ["Magura Sadar", "Mohammadpur", "Shalikha", "Sreepur"],
+        "Manikganj": ["Manikganj Sadar", "Singair", "Shibalaya", "Saturia"],
+        "Meherpur": ["Meherpur Sadar", "Gangni", "Mujibnagar"],
+        "Moulvibazar": ["Moulvibazar Sadar", "Sreemangal", "Kulaura", "Barlekha"],
+        "Munshiganj": ["Munshiganj Sadar", "Sreenagar", "Lohajang", "Sirajdikhan"],
+        "Mymensingh": ["Mymensingh Sadar", "Bhaluka", "Gafargaon", "Trishal", "Muktagacha"],
+        "Naogaon": ["Naogaon Sadar", "Mohadevpur", "Patnitala", "Sapahar"],
+        "Narail": ["Narail Sadar", "Lohagara", "Kalia"],
+        "Narayanganj": ["Narayanganj Sadar", "Rupganj", "Sonargaon", "Bandar"],
+        "Narsingdi": ["Narsingdi Sadar", "Madhabdi", "Palash", "Raipura"],
+        "Natore": ["Natore Sadar", "Baraigram", "Singra", "Gurudaspur"],
+        "Netrokona": ["Netrokona Sadar", "Mohonganj", "Durgapur", "Kendua"],
+        "Nilphamari": ["Nilphamari Sadar", "Saidpur", "Jaldhaka", "Domar"],
+        "Noakhali": ["Noakhali Sadar", "Begumganj", "Companiganj", "Chatkhil"],
+        "Pabna": ["Pabna Sadar", "Ishwardi", "Santhia", "Chatmohar"],
+        "Panchagarh": ["Panchagarh Sadar", "Tetulia", "Boda", "Debiganj"],
+        "Patuakhali": ["Patuakhali Sadar", "Kalapara", "Bauphal", "Galachipa"],
+        "Pirojpur": ["Pirojpur Sadar", "Mathbaria", "Bhandaria", "Nesarabad"],
+        "Rajbari": ["Rajbari Sadar", "Goalandanda", "Pangsha", "Baliakandi"],
+        "Rajshahi": ["Rajshahi City", "Paba", "Puthia", "Godagari", "Bagha"],
+        "Rangamati": ["Rangamati Sadar", "Kaptai", "Naniarchar", "Langadu"],
+        "Rangpur": ["Rangpur City", "Mithapukur", "Pirganj", "Badarganj"],
+        "Satkhira": ["Satkhira Sadar", "Shyamnagar", "Kaliganj", "Kalaroa"],
+        "Shariatpur": ["Shariatpur Sadar", "Naria", "Zajira", "Bhedarganj"],
+        "Sherpur": ["Sherpur Sadar", "Nalitabari", "Nakla", "Sreebardi"],
+        "Sirajganj": ["Sirajganj Sadar", "Shahjadpur", "Ullapara", "Belkuchi"],
+        "Sunamganj": ["Sunamganj Sadar", "Chhatak", "Jagannathpur", "Dirai"],
+        "Sylhet": ["Sylhet City", "Beanibazar", "Golapganj", "Fenchuganj"],
+        "Tangail": ["Tangail Sadar", "Mirzapur", "Madhupur", "Gopalpur"],
+        "Thakurgaon": ["Thakurgaon Sadar", "Pirganj", "Baliadangi", "Ranisankail"]
     };
 
     let currentUser = null;
@@ -257,13 +256,27 @@
         });
     }
 
+    // পেমেন্ট টাইপ বা এরিয়া চেঞ্জ হলে আপডেট
     document.getElementById('uDeliveryArea').onchange = updateTotal;
+    document.getElementById('paymentType').onchange = updateTotal;
+
     function updateTotal() {
-        const charge = parseInt(document.getElementById('uDeliveryArea').value);
+        const charge = parseInt(document.getElementById('uDeliveryArea').value) || 0;
+        const payType = document.getElementById('paymentType').value;
+        
+        document.getElementById('pPriceText').innerText = productPrice + " ৳";
         document.getElementById('dChargeText').innerText = charge + " ৳";
-        document.getElementById('totalAmount').innerText = (productPrice + charge) + " ৳";
+
+        let finalAmount = 0;
+        if (payType === "Full Payment") {
+            finalAmount = productPrice + charge;
+        } else {
+            finalAmount = charge;
+        }
+        document.getElementById('totalAmount').innerText = finalAmount + " ৳";
     }
 
+    // পেমেন্ট মেথড বাটন
     document.getElementById('bkashBtn').onclick = () => setPayment('bKash', '017XXXXXXXX');
     document.getElementById('nagadBtn').onclick = () => setPayment('Nagad', '018XXXXXXXX');
 
@@ -273,18 +286,18 @@
         document.getElementById('trxID').style.display = 'block';
         document.getElementById('payNum').innerText = num;
         document.getElementById('methodLabel').innerText = method + " পার্সোনাল নম্বরে টাকা পাঠান:";
-        document.get        document.getElementById('bkashBtn').classList.remove('selected');
+        
+        document.getElementById('bkashBtn').classList.remove('selected');
         document.getElementById('nagadBtn').classList.remove('selected');
         document.getElementById(method.toLowerCase() + 'Btn').classList.add('selected');
     }
 
-    // নম্বর কপি করার সুবিধা
     document.getElementById('payNum').onclick = function() {
         navigator.clipboard.writeText(this.innerText);
         alert("নম্বর কপি হয়েছে!");
     };
 
-    // অর্ডার প্লেস করা
+    // অর্ডার সাবমিট
     document.getElementById('submitOrder').onclick = function() {
         const name = document.getElementById('uName').value;
         const phone = document.getElementById('uPhone').value;
