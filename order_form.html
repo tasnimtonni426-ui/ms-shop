@@ -273,4 +273,57 @@
         document.getElementById('numberDisplay').style.display = 'block';
         document.getElementById('trxID').style.display = 'block';
         document.getElementById('payNum').innerText = num;
-        document.getElementById('methodLabel').innerText = method + " পার্সো
+        document.getElementById('methodLabel').innerText = method + " পার্সোনাল নম্বরে টাকা পাঠান:";
+        document.getElementById('bkashBtn').classList.remove('selected');
+        document.getElementById('nagadBtn').classList.remove('selected');
+        document.getElementById(method.toLowerCase() + 'Btn').classList.add('selected');
+    }
+
+    // নম্বর কপি করার সুবিধা
+    document.getElementById('payNum').onclick = function() {
+        navigator.clipboard.writeText(this.innerText);
+        alert("নম্বর কপি হয়েছে!");
+    };
+
+    // অর্ডার প্লেস করা
+    document.getElementById('submitOrder').onclick = function() {
+        const name = document.getElementById('uName').value;
+        const phone = document.getElementById('uPhone').value;
+        const dist = document.getElementById('uDistrict').value;
+        const area = document.getElementById('uAreaSelect').value;
+        const trx = document.getElementById('trxID').value;
+        const fullAddr = document.getElementById('uFullAddress').value;
+
+        if(!name || !phone || !dist || !area || !selectedMethod || !trx) {
+            alert("অনুগ্রহ করে সব তথ্য এবং পেমেন্ট ট্রানজেকশন আইডি দিন!");
+            return;
+        }
+
+        const orderRef = push(ref(db, 'orders'));
+        set(orderRef, {
+            userName: name,
+            userPhone: phone,
+            district: dist,
+            area: area,
+            address: fullAddr,
+            productName: pName,
+            productSize: pSize,
+            totalAmount: document.getElementById('totalAmount').innerText,
+            paymentMethod: selectedMethod,
+            trxID: trx,
+            status: "Pending",
+            timestamp: Date.now()
+        }).then(() => {
+            alert("অর্ডার সফলভাবে গ্রহণ করা হয়েছে!");
+            window.location.href = "my_orders.html"; 
+        }).catch((error) => {
+            alert("অর্ডার দিতে সমস্যা হয়েছে: " + error.message);
+        });
+    };
+
+    onAuthStateChanged(auth, (user) => { if(user) currentUser = user; });
+</script>
+
+</body>
+</html>
+
