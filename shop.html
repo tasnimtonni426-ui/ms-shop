@@ -88,6 +88,7 @@
         #chat-input-area { padding: 10px; border-top: 1px solid var(--border); display: flex; gap: 5px; }
         #chat-input-area input { flex: 1; background: var(--glass); border: 1px solid var(--border); color: white; padding: 8px; border-radius: 8px; outline: none; }
         #chat-input-area button { background: var(--primary); border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; color: #0f172a; }
+        #voice-btn { background: #e74c3c !important; color: white !important; }
 
         @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         @media (max-width: 480px) { .product-grid { grid-template-columns: 1fr 1fr; gap: 10px; } }
@@ -139,23 +140,18 @@
 <div id="ai-chat-btn"><i class="fa fa-robot"></i></div>
 <div id="chat-window">
     <div id="chat-header">
-        <span>MS Store AI</span>
+        <span>MS Store Voice AI</span>
         <span onclick="toggleChat()" style="cursor:pointer">✖</span>
     </div>
     <div id="chat-msgs">
-        <div class="bot-msg">আসসালামু আলাইকুম! MS Store এ আপনাকে স্বাগতম। আমি আপনাকে কিভাবে সাহায্য করতে পারি?</div>
+        <div class="bot-msg">আসসালামু আলাইকুম! আমি ভয়েস অ্যাসিস্ট্যান্ট। কিছু জিজ্ঞেস করতে মাইকে ক্লিক করুন।</div>
     </div>
     <div id="chat-input-area">
-        <input type="text" id="ai-input" placeholder="প্রশ্ন লিখুন...">
+        <button id="voice-btn"><i class="fa fa-microphone"></i></button>
+        <input type="text" id="ai-input" placeholder="কথা বলুন বা লিখুন...">
         <button onclick="sendMsg()"><i class="fa fa-paper-plane"></i></button>
     </div>
 </div>
-
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js'); });
-  }
-</script>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -252,12 +248,29 @@
         navigator.clipboard.writeText(id).then(() => alert("ID কপি হয়েছে: " + id));
     };
 
-    // --- AI Chat Logic ---
+    // --- AI Voice & Chat Logic ---
     const API_KEY = "AIzaSyBIg9vOvHf7m4o1QXd4Rs4iblSchdA9RG8";
     const chatBtn = document.getElementById('ai-chat-btn');
     const chatWin = document.getElementById('chat-window');
     const chatMsgs = document.getElementById('chat-msgs');
     const aiInput = document.getElementById('ai-input');
+    const voiceBtn = document.getElementById('voice-btn');
+
+    function speak(text) {
+        const speech = new SpeechSynthesisUtterance();
+        speech.text = text;
+        speech.lang = 'bn-BD';
+        window.speechSynthesis.speak(speech);
+    }
+
+    const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (Recognition) {
+        const reco = new Recognition();
+        reco.lang = 'bn-BD';
+        voiceBtn.onclick = () => { reco.start(); voiceBtn.style.background = "#2ecc71"; };
+        reco.onresult = (e) => { aiInput.value = e.results[0][0].transcript; sendMsg(); voiceBtn.style.background = "#e74c3c"; };
+        reco.onerror = () => { voiceBtn.style.background = "#e74c3c"; };
+    }
 
     window.toggleChat = () => chatWin.style.display = chatWin.style.display === 'flex' ? 'none' : 'flex';
     chatBtn.onclick = toggleChat;
@@ -265,7 +278,6 @@
     window.sendMsg = async () => {
         const val = aiInput.value.trim();
         if(!val) return;
-
         chatMsgs.innerHTML += `<div class="user-msg">${val}</div>`;
         aiInput.value = '';
         chatMsgs.scrollTop = chatMsgs.scrollHeight;
@@ -275,15 +287,14 @@
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
-                    contents: [{ parts: [{ text: `তুমি MS Store এর একজন স্মার্ট অ্যাসিস্ট্যান্ট। তোমার কাজ গ্রাহকদের প্রশ্নের উত্তর দেওয়া। আমাদের স্টোরে জার্সি, বুট এবং গ্যাজেট পাওয়া যায়। কাস্টমার প্রশ্ন করেছে: ${val}` }]}]
+                    contents: [{ parts: [{ text: `তুমি MS Store এর অ্যাসিস্ট্যান্ট। খুব ছোট ১ লাইনে উত্তর দাও। প্রশ্ন: ${val}` }]}]
                 })
             });
             const data = await res.json();
             const reply = data.candidates[0].content.parts[0].text;
             chatMsgs.innerHTML += `<div class="bot-msg">${reply}</div>`;
-        } catch (e) {
-            chatMsgs.innerHTML += `<div class="bot-msg">দুঃখিত, আমি এখন উত্তর দিতে পারছি না। পরে চেষ্টা করুন।</div>`;
-        }
+            speak(reply);
+        } catch (e) { chatMsgs.innerHTML += `<div class="bot-msg">Error!</div>`; }
         chatMsgs.scrollTop = chatMsgs.scrollHeight;
     };
 </script>
