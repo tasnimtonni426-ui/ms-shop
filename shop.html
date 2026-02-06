@@ -22,13 +22,12 @@
         }
         body { font-family: 'Poppins', sans-serif; margin: 0; background: #0f172a; color: white; min-height: 100vh; overflow-x: hidden; }
         
-        /* --- আপডেটেড হেডার স্টাইল --- */
         header { 
             background: rgba(15, 23, 42, 0.98); 
             backdrop-filter: blur(15px); 
             padding: 12px 15px; 
             display: flex; 
-            flex-direction: column; /* এলিমেন্টগুলো নিচে নিচে থাকবে */
+            flex-direction: column; 
             gap: 12px;
             position: sticky; 
             top: 0; 
@@ -37,35 +36,39 @@
             box-sizing: border-box;
         }
 
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-        }
-
+        .header-top { display: flex; justify-content: space-between; align-items: center; width: 100%; }
         .logo { font-size: 22px; font-weight: bold; color: var(--primary); letter-spacing: 1px; }
-
         .search-container { width: 100%; }
         .search-box { position: relative; width: 100%; }
         .search-box input { 
-            width: 100%; 
-            padding: 10px 40px 10px 15px; 
-            border-radius: 12px; 
-            border: 1px solid var(--border); 
-            background: var(--glass); 
-            color: white; 
-            font-size: 14px; 
-            outline: none; 
-            box-sizing: border-box;
-            transition: 0.3s;
+            width: 100%; padding: 10px 40px 10px 15px; border-radius: 12px; 
+            border: 1px solid var(--border); background: var(--glass); 
+            color: white; font-size: 14px; outline: none; box-sizing: border-box; transition: 0.3s;
         }
         .search-box input:focus { border-color: var(--primary); background: rgba(255,255,255,0.08); }
         .search-box i { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--primary); }
-        
-        .profile-btn { font-size: 32px; cursor: pointer; color: var(--primary); background: none; border: none; padding: 0; display: flex; align-items: center; transition: 0.2s; }
+        .profile-btn { font-size: 32px; cursor: pointer; color: var(--primary); background: none; border: none; padding: 0; display: flex; align-items: center; }
 
-        /* --- প্রোফাইল মেনু --- */
+        /* --- স্লাইডার স্টাইল --- */
+        .slider-wrapper { padding: 15px 15px 5px 15px; }
+        .slider-container {
+            width: 100%; height: 160px; border-radius: 15px;
+            overflow: hidden; position: relative; background: var(--glass);
+            border: 1px solid var(--border);
+        }
+        .slider-track {
+            display: flex; width: 300%; height: 100%;
+            transition: transform 0.5s ease-in-out;
+        }
+        .slide { width: 33.333%; height: 100%; cursor: pointer; }
+        .slide img { width: 100%; height: 100%; object-fit: cover; }
+        .dots {
+            position: absolute; bottom: 10px; left: 50%;
+            transform: translateX(-50%); display: flex; gap: 6px;
+        }
+        .dot { width: 6px; height: 6px; background: rgba(255,255,255,0.3); border-radius: 50%; transition: 0.3s; }
+        .dot.active { background: var(--primary); width: 15px; border-radius: 4px; }
+
         .profile-menu { 
             display: none; position: fixed; top: 70px; right: 15px; 
             width: 260px; background: #1e293b; border-radius: 20px; 
@@ -74,19 +77,10 @@
         }
         .profile-menu.show { display: block; animation: slideIn 0.3s ease; }
 
-        .id-box {
-            background: rgba(0, 210, 255, 0.1);
-            border: 1px dashed var(--primary);
-            padding: 12px;
-            border-radius: 12px;
-            text-align: center;
-            margin-bottom: 15px;
-            cursor: pointer;
-        }
+        .id-box { background: rgba(0, 210, 255, 0.1); border: 1px dashed var(--primary); padding: 12px; border-radius: 12px; text-align: center; margin-bottom: 15px; cursor: pointer; }
         .user-label { font-size:11px; color:#94a3b8; margin-top: 5px; }
         .user-data { background:rgba(0,0,0,0.2); padding:8px; border-radius:8px; margin-bottom:10px; font-size: 13px; }
 
-        /* --- ক্যাটাগরি এবং প্রোডাক্ট গ্রিড --- */
         .cat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 15px; margin-top: 5px; }
         .cat-item { background: var(--glass); border: 1px solid var(--border); border-radius: 15px; padding: 12px 5px; text-align: center; cursor: pointer; transition: 0.3s; }
         .cat-item i { font-size: 20px; color: var(--primary); margin-bottom: 5px; display: block; }
@@ -116,11 +110,8 @@
 <header>
     <div class="header-top">
         <div class="logo">MS STORE</div> 
-        <button class="profile-btn" id="profileTrigger">
-            <i class="fa fa-user-circle"></i>
-        </button>
+        <button class="profile-btn" id="profileTrigger"><i class="fa fa-user-circle"></i></button>
     </div>
-
     <div class="search-container">
         <div class="search-box">
             <input type="text" id="searchInput" placeholder="পছন্দের পণ্যটি খুঁজুন..." onkeyup="searchFn()">
@@ -129,18 +120,27 @@
     </div>
 </header>
 
+<div class="slider-wrapper">
+    <div class="slider-container">
+        <div class="slider-track" id="sliderTrack">
+            </div>
+        <div class="dots" id="sliderDots">
+            <div class="dot active"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+    </div>
+</div>
+
 <div class="profile-menu" id="profileMenu">
     <h3 style="margin:0 0 15px 0; font-size: 18px; color:var(--primary); text-align: center;">My Profile</h3>
     <div class="id-box" onclick="copyMyID()">
-        <div style="font-size:10px; color:#94a3b8; text-transform: uppercase;">User Profile ID (ক্লিক করুন)</div>
-        <div id="u-id" style="font-size: 18px; font-weight: bold; color: white; letter-spacing: 2px; margin-top: 3px;">#------</div>
+        <div id="u-id" style="font-size: 18px; font-weight: bold; color: white;">#------</div>
     </div>
-    <div class="user-label">নাম:</div>
     <div class="user-data" id="u-name">...</div>
-    <div class="user-label">EMAIL:</div>
     <div class="user-data" id="u-email">...</div>
-    <button style="width:100%; margin-top:20px; padding:12px; background:var(--primary); border:none; border-radius:12px; font-weight:bold; cursor:pointer;" onclick="location.href='my_orders.html'">My Orders</button>
-    <button style="width:100%; margin-top:10px; padding:10px; background:#e74c3c; border:none; border-radius:12px; color:white; cursor:pointer;" onclick="logout()">logout</button>
+    <button style="width:100%; margin-top:20px; padding:12px; background:var(--primary); border:none; border-radius:12px; font-weight:bold;" onclick="location.href='my_orders.html'">My Orders</button>
+    <button style="width:100%; margin-top:10px; padding:10px; background:#e74c3c; border:none; border-radius:12px; color:white;" onclick="logout()">logout</button>
 </div>
 
 <div class="cat-grid">
@@ -149,20 +149,9 @@
     <div class="cat-item" onclick="selectMainCat('Electronics', this)"><i class="fa-solid fa-microchip"></i><span>DEVICE</span></div>
     <div class="cat-item" onclick="selectMainCat('Fashion', this)"><i class="fa fa-tshirt"></i><span>FASHION</span></div>
 </div>
-
 <div id="subCatMenu" class="sub-cat-container"></div>
 
-<div class="container">
-    <div class="product-grid" id="p-list"></div>
-</div>
-
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js').then(reg => console.log('SW Registered'));
-    });
-  }
-</script>
+<div class="container"><div class="product-grid" id="p-list"></div></div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -182,8 +171,34 @@
     const auth = getAuth(app);
     const db = getDatabase(app);
 
-    let pArray = [];
+    // --- স্লাইডার ফাংশনালিটি ---
+    function initSlider() {
+        const track = document.getElementById('sliderTrack');
+        const dots = document.querySelectorAll('.dot');
+        let current = 0;
 
+        onValue(ref(db, 'banners'), (snap) => {
+            if (snap.exists()) {
+                const data = snap.val();
+                let slidesHtml = '';
+                for (let i = 1; i <= 3; i++) {
+                    const b = data[`banner${i}`] || { img: 'https://via.placeholder.com/800x400?text=Set+Banner+'+i, link: '#' };
+                    slidesHtml += `<div class="slide" onclick="if('${b.link}'!='#') location.href='${b.link}'"><img src="${b.img}"></div>`;
+                }
+                track.innerHTML = slidesHtml;
+            }
+        });
+
+        setInterval(() => {
+            current = (current + 1) % 3;
+            track.style.transform = `translateX(-${current * 33.333}%)`;
+            dots.forEach((d, i) => d.classList.toggle('active', i === current));
+        }, 4000);
+    }
+    initSlider();
+
+    // --- বাকি লজিক ---
+    let pArray = [];
     onAuthStateChanged(auth, (user) => {
         if (user) {
             document.getElementById('u-name').innerText = user.displayName || "User";
@@ -243,7 +258,6 @@
     };
 
     window.filterBySubCat = (s, el) => { updateSubBtnStyle(el); render(pArray.filter(p => p.category === s)); };
-
     function updateSubBtnStyle(el) { document.querySelectorAll('.sub-cat-btn').forEach(b => b.classList.remove('active')); el.classList.add('active'); }
 
     window.searchFn = () => {
@@ -254,9 +268,7 @@
     const menu = document.getElementById('profileMenu');
     document.getElementById('profileTrigger').onclick = (e) => { e.stopPropagation(); menu.classList.toggle('show'); };
     document.onclick = (e) => { if (!menu.contains(e.target)) menu.classList.remove('show'); };
-    
     window.logout = () => signOut(auth).then(() => location.href = "index.html");
-
     window.copyMyID = () => {
         const id = document.getElementById('u-id').innerText;
         navigator.clipboard.writeText(id).then(() => alert("ID কপি হয়েছে: " + id));
@@ -264,4 +276,3 @@
 </script>
 </body>
 </html>
-
