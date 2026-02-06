@@ -22,13 +22,12 @@
         }
         body { font-family: 'Poppins', sans-serif; margin: 0; background: #0f172a; color: white; min-height: 100vh; overflow-x: hidden; }
         
-        /* --- আপডেটেড হেডার স্টাইল --- */
         header { 
             background: rgba(15, 23, 42, 0.98); 
             backdrop-filter: blur(15px); 
             padding: 12px 15px; 
             display: flex; 
-            flex-direction: column; /* এলিমেন্টগুলো নিচে নিচে থাকবে */
+            flex-direction: column; 
             gap: 12px;
             position: sticky; 
             top: 0; 
@@ -37,56 +36,28 @@
             box-sizing: border-box;
         }
 
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-        }
-
+        .header-top { display: flex; justify-content: space-between; align-items: center; width: 100%; }
         .logo { font-size: 22px; font-weight: bold; color: var(--primary); letter-spacing: 1px; }
-
         .search-container { width: 100%; }
         .search-box { position: relative; width: 100%; }
         .search-box input { 
-            width: 100%; 
-            padding: 10px 40px 10px 15px; 
-            border-radius: 12px; 
-            border: 1px solid var(--border); 
-            background: var(--glass); 
-            color: white; 
-            font-size: 14px; 
-            outline: none; 
-            box-sizing: border-box;
-            transition: 0.3s;
+            width: 100%; padding: 10px 40px 10px 15px; border-radius: 12px; border: 1px solid var(--border); 
+            background: var(--glass); color: white; font-size: 14px; outline: none; box-sizing: border-box; transition: 0.3s;
         }
         .search-box input:focus { border-color: var(--primary); background: rgba(255,255,255,0.08); }
         .search-box i { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--primary); }
-        
         .profile-btn { font-size: 32px; cursor: pointer; color: var(--primary); background: none; border: none; padding: 0; display: flex; align-items: center; transition: 0.2s; }
 
-        /* --- প্রোফাইল মেনু --- */
         .profile-menu { 
-            display: none; position: fixed; top: 70px; right: 15px; 
-            width: 260px; background: #1e293b; border-radius: 20px; 
-            padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); 
-            z-index: 6000; border: 1px solid var(--border); 
+            display: none; position: fixed; top: 70px; right: 15px; width: 260px; background: #1e293b; border-radius: 20px; 
+            padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); z-index: 6000; border: 1px solid var(--border); 
         }
         .profile-menu.show { display: block; animation: slideIn 0.3s ease; }
 
-        .id-box {
-            background: rgba(0, 210, 255, 0.1);
-            border: 1px dashed var(--primary);
-            padding: 12px;
-            border-radius: 12px;
-            text-align: center;
-            margin-bottom: 15px;
-            cursor: pointer;
-        }
+        .id-box { background: rgba(0, 210, 255, 0.1); border: 1px dashed var(--primary); padding: 12px; border-radius: 12px; text-align: center; margin-bottom: 15px; cursor: pointer; }
         .user-label { font-size:11px; color:#94a3b8; margin-top: 5px; }
         .user-data { background:rgba(0,0,0,0.2); padding:8px; border-radius:8px; margin-bottom:10px; font-size: 13px; }
 
-        /* --- ক্যাটাগরি এবং প্রোডাক্ট গ্রিড --- */
         .cat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 15px; margin-top: 5px; }
         .cat-item { background: var(--glass); border: 1px solid var(--border); border-radius: 15px; padding: 12px 5px; text-align: center; cursor: pointer; transition: 0.3s; }
         .cat-item i { font-size: 20px; color: var(--primary); margin-bottom: 5px; display: block; }
@@ -107,6 +78,17 @@
         .p-price { color: var(--primary); font-weight: bold; font-size: 15px; margin-top: 4px; }
         .sold-badge { position: absolute; top: 8px; left: 8px; background: #ef4444; color: white; font-size: 10px; padding: 2px 8px; border-radius: 6px; font-weight: bold; }
 
+        /* --- AI Chatbot Style --- */
+        #ai-chat-btn { position: fixed; bottom: 20px; left: 20px; background: var(--primary); width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 25px; cursor: pointer; z-index: 9999; box-shadow: 0 5px 20px rgba(0,0,0,0.5); color: #0f172a; }
+        #chat-window { display: none; position: fixed; bottom: 85px; left: 20px; width: 300px; height: 400px; background: #1e293b; border: 1px solid var(--border); border-radius: 15px; z-index: 9999; flex-direction: column; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.8); }
+        #chat-header { background: var(--primary); padding: 12px; font-weight: bold; color: #0f172a; display: flex; justify-content: space-between; align-items: center; }
+        #chat-msgs { flex: 1; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; font-size: 13px; scroll-behavior: smooth; }
+        .bot-msg { align-self: flex-start; background: var(--glass); padding: 8px 12px; border-radius: 12px 12px 12px 0; border: 1px solid var(--border); max-width: 80%; }
+        .user-msg { align-self: flex-end; background: var(--primary); color: #0f172a; padding: 8px 12px; border-radius: 12px 12px 0 12px; max-width: 80%; }
+        #chat-input-area { padding: 10px; border-top: 1px solid var(--border); display: flex; gap: 5px; }
+        #chat-input-area input { flex: 1; background: var(--glass); border: 1px solid var(--border); color: white; padding: 8px; border-radius: 8px; outline: none; }
+        #chat-input-area button { background: var(--primary); border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; color: #0f172a; }
+
         @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         @media (max-width: 480px) { .product-grid { grid-template-columns: 1fr 1fr; gap: 10px; } }
     </style>
@@ -120,7 +102,6 @@
             <i class="fa fa-user-circle"></i>
         </button>
     </div>
-
     <div class="search-container">
         <div class="search-box">
             <input type="text" id="searchInput" placeholder="পছন্দের পণ্যটি খুঁজুন..." onkeyup="searchFn()">
@@ -130,17 +111,17 @@
 </header>
 
 <div class="profile-menu" id="profileMenu">
-    <h3 style="margin:0 0 15px 0; font-size: 18px; color:var(--primary); text-align: center;">My Profile</h3>
+    <h3 style="margin:0; font-size: 18px; color:var(--primary); text-align: center;">My Profile</h3>
     <div class="id-box" onclick="copyMyID()">
-        <div style="font-size:10px; color:#94a3b8; text-transform: uppercase;">User Profile ID (ক্লিক করুন)</div>
-        <div id="u-id" style="font-size: 18px; font-weight: bold; color: white; letter-spacing: 2px; margin-top: 3px;">#------</div>
+        <div style="font-size:10px; color:#94a3b8;">User Profile ID</div>
+        <div id="u-id" style="font-size: 18px; font-weight: bold; color: white;">#------</div>
     </div>
     <div class="user-label">নাম:</div>
     <div class="user-data" id="u-name">...</div>
     <div class="user-label">EMAIL:</div>
     <div class="user-data" id="u-email">...</div>
-    <button style="width:100%; margin-top:20px; padding:12px; background:var(--primary); border:none; border-radius:12px; font-weight:bold; cursor:pointer;" onclick="location.href='my_orders.html'">My Orders</button>
-    <button style="width:100%; margin-top:10px; padding:10px; background:#e74c3c; border:none; border-radius:12px; color:white; cursor:pointer;" onclick="logout()">logout</button>
+    <button style="width:100%; margin-top:10px; padding:12px; background:var(--primary); border:none; border-radius:10px; font-weight:bold;" onclick="location.href='my_orders.html'">My Orders</button>
+    <button style="width:100%; margin-top:8px; padding:10px; background:#e74c3c; border:none; border-radius:10px; color:white;" onclick="logout()">logout</button>
 </div>
 
 <div class="cat-grid">
@@ -149,18 +130,30 @@
     <div class="cat-item" onclick="selectMainCat('Electronics', this)"><i class="fa-solid fa-microchip"></i><span>DEVICE</span></div>
     <div class="cat-item" onclick="selectMainCat('Fashion', this)"><i class="fa fa-tshirt"></i><span>FASHION</span></div>
 </div>
-
 <div id="subCatMenu" class="sub-cat-container"></div>
 
 <div class="container">
     <div class="product-grid" id="p-list"></div>
 </div>
 
+<div id="ai-chat-btn"><i class="fa fa-robot"></i></div>
+<div id="chat-window">
+    <div id="chat-header">
+        <span>MS Store AI</span>
+        <span onclick="toggleChat()" style="cursor:pointer">✖</span>
+    </div>
+    <div id="chat-msgs">
+        <div class="bot-msg">আসসালামু আলাইকুম! MS Store এ আপনাকে স্বাগতম। আমি আপনাকে কিভাবে সাহায্য করতে পারি?</div>
+    </div>
+    <div id="chat-input-area">
+        <input type="text" id="ai-input" placeholder="প্রশ্ন লিখুন...">
+        <button onclick="sendMsg()"><i class="fa fa-paper-plane"></i></button>
+    </div>
+</div>
+
 <script>
   if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js').then(reg => console.log('SW Registered'));
-    });
+    window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js'); });
   }
 </script>
 
@@ -243,7 +236,6 @@
     };
 
     window.filterBySubCat = (s, el) => { updateSubBtnStyle(el); render(pArray.filter(p => p.category === s)); };
-
     function updateSubBtnStyle(el) { document.querySelectorAll('.sub-cat-btn').forEach(b => b.classList.remove('active')); el.classList.add('active'); }
 
     window.searchFn = () => {
@@ -254,12 +246,45 @@
     const menu = document.getElementById('profileMenu');
     document.getElementById('profileTrigger').onclick = (e) => { e.stopPropagation(); menu.classList.toggle('show'); };
     document.onclick = (e) => { if (!menu.contains(e.target)) menu.classList.remove('show'); };
-    
     window.logout = () => signOut(auth).then(() => location.href = "index.html");
-
     window.copyMyID = () => {
         const id = document.getElementById('u-id').innerText;
         navigator.clipboard.writeText(id).then(() => alert("ID কপি হয়েছে: " + id));
+    };
+
+    // --- AI Chat Logic ---
+    const API_KEY = "AIzaSyBIg9vOvHf7m4o1QXd4Rs4iblSchdA9RG8";
+    const chatBtn = document.getElementById('ai-chat-btn');
+    const chatWin = document.getElementById('chat-window');
+    const chatMsgs = document.getElementById('chat-msgs');
+    const aiInput = document.getElementById('ai-input');
+
+    window.toggleChat = () => chatWin.style.display = chatWin.style.display === 'flex' ? 'none' : 'flex';
+    chatBtn.onclick = toggleChat;
+
+    window.sendMsg = async () => {
+        const val = aiInput.value.trim();
+        if(!val) return;
+
+        chatMsgs.innerHTML += `<div class="user-msg">${val}</div>`;
+        aiInput.value = '';
+        chatMsgs.scrollTop = chatMsgs.scrollHeight;
+
+        try {
+            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: `তুমি MS Store এর একজন স্মার্ট অ্যাসিস্ট্যান্ট। তোমার কাজ গ্রাহকদের প্রশ্নের উত্তর দেওয়া। আমাদের স্টোরে জার্সি, বুট এবং গ্যাজেট পাওয়া যায়। কাস্টমার প্রশ্ন করেছে: ${val}` }]}]
+                })
+            });
+            const data = await res.json();
+            const reply = data.candidates[0].content.parts[0].text;
+            chatMsgs.innerHTML += `<div class="bot-msg">${reply}</div>`;
+        } catch (e) {
+            chatMsgs.innerHTML += `<div class="bot-msg">দুঃখিত, আমি এখন উত্তর দিতে পারছি না। পরে চেষ্টা করুন।</div>`;
+        }
+        chatMsgs.scrollTop = chatMsgs.scrollHeight;
     };
 </script>
 </body>
