@@ -1,4 +1,4 @@
-// ১ নম্বর লাইনে 'import' ছোট হাতের অক্ষরে হবে
+// ১ নম্বর লাইনে 'import' অবশ্যই ছোট হাতের অক্ষরে হবে
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, updateProfile, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
@@ -13,29 +13,38 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
+// এইচটিএমএল থেকে আইডিগুলো নেওয়া
 const container = document.getElementById('container');
 const registerBtn = document.getElementById('registerBtn');
 const loginBtn = document.getElementById('loginBtn');
 
-// পেজ লোড হবার সময় রিসেট করা
+// পেজ লোড হবার সময় স্লাইডিং প্যানেল রিসেট করা
 window.addEventListener('DOMContentLoaded', () => {
-    if(container) container.classList.remove('active');
+    if (container) container.classList.remove('active');
 });
 
-// অ্যানিমেশন কন্ট্রোল
-if(registerBtn) registerBtn.addEventListener('click', () => container.classList.add('active'));
-if(loginBtn) loginBtn.addEventListener('click', () => container.classList.remove('active'));
+// অ্যানিমেশন কন্ট্রোল (সাইন আপ ও লগইন সুইচ)
+if (registerBtn) {
+    registerBtn.addEventListener('click', () => container.classList.add('active'));
+}
+if (loginBtn) {
+    loginBtn.addEventListener('click', () => container.classList.remove('active'));
+}
 
-// গুগল লগইন
+// ৩. গুগল লগইন (গ্লোবাল ফাংশন)
 window.googleLogin = function() {
     signInWithPopup(auth, provider)
-        .then(() => window.location.href = "shop.html")
-        .catch(() => console.log("Google Login Cancelled"));
+        .then(() => {
+            window.location.href = "shop.html";
+        })
+        .catch((err) => {
+            console.log("Google Login Cancelled or Failed", err);
+        });
 };
 
-// ইমেইল সাইন আপ
+// ৪. ইমেইল সাইন আপ
 const regForm = document.getElementById('registerForm');
-if(regForm) {
+if (regForm) {
     regForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const name = document.getElementById('regName').value;
@@ -46,13 +55,13 @@ if(regForm) {
             updateProfile(res.user, { displayName: name }).then(() => {
                 window.location.href = "shop.html";
             });
-        }).catch(err => alert("Error: " + err.message));
+        }).catch(err => alert("রেজিস্ট্রেশন ব্যর্থ: " + err.message));
     });
 }
 
-// ইমেইল লগইন
+// ৫. ইমেইল লগইন
 const logForm = document.getElementById('loginForm');
-if(logForm) {
+if (logForm) {
     logForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const email = document.getElementById('logEmail').value;
@@ -61,14 +70,14 @@ if(logForm) {
         signInWithEmailAndPassword(auth, email, pass)
             .then(() => window.location.href = "shop.html")
             .catch(() => alert("ভুল ইমেইল বা পাসওয়ার্ড"));
-    });
+});
 }
 
-// মেনু লজিক
+// ৬. থ্রি-ডট মেনু লজিক
 const menuToggle = document.getElementById('menuToggle');
 const dropdownMenu = document.getElementById('dropdownMenu');
 
-if(menuToggle) {
+if (menuToggle) {
     menuToggle.addEventListener('click', (e) => {
         e.stopPropagation();
         dropdownMenu.style.display = (dropdownMenu.style.display === 'block') ? 'none' : 'block';
@@ -76,5 +85,5 @@ if(menuToggle) {
 }
 
 window.addEventListener('click', () => {
-    if(dropdownMenu) dropdownMenu.style.display = 'none';
+    if (dropdownMenu) dropdownMenu.style.display = 'none';
 });
