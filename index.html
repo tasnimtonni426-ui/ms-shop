@@ -3,196 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MS STORE - Premium</title>
-    
+    <title>MS STORE - Final Fixed</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    
     <style>
-        :root {
-            --gradient: linear-gradient(to right, #5c6bc0, #2da0a8);
-        }
-
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
-
         body {
             background: #0f172a;
             display: flex; align-items: center; justify-content: center;
             height: 100vh; width: 100vw; overflow: hidden;
         }
 
-        /* --- নেভিগেশন বার এবং থ্রি-ডট মেনু ফিক্স --- */
-        nav {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            padding: 20px 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 5000; /* এটাকে সবার উপরে রাখা হয়েছে */
+        /* থ্রি ডট মেনু - ডান পাশের কোণায় */
+        .top-nav {
+            position: fixed; top: 0; width: 100%; padding: 15px 20px;
+            display: flex; justify-content: flex-end; z-index: 9999;
         }
-
-        .logo { font-size: 22px; font-weight: 700; color: white; letter-spacing: 1px; }
-
         .menu-container { position: relative; }
-
-        .three-dots {
-            font-size: 20px;
-            color: white;
-            cursor: pointer;
-            padding: 5px 10px;
+        .three-dots { color: white; font-size: 22px; cursor: pointer; padding: 5px; }
+        .dropdown {
+            display: none; position: absolute; right: 0; top: 35px;
+            background: #1e293b; min-width: 140px; border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5); overflow: hidden;
         }
+        .dropdown a { color: white; padding: 12px; text-decoration: none; display: block; font-size: 14px; }
+        .dropdown a:hover { background: #2da0a8; }
+        .menu-container:hover .dropdown { display: block; }
 
-        .dropdown-menu {
-            display: none;
-            position: absolute;
-            right: 0;
-            top: 35px;
-            background: #1e293b;
-            min-width: 160px;
-            border-radius: 8px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.5);
-            overflow: hidden;
-        }
-
-        .dropdown-menu a {
-            color: white;
-            padding: 12px 16px;
-            text-decoration: none;
-            display: block;
-            font-size: 14px;
-            transition: 0.3s;
-        }
-
-        .dropdown-menu a:hover { background: #334155; }
-
-        /* থ্রি-ডটে ক্লিক করলে মেনু দেখানোর জন্য */
-        .menu-container:hover .dropdown-menu { display: block; }
-
-        /* --- মেইন কন্টেইনার --- */
+        /* মেইন কন্টেইনার */
         .container {
-            background-color: #fff;
-            position: relative;
-            overflow: hidden;
-            width: 768px;
-            max-width: 100%;
-            min-height: 480px;
-            border-radius: 30px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.35);
+            background: #fff; position: relative; overflow: hidden;
+            width: 768px; max-width: 100%; min-height: 500px; border-radius: 30px;
         }
-
-        .form-container { position: absolute; top: 0; height: 100%; transition: all 0.6s ease-in-out; }
+        .form-container { position: absolute; top: 0; height: 100%; transition: all 0.6s ease; }
         .sign-in { left: 0; width: 50%; z-index: 2; }
         .sign-up { left: 0; width: 50%; opacity: 0; z-index: 1; }
-
+        
         .container.active .sign-in { transform: translateX(100%); opacity: 0; }
         .container.active .sign-up { transform: translateX(100%); opacity: 1; z-index: 5; }
 
         form {
-            background-color: #fff;
-            display: flex; align-items: center; justify-content: center;
+            background: #fff; display: flex; align-items: center; justify-content: center;
             flex-direction: column; padding: 0 40px; height: 100%; text-align: center;
         }
-
         input {
-            background-color: #eee; border: none; margin: 8px 0;
-            padding: 12px 15px; font-size: 13px; border-radius: 8px; width: 100%; outline: none;
+            background: #eee; border: none; margin: 8px 0; padding: 12px;
+            border-radius: 10px; width: 100%; outline: none;
+        }
+        .submit-btn {
+            background: #2da0a8; color: #fff; padding: 12px 50px;
+            border-radius: 10px; border: none; font-weight: 700;
+            text-transform: uppercase; margin-top: 15px; cursor: pointer; width: 100%;
         }
 
-        button {
-            background-color: #2da0a8; color: #fff; font-size: 12px;
-            padding: 10px 45px; border-radius: 8px; border: none;
-            font-weight: 600; text-transform: uppercase; margin-top: 10px; cursor: pointer;
-        }
-
-        button.hidden { background-color: transparent; border: 1px solid #fff; }
-
+        /* টগল প্যানেল */
         .toggle-container {
             position: absolute; top: 0; left: 50%; width: 50%; height: 100%;
-            overflow: hidden; transition: all 0.6s ease-in-out; z-index: 1000;
+            overflow: hidden; transition: all 0.6s ease; z-index: 1000;
             border-radius: 150px 0 0 100px;
         }
-
         .container.active .toggle-container { transform: translateX(-100%); border-radius: 0 150px 100px 0; }
-
         .toggle {
-            background: var(--gradient); color: #fff; position: relative;
-            left: -100%; height: 100%; width: 200%;
-            transition: all 0.6s ease-in-out;
+            background: linear-gradient(to right, #5c6bc0, #2da0a8);
+            color: #fff; position: relative; left: -100%; height: 100%; width: 200%;
+            transition: all 0.6s ease;
         }
         .container.active .toggle { transform: translateX(50%); }
-
         .toggle-panel {
             position: absolute; width: 50%; height: 100%;
             display: flex; align-items: center; justify-content: center;
-            flex-direction: column; padding: 0 30px; text-align: center; top: 0;
+            flex-direction: column; padding: 0 30px; text-align: center;
         }
         .toggle-left { transform: translateX(-200%); }
         .container.active .toggle-left { transform: translateX(0); }
         .toggle-right { right: 0; }
+        .ghost-btn { background: transparent; border: 1px solid #fff; padding: 10px 30px; border-radius: 8px; color: #fff; cursor: pointer; margin-top: 10px; }
 
-        /* --- মোবাইল ভিউ --- */
+        /* মোবাইল ভিউ ফিক্স (প্যানেল নিচে যাবে না, বাটন সবসময় ক্লিকেবল) */
         @media screen and (max-width: 650px) {
             .container { width: 100vw; height: 100vh; border-radius: 0; }
-            .form-container { top: 40%; height: 60%; width: 100%; }
+            .form-container { top: 0; height: 60%; width: 100%; z-index: 5; }
             .sign-in, .sign-up { left: 0; width: 100%; }
-            .container.active .sign-in, .container.active .sign-up { transform: translateY(-65%); }
-            
+            .container.active .sign-in { opacity: 0; pointer-events: none; }
+            .container.active .sign-up { opacity: 1; pointer-events: all; }
+
             .toggle-container {
-                left: 0; top: 0; width: 100%; height: 40%;
-                border-radius: 0 0 40px 40px;
+                left: 0; top: 60%; width: 100%; height: 40%;
+                border-radius: 50px 50px 0 0; z-index: 10;
             }
-            .container.active .toggle-container { transform: translateY(150%); border-radius: 40px 40px 0 0; }
-            .toggle { left: 0; top: -100%; width: 100%; height: 200%; }
-            .container.active .toggle { transform: translateY(50%); }
-            .toggle-panel { width: 100%; height: 50%; }
-            .toggle-left { transform: translateY(-200%); }
-            .container.active .toggle-left { transform: translateY(0); }
+            .container.active .toggle-container { transform: translateY(0); }
+            .toggle { left: 0; top: 0; width: 100%; height: 100%; }
+            .toggle-panel { width: 100%; height: 100%; }
         }
     </style>
 </head>
 <body>
 
-    <nav>
-        <div class="logo">MS STORE</div>
+    <div class="top-nav">
         <div class="menu-container">
-            <i class="fa fa-ellipsis-v three-dots" id="menuBtn"></i>
-            <div class="dropdown-menu">
-                <a href="admin_login.html"><i class="fa fa-user-shield"></i> Admin Login</a>
+            <i class="fa fa-ellipsis-v three-dots"></i>
+            <div class="dropdown">
+                <a href="admin_login.html">Admin Login</a>
             </div>
         </div>
-    </nav>
+    </div>
 
     <div class="container" id="container">
         <div class="form-container sign-up">
             <form id="registerForm">
                 <h1>Create Account</h1>
                 <input type="text" id="regName" placeholder="আপনার নাম" required>
-                <input type="email" id="regEmail" placeholder="ইমেইল এড্রেস" required>
+                <input type="email" id="regEmail" placeholder="ইমেইল" required>
                 <input type="password" id="regPass" placeholder="পাসওয়ার্ড" required>
-                <button type="submit">Sign Up</button>
+                <button type="submit" class="submit-btn">Sign Up</button>
             </form>
         </div>
 
         <div class="form-container sign-in">
             <form id="loginForm">
                 <h1>Sign In</h1>
-                <input type="email" id="logEmail" placeholder="ইমেইল এড্রেস" required>
+                <input type="email" id="logEmail" placeholder="ইমেইল" required>
                 <input type="password" id="logPass" placeholder="পাসওয়ার্ড" required>
-                <button type="submit">Sign In</button>
+                <button type="submit" class="submit-btn">Sign In</button>
             </form>
         </div>
 
         <div class="toggle-container">
             <div class="toggle">
                 <div class="toggle-panel toggle-left">
-                    <h1>স্বাগতম!</h1>
-                    <button class="hidden" id="login">Login এ যান</button>
+                    <h2>Welcome!</h2>
+                    <p>অ্যাকাউন্ট থাকলে লগইন করুন</p>
+                    <button class="ghost-btn" id="login">Login</button>
                 </div>
                 <div class="toggle-panel toggle-right">
-                    <h1>হ্যালো!</h1>
-                    <button class="hidden" id="register">রেজিস্ট্রেশন করুন</button>
+                    <h2>New Here?</h2>
+                    <p>নতুন হলে রেজিস্ট্রেশন করুন</p>
+                    <button class="ghost-btn" id="register">Sign Up</button>
                 </div>
             </div>
         </div>
@@ -203,19 +149,8 @@
         const registerBtn = document.getElementById('register');
         const loginBtn = document.getElementById('login');
 
-        registerBtn.onclick = () => container.classList.add('active');
-        loginBtn.onclick = () => container.classList.remove('active');
-        
-        // মোবাইল টাচ সাপোর্ট (মেনু ওপেন করার জন্য)
-        document.getElementById('menuBtn').onclick = function(e) {
-            e.stopPropagation();
-            const dropdown = this.nextElementSibling;
-            dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
-        };
-
-        window.onclick = function() {
-            document.querySelector('.dropdown-menu').style.display = 'none';
-        };
+        registerBtn.addEventListener('click', () => container.classList.add('active'));
+        loginBtn.addEventListener('click', () => container.classList.remove('active'));
     </script>
 </body>
 </html>
