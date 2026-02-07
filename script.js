@@ -12,26 +12,20 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
-// গুরুত্বপূর্ণ: Google লগইন ফাংশনটি গ্লোবাল করা হলো
+// গুগল লগইন (গ্লোবাল ফাংশন)
 window.googleLogin = function() {
     signInWithPopup(auth, provider)
-        .then((result) => {
-            console.log("Success:", result.user);
-            window.location.href = "shop.html";
-        })
-        .catch((error) => {
-            console.error("Error:", error.message);
-            alert("গুগল লগইন করতে সমস্যা হয়েছে: " + error.message);
-        });
+        .then(() => window.location.href = "shop.html")
+        .catch((err) => alert("গুগল লগইন ব্যর্থ: " + err.message));
 };
 
-// অ্যানিমেশন লজিক
+// অ্যানিমেশন কন্ট্রোল
 const container = document.getElementById('container');
 const registerBtn = document.getElementById('register');
 const loginBtn = document.getElementById('login');
 
-if(registerBtn) registerBtn.onclick = () => container.classList.add('active');
-if(loginBtn) loginBtn.onclick = () => container.classList.remove('active');
+registerBtn.onclick = () => container.classList.add('active');
+loginBtn.onclick = () => container.classList.remove('active');
 
 // ইমেইল সাইন আপ
 document.getElementById('registerForm').onsubmit = (e) => {
@@ -44,7 +38,7 @@ document.getElementById('registerForm').onsubmit = (e) => {
         updateProfile(res.user, { displayName: name }).then(() => {
             window.location.href = "shop.html";
         });
-    }).catch(err => alert("রেজিস্ট্রেশন ব্যর্থ: " + err.message));
+    }).catch(err => alert("রেজিস্ট্রেশন ব্যর্থ!"));
 };
 
 // ইমেইল লগইন
@@ -55,19 +49,13 @@ document.getElementById('loginForm').onsubmit = (e) => {
     
     signInWithEmailAndPassword(auth, email, pass)
         .then(() => window.location.href = "shop.html")
-        .catch(err => alert("ভুল ইমেইল বা পাসওয়ার্ড"));
+        .catch(() => alert("ভুল ইমেইল বা পাসওয়ার্ড"));
 };
 
-// থ্রি-ডট মেনু
-const menuBtn = document.querySelector('.three-dots-btn');
-if(menuBtn) {
-    menuBtn.onclick = (e) => {
-        e.stopPropagation();
-        const dropdown = document.querySelector('.admin-dropdown');
-        dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
-    };
-}
-window.onclick = () => {
+// মেনু কন্ট্রোল
+document.querySelector('.three-dots-btn').onclick = (e) => {
+    e.stopPropagation();
     const dropdown = document.querySelector('.admin-dropdown');
-    if(dropdown) dropdown.style.display = 'none';
+    dropdown.style.display = (dropdown.style.display === 'block') ? 'none' : 'block';
 };
+window.onclick = () => document.querySelector('.admin-dropdown').style.display = 'none';
