@@ -12,14 +12,14 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
-// গুগল লগইন (গ্লোবাল ফাংশন)
+// গুগল লগইন গ্লোবাল ফাংশন
 window.googleLogin = function() {
     signInWithPopup(auth, provider)
         .then(() => window.location.href = "shop.html")
-        .catch((err) => alert("গুগল লগইন ব্যর্থ: " + err.message));
+        .catch((err) => alert("গুগল লগইন বাতিল বা ব্যর্থ হয়েছে"));
 };
 
-// অ্যানিমেশন কন্ট্রোল
+// অ্যানিমেশন ট্রিগার
 const container = document.getElementById('container');
 const registerBtn = document.getElementById('register');
 const loginBtn = document.getElementById('login');
@@ -52,7 +52,7 @@ document.getElementById('loginForm').onsubmit = (e) => {
         .catch(() => alert("ভুল ইমেইল বা পাসওয়ার্ড"));
 };
 
-// মেনু কন্ট্রোল
+// মেনু লজিক
 document.querySelector('.three-dots-btn').onclick = (e) => {
     e.stopPropagation();
     const dropdown = document.querySelector('.admin-dropdown');
