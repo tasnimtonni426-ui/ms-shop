@@ -175,6 +175,26 @@
         if(s==='Delivered') return '#2ecc71';
         return '#e74c3c';
     }
+    // একটি লগইন ফাংশন তৈরি করা (যদি লগইন না থাকে)
+import { GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+const provider = new GoogleAuthProvider();
+
+window.adminLogin = () => {
+    signInWithPopup(auth, provider)
+    .then((result) => {
+        const user = result.user;
+        if(user.email === 'tasnimtonni426@gmail.com') {
+            alert("অ্যাডমিন লগইন সফল!");
+            location.reload(); // পেজ রিফ্রেশ হবে এবং ডাটা দেখাবে
+        } else {
+            alert("ভুল ইমেইল! এই ইমেইলটি অ্যাডমিন নয়।");
+        }
+    }).catch((error) => {
+        alert("লগইন এরর: " + error.message);
+    });
+};
+    
 </script>
 </body>
 </html>
