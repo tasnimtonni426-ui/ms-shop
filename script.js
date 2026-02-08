@@ -27,7 +27,7 @@ const auth = getAuth(app);
 const db = getDatabase(app);
 const provider = new GoogleAuthProvider();
 
-// সেশন দীর্ঘস্থায়ী করা
+// সেশন লোকাল স্টোরেজে সেভ রাখা
 setPersistence(auth, browserLocalPersistence);
 
 // --- ১. কাস্টম প্রফেশনাল পপ-আপ কন্ট্রোল ---
@@ -44,14 +44,17 @@ window.closeModal = () => {
     if(modal) modal.style.display = 'none';
 }
 
-// --- ২. অটো-রিডাইরেক্ট চেক (লগইন করা থাকলে) ---
+// --- ২. অটো-রিডাইরেক্ট লজিক ---
 onAuthStateChanged(auth, (user) => {
     if (user && user.emailVerified) {
-        window.location.href = "shop.html"; 
+        // যদি ইউজার ভেরিফাইড থাকে এবং বর্তমানে লগইন পেজে থাকে, তবেই রিডাইরেক্ট হবে
+        if (window.location.pathname.includes("index.html") || window.location.pathname === "/" || window.location.pathname.endsWith("/")) {
+            window.location.href = "shop.html"; 
+        }
     }
 });
 
-// --- ৩. সাইন-আপ লজিক (Auto-Redirect সেটিংস সহ) ---
+// --- ৩. সাইন-আপ লজিক (GitHub Pages 404 সমাধান সহ) ---
 const regForm = document.getElementById('registerForm');
 if (regForm) {
     regForm.addEventListener('submit', (e) => {
@@ -60,24 +63,29 @@ if (regForm) {
         const email = document.getElementById('regEmail').value;
         const pass = document.getElementById('regPass').value;
 
-        // লিঙ্কে ক্লিক করার পর যেখানে ফিরে যাবে
+        // GitHub Pages-এর জন্য ফিক্সড ইউআরএল (যাতে 404 এরর না আসে)
         const actionCodeSettings = {
-            url: window.location.origin + '/shop.html', // অটোমেটিক আপনার শপ পেজের লিঙ্ক নিবে
+            url: 'https://tasnimtonni426-ui.github.io/shop.html', 
             handleCodeInApp: true,
         };
 
         createUserWithEmailAndPassword(auth, email, pass).then((res) => {
             // ইমেইল ভেরিফিকেশন লিঙ্ক পাঠানো
             sendEmailVerification(res.user, actionCodeSettings).then(() => {
-                showModal(email); // সেই সুন্দর পপআপটি দেখাবে
+                showModal(email); // সেই সুন্দর প্রফেশনাল পপআপটি দেখাবে
                 
                 updateProfile(res.user, { displayName: name }).then(() => {
                     set(ref(db, 'users/' + res.user.uid), {
-                        username: name, email: email, role: "customer", joinedAt: serverTimestamp()
+                        username: name,
+                        email: email,
+                        role: "customer",
+                        joinedAt: serverTimestamp()
                     });
                 });
             });
-        }).catch(err => alert("Error: " + err.message));
+        }).catch(err => {
+            alert("Error: " + err.message);
+        });
     });
 }
 
@@ -93,22 +101,34 @@ if (logForm) {
             if (res.user.emailVerified) {
                 window.location.href = "shop.html";
             } else {
-                alert("আপনার ইমেইলটি এখনো ভেরিফাই করা হয়নি। দয়া করে জিমেইল চেক করুন।");
+                alert("আপনার ইমেইলটি এখনো ভেরিফাই করা হয়নি। দয়া করে আপনার জিমেইল চেক করুন।");
             }
-        }).catch(() => alert("ভুল ইমেইল অথবা পাসওয়ার্ড।"));
+        }).catch(() => {
+            alert("ভুল ইমেইল অথবা পাসওয়ার্ড।");
+        });
     });
 }
 
-// --- ৫. স্লাইডিং এনিমেশন (SignIn/SignUp Toggle) ---
+// --- ৫. স্লাইডিং এনিমেশন (SignIn/SignUp Switch) ---
 const container = document.getElementById('container');
 const registerBtn = document.getElementById('registerBtn');
 const loginBtn = document.getElementById('loginBtn');
 
-if (registerBtn) registerBtn.addEventListener('click', () => container.classList.add('active'));
-if (loginBtn) loginBtn.addEventListener('click', () => container.classList.remove('active'));
+if (registerBtn && loginBtn && container) {
+    registerBtn.addEventListener('click', () => {
+        container.classList.add('active');
+    });
+    loginBtn.addEventListener('click', () => {
+        container.classList.remove('active');
+    });
+}
 
-// গুগল লগইন
+// গুগল লগইন ফাংশন
 window.googleLogin = function() {
-    signInWithPopup(auth, provider).then(() => window.location.href = "shop.html");
+    signInWithPopup(auth, provider).then(() => {
+        window.location.href = "shop.html";
+    }).catch((err) => {
+        console.error("Google Login Error:", err);
+    });
 };
-        
+    
