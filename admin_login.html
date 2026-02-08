@@ -2,15 +2,16 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Login</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login</title>
     <style>
         body { background: #2c3e50; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .box { background: white; padding: 30px; border-radius: 10px; text-align: center; width: 90%; max-width: 350px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
-        h2 { color: #2c3e50; margin-bottom: 20px; }
-        input { width: 100%; padding: 12px; margin: 10px 0; display: block; box-sizing: border-box; border: 1px solid #ddd; border-radius: 5px; outline: none; }
-        button { background: #e74c3c; color: white; border: none; padding: 12px 20px; border-radius: 5px; cursor: pointer; width: 100%; font-weight: bold; font-size: 16px; margin-top: 10px; }
-        button:active { transform: scale(0.98); }
+        .box { background: white; padding: 30px; border-radius: 15px; text-align: center; width: 90%; max-width: 350px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+        h2 { color: #2c3e50; margin-bottom: 20px; font-size: 22px; }
+        input { width: 100%; padding: 12px; margin: 10px 0; display: block; box-sizing: border-box; border: 1px solid #ddd; border-radius: 8px; outline: none; font-size: 16px; }
+        button { background: #e74c3c; color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; font-size: 16px; margin-top: 10px; transition: 0.3s; }
+        button:active { transform: scale(0.95); }
+        .footer-text { font-size: 12px; color: #7f8c8d; margin-top: 15px; }
     </style>
 </head>
 <body>
@@ -18,16 +19,19 @@
         <h2>অ্যাডমিন অ্যাক্সেস</h2>
         <input type="email" id="a-email" placeholder="অ্যাডমিন ইমেইল">
         <input type="password" id="a-pass" placeholder="পাসওয়ার্ড">
-        <button onclick="login()">লগইন</button>
+        <button onclick="login()">লগইন করুন</button>
+        <p class="footer-text">শুধুমাত্র অনুমোদিত অ্যাডমিনদের জন্য</p>
     </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
+    // আপনার ফায়ারবেস কনফিগ
     const firebaseConfig = {
         apiKey: "AIzaSyCu8lgGs3Q-qLeedhngQAVXtt8BHOAlWDg",
         authDomain: "ms-sp-97f78.firebaseapp.com",
+        databaseURL: "https://ms-sp-97f78-default-rtdb.firebaseio.com",
         projectId: "ms-sp-97f78",
         storageBucket: "ms-sp-97f78.appspot.com",
         messagingSenderId: "880638162029",
@@ -38,25 +42,39 @@
     const auth = getAuth(app);
 
     window.login = () => {
-        const email = document.getElementById('a-email').value;
-        const pass = document.getElementById('a-pass').value;
+        // .trim() ব্যবহার করা হয়েছে যাতে বাড়তি স্পেস এরর না দেয়
+        const email = document.getElementById('a-email').value.trim();
+        const pass = document.getElementById('a-pass').value.trim();
         
+        if(!email || !pass) {
+            alert("অনুগ্রহ করে ইমেইল এবং পাসওয়ার্ড লিখুন");
+            return;
+        }
+
+        // ইমেইল চেক
         if(email === "tasnimtonni426@gmail.com") { 
-            // ১ নম্বর ধাপ: সেশন স্থায়ী করার জন্য Persistence সেট করা হলো
+            // সেশন স্থায়ী করার জন্য Persistence সেট করা
             setPersistence(auth, browserLocalPersistence)
                 .then(() => {
-                    // ২ নম্বর ধাপ: লগইন করা
                     return signInWithEmailAndPassword(auth, email, pass);
                 })
                 .then(() => {
+                    alert("লগইন সফল! স্বাগতম অ্যাডমিন।");
                     window.location.href = "admin_dashboard.html";
                 })
                 .catch(e => {
-                    console.error(e);
-                    alert("ভুল পাসওয়ার্ড অথবা সার্ভার সমস্যা!");
+                    console.error("Login Error:", e.code);
+                    // মোবাইলে সহজে বোঝার জন্য এরর মেসেজ
+                    if(e.code === 'auth/invalid-credential' || e.code === 'auth/wrong-password') {
+                        alert("পাসওয়ার্ড ভুল হয়েছে! আবার চেষ্টা করুন।");
+                    } else if(e.code === 'auth/network-request-failed') {
+                        alert("ইন্টারনেট কানেকশন চেক করুন!");
+                    } else {
+                        alert("সার্ভার সমস্যা: " + e.message);
+                    }
                 });
         } else {
-            alert("আপনি এডমিন নন!");
+            alert("দুঃখিত, আপনি অ্যাডমিন নন!");
         }
     };
 </script>
