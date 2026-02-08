@@ -3,11 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <title>Admin Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body { background: #2c3e50; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .box { background: white; padding: 30px; border-radius: 10px; text-align: center; }
-        input { width: 100%; padding: 10px; margin: 10px 0; display: block; box-sizing: border-box; }
-        button { background: #e74c3c; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+        .box { background: white; padding: 30px; border-radius: 10px; text-align: center; width: 90%; max-width: 350px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+        h2 { color: #2c3e50; margin-bottom: 20px; }
+        input { width: 100%; padding: 12px; margin: 10px 0; display: block; box-sizing: border-box; border: 1px solid #ddd; border-radius: 5px; outline: none; }
+        button { background: #e74c3c; color: white; border: none; padding: 12px 20px; border-radius: 5px; cursor: pointer; width: 100%; font-weight: bold; font-size: 16px; margin-top: 10px; }
+        button:active { transform: scale(0.98); }
     </style>
 </head>
 <body>
@@ -20,9 +23,9 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getAuth, signInWithEmailAndPassword, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-    const firebaseConfig = { /* আপনার একই কনফিগ এখানে বসান */
+    const firebaseConfig = {
         apiKey: "AIzaSyCu8lgGs3Q-qLeedhngQAVXtt8BHOAlWDg",
         authDomain: "ms-sp-97f78.firebaseapp.com",
         projectId: "ms-sp-97f78",
@@ -38,11 +41,20 @@
         const email = document.getElementById('a-email').value;
         const pass = document.getElementById('a-pass').value;
         
-        // এখানে আপনার নির্দিষ্ট জিমেইল চেক হবে
         if(email === "tasnimtonni426@gmail.com") { 
-            signInWithEmailAndPassword(auth, email, pass)
-                .then(() => window.location.href = "admin_dashboard.html")
-                .catch(e => alert("ভুল তথ্য!"));
+            // ১ নম্বর ধাপ: সেশন স্থায়ী করার জন্য Persistence সেট করা হলো
+            setPersistence(auth, browserLocalPersistence)
+                .then(() => {
+                    // ২ নম্বর ধাপ: লগইন করা
+                    return signInWithEmailAndPassword(auth, email, pass);
+                })
+                .then(() => {
+                    window.location.href = "admin_dashboard.html";
+                })
+                .catch(e => {
+                    console.error(e);
+                    alert("ভুল পাসওয়ার্ড অথবা সার্ভার সমস্যা!");
+                });
         } else {
             alert("আপনি এডমিন নন!");
         }
