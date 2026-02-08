@@ -127,6 +127,25 @@
     </div>
 
 <script type="module">
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+const auth = getAuth();
+
+// এই ফাংশনটি চেক করবে আপনি লগইন করা কি না
+onAuthStateChanged(auth, (user) => {
+    if (user && user.email === 'tasnimtonni426@gmail.com') {
+        // আপনি লগইন করা আছেন! 
+        console.log("Admin Access Granted");
+        
+        // এখানে আপনার পেজের ডাটা লোড করার মেইন ফাংশনটি কল করুন (যদি থাকে)
+        // উদাহরণ: loadOrders(); বা updateCounts();
+    } else {
+        // লগইন করা না থাকলে সোজা লগইন পেজে পাঠিয়ে দিবে
+        alert("দয়া করে আগে লগইন করুন!");
+        window.location.href = "login.html"; 
+    }
+});
+    
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getDatabase, ref, onValue, push, remove, update, get, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
