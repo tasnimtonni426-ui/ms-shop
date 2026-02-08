@@ -1,6 +1,18 @@
 // ১. ফায়ারবেস মডিউল ইমপোর্ট
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, updateProfile, sendEmailVerification, setPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { 
+    getAuth, 
+    signInWithEmailAndPassword, 
+    createUserWithEmailAndPassword, 
+    signInWithPopup, 
+    GoogleAuthProvider, 
+    updateProfile, 
+    sendEmailVerification, 
+    setPersistence, 
+    browserLocalPersistence, // LocalPersistence ব্যবহার করা হয়েছে যাতে অটো-লগইন থাকে
+    onAuthStateChanged,
+    signOut 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { getDatabase, ref, set, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
 const firebaseConfig = {
@@ -17,43 +29,45 @@ const auth = getAuth(app);
 const db = getDatabase(app);
 const provider = new GoogleAuthProvider();
 
-// --- সিকিউরিটি লেয়ার: সেশন ম্যানেজমেন্ট ---
-// ব্রাউজার বন্ধ করলে অটো লগআউট হবে (নিরাপদ সেশন)
-setPersistence(auth, browserSessionPersistence);
+// --- অটো-লগইন সেটিংস (বারবার লগইন লাগবে না) ---
+setPersistence(auth, browserLocalPersistence);
+
+// --- সিকিউরিটি চেক: লগইন থাকলে সরাসরি শপে পাঠিয়ে দাও ---
+onAuthStateChanged(auth, (user) => {
+    if (user && user.emailVerified) {
+        window.location.href = "shop.html";
+    }
+});
 
 const container = document.getElementById('container');
 const registerBtn = document.getElementById('registerBtn');
 const loginBtn = document.getElementById('loginBtn');
 
-// ৫. ডাটাবেসে ইউজার ডাটা সেভ (উন্নত সিকিউরিটি)
+// ডাটাবেসে ইউজার ডাটা সেভ
 function writeUserData(userId, name, email) {
     set(ref(db, 'users/' + userId), {
         username: name,
         email: email,
-        lastLogin: serverTimestamp(), // ক্লায়েন্ট টাইমের বদলে সার্ভার টাইম (নিরাপদ)
-        role: "customer" // ডিফল্ট রোল
-    }).catch(err => console.error("Security/Database Error:", err));
+        lastLogin: serverTimestamp(),
+        role: "customer"
+    }).catch(err => console.error("Database Error:", err));
 }
 
-// ৬. এনিমেশন লজিক
-window.addEventListener('DOMContentLoaded', () => {
-    if (container) container.classList.remove('active');
-});
-
+// এনিমেশন লজিক
 if (registerBtn) registerBtn.addEventListener('click', () => container.classList.add('active'));
 if (loginBtn) loginBtn.addEventListener('click', () => container.classList.remove('active'));
 
-// ৭. গুগল লগইন (Verified Only)
+// গুগল লগইন
 window.googleLogin = function() {
     signInWithPopup(auth, provider)
         .then((result) => {
             writeUserData(result.user.uid, result.user.displayName, result.user.email);
             window.location.href = "shop.html";
         })
-        .catch((err) => console.log("Login Securely Cancelled"));
+        .catch((err) => console.log("Login Cancelled"));
 };
 
-// ৮. ইমেইল সাইন আপ (Verification সহ)
+// ইমেইল সাইন আপ (ইমেইল ভেরিফিকেশন সহ)
 const regForm = document.getElementById('registerForm');
 if (regForm) {
     regForm.addEventListener('submit', (e) => {
@@ -62,53 +76,54 @@ if (regForm) {
         const email = document.getElementById('regEmail').value;
         const pass = document.getElementById('regPass').value;
 
-        // পাসওয়ার্ড স্ট্রেন্থ চেক (মিনিমাম ৬ অক্ষর)
         if(pass.length < 6) {
             alert("নিরাপত্তার জন্য পাসওয়ার্ড অন্তত ৬ অক্ষরের হতে হবে!");
             return;
         }
         
         createUserWithEmailAndPassword(auth, email, pass).then((res) => {
-            // ইমেইল ভেরিফিকেশন পাঠানো
+            // ১. ভেরিফিকেশন ইমেইল পাঠানো
             sendEmailVerification(res.user).then(() => {
-                alert("আপনার ইমেইলে একটি ভেরিফিকেশন লিঙ্ক পাঠানো হয়েছে। চেক করুন!");
+                alert("আপনার জিমেইলে একটি ভেরিফিকেশন লিঙ্ক পাঠানো হয়েছে। লিঙ্কটি কনফার্ম করে তারপর লগইন করুন।");
+                
+                // ২. প্রোফাইল আপডেট ও ডাটাবেসে সেভ
+                updateProfile(res.user, { displayName: name }).then(() => {
+                    writeUserData(res.user.uid, name, email);
+                    // ভেরিফাই না করা পর্যন্ত লগআউট করে রাখা ভালো
+                    signOut(auth).then(() => {
+                        location.reload(); 
+                    });
+                });
             });
-
-            updateProfile(res.user, { displayName: name }).then(() => {
-                writeUserData(res.user.uid, name, email);
-                window.location.href = "shop.html";
-            });
-        }).catch(err => alert("নিরাপত্তা জনিত কারণে ব্যর্থ: " + err.message));
+        }).catch(err => alert("ব্যর্থ: " + err.message));
     });
 }
 
-// ৯. ইমেইল লগইন (Rate Limiting সিমুলেশন)
-let attemptCount = 0;
+// ইমেইল লগইন (ভেরিফিকেশন চেক সহ)
 const logForm = document.getElementById('loginForm');
 if (logForm) {
     logForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        
-        if(attemptCount > 5) {
-            alert("অতিরিক্ত ভুল চেষ্টার কারণে আপনার এক্সেস সাময়িক ব্লক করা হয়েছে।");
-            return;
-        }
-
         const email = document.getElementById('logEmail').value;
         const pass = document.getElementById('logPass').value;
         
         signInWithEmailAndPassword(auth, email, pass)
-            .then(() => {
-                window.location.href = "shop.html";
+            .then((res) => {
+                // চেক করো ইমেইল ভেরিফাইড কি না
+                if (res.user.emailVerified) {
+                    window.location.href = "shop.html";
+                } else {
+                    alert("আপনার ইমেইলটি এখনো ভেরিফাই করা হয়নি। জিমেইল চেক করুন।");
+                    signOut(auth);
+                }
             })
-            .catch(() => {
-                attemptCount++;
-                alert("ভুল ইমেইল বা পাসওয়ার্ড। চেষ্টা বাকি: " + (6 - attemptCount));
+            .catch((err) => {
+                alert("ভুল ইমেইল বা পাসওয়ার্ড অথবা ভেরিফিকেশন বাকি।");
             });
     });
 }
 
-// ১০. মেনু কন্ট্রোল
+// মেনু কন্ট্রোল
 const menuToggle = document.getElementById('menuToggle');
 const dropdownMenu = document.getElementById('dropdownMenu');
 if (menuToggle) {
