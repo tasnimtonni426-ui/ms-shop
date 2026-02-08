@@ -3,14 +3,17 @@ import {
     getAuth, 
     signInWithEmailAndPassword, 
     createUserWithEmailAndPassword, 
+    signInWithPopup, 
+    GoogleAuthProvider, 
+    updateProfile, 
     sendEmailVerification, 
-    onAuthStateChanged,
-    signOut,
-    GoogleAuthProvider,
-    signInWithPopup
+    setPersistence, 
+    browserLocalPersistence, 
+    onAuthStateChanged 
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { getDatabase, ref, set, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
+// ফায়ারবেস কনফিগারেশন
 const firebaseConfig = {
     apiKey: "AIzaSyCu8lgGs3Q-qLeedhngQAVXtt8BHOAlWDg",
     authDomain: "ms-sp-97f78.firebaseapp.com",
@@ -24,36 +27,31 @@ const auth = getAuth(app);
 const db = getDatabase(app);
 const provider = new GoogleAuthProvider();
 
-// --- মডাল কন্ট্রোল ---
+// সেশন দীর্ঘস্থায়ী করা
+setPersistence(auth, browserLocalPersistence);
+
+// --- ১. কাস্টম প্রফেশনাল পপ-আপ কন্ট্রোল ---
 window.showModal = (email) => {
-    document.getElementById('modalMessage').innerText = `আমরা ${email} ঠিকানায় একটি লিঙ্ক পাঠিয়েছি। ভেরিফাই করে তারপর লগইন করুন।`;
-    document.getElementById('customModal').style.display = 'flex';
-}
-window.closeModal = () => {
-    document.getElementById('customModal').style.display = 'none';
+    const modal = document.getElementById('customModal');
+    if(modal) {
+        document.getElementById('modalMessage').innerText = `আমরা ${email} ঠিকানায় একটি লিঙ্ক পাঠিয়েছি। ভেরিফাই করার পর আপনি সরাসরি শপে চলে যাবেন।`;
+        modal.style.display = 'flex';
+    }
 }
 
-// --- সিকিউরিটি চেক: ভেরিফাইড না হলে শপে যেতে পারবে না ---
+window.closeModal = () => {
+    const modal = document.getElementById('customModal');
+    if(modal) modal.style.display = 'none';
+}
+
+// --- ২. অটো-রিডাইরেক্ট চেক (লগইন করা থাকলে) ---
 onAuthStateChanged(auth, (user) => {
-    if (user) {
-        if (user.emailVerified) {
-            // যদি ভেরিফাইড থাকে তবেই শপে যাবে
-            if (window.location.pathname.includes("index.html") || window.location.pathname === "/") {
-                window.location.href = "shop.html";
-            }
-        } else {
-            // যদি ভেরিফাইড না থাকে, তাকে শপ থেকে বের করে লগইন পেজে পাঠাবে
-            if (window.location.pathname.includes("shop.html")) {
-                alert("দয়া করে আগে আপনার ইমেইল ভেরিফাই করুন!");
-                signOut(auth).then(() => {
-                    window.location.href = "index.html";
-                });
-            }
-        }
+    if (user && user.emailVerified) {
+        window.location.href = "shop.html"; 
     }
 });
 
-// --- সাইন আপ লজিক ---
+// --- ৩. সাইন-আপ লজিক (Auto-Redirect সেটিংস সহ) ---
 const regForm = document.getElementById('registerForm');
 if (regForm) {
     regForm.addEventListener('submit', (e) => {
@@ -62,25 +60,28 @@ if (regForm) {
         const email = document.getElementById('regEmail').value;
         const pass = document.getElementById('regPass').value;
 
-        createUserWithEmailAndPassword(auth, email, pass).then((res) => {
-            // ১. ভেরিফিকেশন লিঙ্ক পাঠানো
-            sendEmailVerification(res.user).then(() => {
-                // ২. প্রফেশনাল পপআপ দেখানো
-                showModal(email);
-                
-                // ৩. ডাটাবেসে তথ্য রাখা
-                set(ref(db, 'users/' + res.user.uid), {
-                    username: name, email: email, joinedAt: serverTimestamp()
-                });
+        // লিঙ্কে ক্লিক করার পর যেখানে ফিরে যাবে
+        const actionCodeSettings = {
+            url: window.location.origin + '/shop.html', // অটোমেটিক আপনার শপ পেজের লিঙ্ক নিবে
+            handleCodeInApp: true,
+        };
 
-                // ৪. সাথে সাথে লগআউট করা (যাতে সে ভেরিফাই করার আগে ঢুকতে না পারে)
-                signOut(auth);
+        createUserWithEmailAndPassword(auth, email, pass).then((res) => {
+            // ইমেইল ভেরিফিকেশন লিঙ্ক পাঠানো
+            sendEmailVerification(res.user, actionCodeSettings).then(() => {
+                showModal(email); // সেই সুন্দর পপআপটি দেখাবে
+                
+                updateProfile(res.user, { displayName: name }).then(() => {
+                    set(ref(db, 'users/' + res.user.uid), {
+                        username: name, email: email, role: "customer", joinedAt: serverTimestamp()
+                    });
+                });
             });
         }).catch(err => alert("Error: " + err.message));
     });
 }
 
-// --- লগইন লজিক ---
+// --- ৪. সাইন-ইন লজিক ---
 const logForm = document.getElementById('loginForm');
 if (logForm) {
     logForm.addEventListener('submit', (e) => {
@@ -92,21 +93,22 @@ if (logForm) {
             if (res.user.emailVerified) {
                 window.location.href = "shop.html";
             } else {
-                alert("আপনার ইমেইলটি এখনো ভেরিফাই করা হয়নি। দয়া করে আপনার জিমেইল চেক করুন।");
-                signOut(auth);
+                alert("আপনার ইমেইলটি এখনো ভেরিফাই করা হয়নি। দয়া করে জিমেইল চেক করুন।");
             }
         }).catch(() => alert("ভুল ইমেইল অথবা পাসওয়ার্ড।"));
     });
 }
 
-// এনিমেশন বাটন কন্ট্রোল (SignUp/SignIn Toggle)
+// --- ৫. স্লাইডিং এনিমেশন (SignIn/SignUp Toggle) ---
 const container = document.getElementById('container');
 const registerBtn = document.getElementById('registerBtn');
 const loginBtn = document.getElementById('loginBtn');
+
 if (registerBtn) registerBtn.addEventListener('click', () => container.classList.add('active'));
 if (loginBtn) loginBtn.addEventListener('click', () => container.classList.remove('active'));
 
+// গুগল লগইন
 window.googleLogin = function() {
     signInWithPopup(auth, provider).then(() => window.location.href = "shop.html");
 };
-    
+        
