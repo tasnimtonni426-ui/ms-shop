@@ -13,8 +13,6 @@
         .btn-box { display: flex; flex-direction: column; gap: 10px; max-width: 400px; margin: 0 auto; }
         .btn { background: #e74c3c; color: white; padding: 15px; text-decoration: none; border-radius: 5px; text-align: center; font-weight: bold; }
         .btn-blue { background: #3498db; }
-        
-        /* লোডিং স্ক্রিন */
         #auth-check { position: fixed; top:0; left:0; width:100%; height:100%; background:white; display:flex; justify-content:center; align-items:center; z-index:999; }
     </style>
 </head>
@@ -60,7 +58,6 @@
     const db = getDatabase(app);
     const auth = getAuth(app);
 
-    // অটো-লগইন চেক
     onAuthStateChanged(auth, (user) => {
         if (user && user.email === 'tasnimtonni426@gmail.com') {
             document.getElementById('auth-check').style.display = "none";
@@ -70,14 +67,12 @@
         }
     });
 
-    // ডাটা কাউন্ট করা (আপনার আগের সিস্টেম অনুযায়ী)
     function loadStats() {
         onValue(ref(db, 'orders'), (snapshot) => {
             if (snapshot.exists()) {
                 const orders = snapshot.val();
                 const keys = Object.keys(orders);
                 document.getElementById('o-total').innerText = keys.length;
-                
                 let pending = 0;
                 keys.forEach(k => {
                     if(orders[k].status === 'Pending') pending++;
@@ -90,7 +85,6 @@
         });
     }
 
-    // লগআউট
     window.logout = () => {
         signOut(auth).then(() => { window.location.href = "login.html"; });
     };
