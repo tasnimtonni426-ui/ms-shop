@@ -25,7 +25,7 @@
         .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 15px 0; border-top: 1px solid #f1f5f9; }
         .info-item { font-size: 13px; color: #475569; display: flex; align-items: center; gap: 8px; }
         .address-section { background: #f8fafc; padding: 12px 15px; border-radius: 12px; margin-bottom: 15px; }
-        .trx-bar { display: flex; align-items: center; justify-content: space-between; background: #f0f9ff; padding: 12px 15px; border-radius: 12px; margin-bottom: 15px; font-size: 13px; }
+        .trx-bar { display: flex; align-items: center; justify-content: space-between; background: #f0f9ff; padding: 12px 15px; border-radius: 12px; margin-bottom: 15px; font-size: 13px; cursor: pointer; }
         .total-section { display: flex; justify-content: space-between; padding-top: 15px; border-top: 1px dashed #e2e8f0; }
         .amount { font-size: 18px; font-weight: 700; }
         .s-btns { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top: 15px; }
@@ -34,7 +34,7 @@
         .s-btn.active-Shipped { background: var(--shipped); color: white; }
         .s-btn.active-Delivered { background: var(--delivered); color: white; }
         .s-btn.active-Cancelled { background: var(--danger); color: white; }
-        .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--dark); color: white; padding: 10px 24px; border-radius: 30px; display: none; }
+        .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--dark); color: white; padding: 10px 24px; border-radius: 30px; display: none; z-index: 9999; }
     </style>
 </head>
 <body>
@@ -42,28 +42,32 @@
     <div class="toast" id="copyToast">কপি করা হয়েছে!</div>
 
     <div class="header">
-        <button onclick="location.href='admin.html'" style="border:none; background:none; font-size:20px;"><i class="fa fa-arrow-left"></i></button>
+        <button onclick="location.href='admin_dashboard.html'" style="border:none; background:none; font-size:20px;"><i class="fa fa-arrow-left"></i></button>
         <h2 style="margin:0; font-size:18px;">অর্ডার ম্যানেজমেন্ট</h2>
     </div>
 
-    <div class="search-box">
-        <i class="fa fa-search"></i>
-        <input type="text" id="orderSearch" placeholder="আইডি বা নাম দিয়ে খুঁজুন..." onkeyup="handleSearch()">
-    </div>
+    <div id="auth-area"></div>
 
-    <div class="tab-menu">
-        <div class="tab active" onclick="switchTab('Pending', this)">পেন্ডিং</div>
-        <div class="tab" onclick="switchTab('Shipped', this)">শিফট</div>
-        <div class="tab" onclick="switchTab('Delivered', this)">ডেলিভারি</div>
-        <div class="tab" onclick="switchTab('Cancelled', this)">ক্যানসেল</div>
-    </div>
+    <div id="admin-content" style="display: none;">
+        <div class="search-box">
+            <i class="fa fa-search"></i>
+            <input type="text" id="orderSearch" placeholder="আইডি বা নাম দিয়ে খুঁজুন..." onkeyup="handleSearch()">
+        </div>
 
-    <div id="orders-list">অর্ডার লোড হচ্ছে...</div>
+        <div class="tab-menu">
+            <div class="tab active" onclick="switchTab('Pending', this)">পেন্ডিং</div>
+            <div class="tab" onclick="switchTab('Shipped', this)">শিফট</div>
+            <div class="tab" onclick="switchTab('Delivered', this)">ডেলিভারি</div>
+            <div class="tab" onclick="switchTab('Cancelled', this)">ক্যানসেল</div>
+        </div>
+
+        <div id="orders-list">অর্ডার লোড হচ্ছে...</div>
+    </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCu8lgGs3Q-qLeedhngQAVXtt8BHOAlWDg",
@@ -76,15 +80,33 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+
     let currentTab = 'Pending';
     let allOrders = {};
 
-    // অ্যাডমিন চেক এবং ডাটা লোড
+    // সেশন সেভ রাখার জন্য Persistence সেট করা
+    setPersistence(auth, browserLocalPersistence);
+
+    // লগইন চেক
     onAuthStateChanged(auth, (user) => {
         if (user && user.email === 'tasnimtonni426@gmail.com') {
+            document.getElementById('auth-area').innerHTML = "";
+            document.getElementById('admin-content').style.display = "block";
             loadOrders();
         } else {
-            document.getElementById('orders-list').innerHTML = `<div style="text-align:center; padding:50px; color:red;">আপনি অ্যাডমিন হিসেবে লগইন করা নেই!</div>`;
+            document.getElementById('admin-content').style.display = "none";
+            document.getElementById('auth-area').innerHTML = `
+                <div style="text-align:center; padding:100px 20px;">
+                    <i class="fa fa-lock" style="font-size:50px; color:#cbd5e1; margin-bottom:20px;"></i>
+                    <h3 style="margin-bottom:10px;">অ্যাডমিন এক্সেস প্রয়োজন</h3>
+                    <p style="color:#64748b; font-size:14px; margin-bottom:20px;">নিরাপত্তার জন্য আপনার অ্যাডমিন জিমেইল দিয়ে একবার লগইন করুন।</p>
+                    <button id="loginBtn" style="background:var(--primary); color:white; border:none; padding:12px 30px; border-radius:12px; font-weight:bold; cursor:pointer;">Google দিয়ে লগইন করুন</button>
+                </div>
+            `;
+            document.getElementById('loginBtn').onclick = () => {
+                signInWithPopup(auth, provider).catch(err => alert("লগইন এরর: " + err.message));
+            };
         }
     });
 
@@ -105,6 +127,15 @@
     window.handleSearch = () => {
         const q = document.getElementById('orderSearch').value.toUpperCase();
         renderOrders(q);
+    };
+
+    window.copyText = (text) => {
+        if(!text) return;
+        navigator.clipboard.writeText(text).then(() => {
+            const toast = document.getElementById('copyToast');
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 2000);
+        });
     };
 
     function renderOrders(filter = "") {
@@ -138,20 +169,23 @@
                 <span class="order-id">ID: #${id.slice(-6).toUpperCase()}</span>
                 <span class="status-pill" style="color:${color}">${o.status}</span>
             </div>
-            <h3 class="p-name">${o.productName || 'Product'}</h3>
+            <h3 class="p-name">${o.productName || 'লোড হচ্ছে...'}</h3>
+            <span style="font-size:12px; color:var(--primary); font-weight:600;">Size: ${o.productSize || 'N/A'}</span>
             <div class="info-grid">
                 <div class="info-item"><i class="fa fa-user"></i> ${o.userName || 'N/A'}</div>
-                <div class="info-item"><i class="fa fa-phone"></i> ${o.userPhone || 'N/A'}</div>
+                <div class="info-item" onclick="copyText('${o.userPhone}')" style="font-weight:bold; color:var(--dark);">
+                    <i class="fa fa-phone"></i> ${o.userPhone || 'N/A'}
+                </div>
             </div>
             <div class="address-section">
-                <b>ঠিকানা:</b> ${o.address || 'N/A'}, ${o.area || ''}, ${o.district || ''}
+                <div style="font-size:13px; line-height:1.5;"><b>ঠিকানা:</b> ${o.address || 'N/A'}, ${o.area || ''}, ${o.district || ''}</div>
             </div>
-            <div class="trx-bar">
-                <span><b>Method:</b> ${o.paymentMethod || 'COD'}</span>
-                <span><b>TrxID:</b> ${o.trxID || 'N/A'}</span>
+            <div class="trx-bar" onclick="copyText('${o.trxID}')">
+                <span><b>${o.paymentMethod || 'Pay'}:</b> ${o.trxID || 'N/A'}</span>
+                <i class="fa fa-copy"></i>
             </div>
             <div class="total-section">
-                <span>Total:</span>
+                <span style="color:#94a3b8; font-size:13px;">Total Amount:</span>
                 <span class="amount">${o.totalAmount || o.price || 0} ৳</span>
             </div>
             <div class="s-btns">
@@ -165,8 +199,7 @@
     }
 
     window.updateStatus = (id, s) => { 
-        update(ref(db, 'orders/' + id), { status: s })
-        .then(() => { alert("Status Updated to " + s); });
+        update(ref(db, 'orders/' + id), { status: s });
     };
     
     function getCol(s) { 
@@ -175,26 +208,6 @@
         if(s==='Delivered') return '#2ecc71';
         return '#e74c3c';
     }
-    // একটি লগইন ফাংশন তৈরি করা (যদি লগইন না থাকে)
-import { GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-const provider = new GoogleAuthProvider();
-
-window.adminLogin = () => {
-    signInWithPopup(auth, provider)
-    .then((result) => {
-        const user = result.user;
-        if(user.email === 'tasnimtonni426@gmail.com') {
-            alert("অ্যাডমিন লগইন সফল!");
-            location.reload(); // পেজ রিফ্রেশ হবে এবং ডাটা দেখাবে
-        } else {
-            alert("ভুল ইমেইল! এই ইমেইলটি অ্যাডমিন নয়।");
-        }
-    }).catch((error) => {
-        alert("লগইন এরর: " + error.message);
-    });
-};
-    
 </script>
 </body>
 </html>
