@@ -7,87 +7,34 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { 
-            --primary: #00d2ff; 
-            --dark: #0f172a; 
-            --pending: #f1c40f; 
-            --shipped: #3498db; 
-            --delivered: #2ecc71; 
-            --danger: #e74c3c; 
-            --bg: #f8fafc;
+            --primary: #00d2ff; --dark: #0f172a; --pending: #f1c40f; 
+            --shipped: #3498db; --delivered: #2ecc71; --danger: #e74c3c; --bg: #f8fafc;
         }
         body { font-family: 'Poppins', sans-serif; background: var(--bg); margin: 0; padding: 15px; color: #334155; }
-        
-        /* Header & Search */
         .header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; background: white; padding: 18px; border-radius: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .search-box { 
-            display: flex; align-items: center; background: white; padding: 12px 18px; 
-            border-radius: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 20px;
-            border: 1px solid #e2e8f0;
-        }
+        .search-box { display: flex; align-items: center; background: white; padding: 12px 18px; border-radius: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #e2e8f0; }
         .search-box input { border: none; outline: none; width: 100%; margin-left: 10px; font-size: 14px; background: transparent; }
-
-        /* Tabs */
         .tab-menu { display: flex; background: #e2e8f0; border-radius: 14px; padding: 4px; gap: 4px; margin-bottom: 20px; }
-        .tab { flex: 1; text-align: center; padding: 10px 5px; cursor: pointer; border-radius: 10px; font-size: 12px; font-weight: 600; color: #64748b; transition: 0.3s; }
+        .tab { flex: 1; text-align: center; padding: 10px 5px; cursor: pointer; border-radius: 10px; font-size: 12px; font-weight: 600; color: #64748b; }
         .tab.active { background: white; color: var(--dark); box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-
-        /* Professional Order Card */
-        .order-card { 
-            background: white; border-radius: 20px; padding: 20px; margin-bottom: 20px; 
-            border: 1px solid #e2e8f0; position: relative; overflow: hidden;
-            transition: transform 0.2s;
-        }
-        .order-card::before { 
-            content: ""; position: absolute; left: 0; top: 0; height: 100%; width: 5px; 
-            background: var(--status-color, #ccc); 
-        }
-
+        .order-card { background: white; border-radius: 20px; padding: 20px; margin-bottom: 20px; border: 1px solid #e2e8f0; position: relative; border-left: 5px solid var(--status-color, #ccc); }
         .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
-        .order-id { font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
+        .order-id { font-size: 11px; font-weight: 700; color: #94a3b8; }
         .status-pill { font-size: 10px; padding: 4px 10px; border-radius: 20px; font-weight: 700; text-transform: uppercase; background: #f1f5f9; }
-
-        .p-name { font-size: 17px; font-weight: 600; color: var(--dark); margin: 0 0 5px 0; line-height: 1.4; }
-        .p-size { display: inline-block; font-size: 11px; background: rgba(0, 210, 255, 0.1); color: var(--primary); padding: 2px 8px; border-radius: 6px; font-weight: 600; margin-bottom: 15px; }
-        
+        .p-name { font-size: 17px; font-weight: 600; color: var(--dark); margin: 0 0 5px 0; }
         .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 15px 0; border-top: 1px solid #f1f5f9; }
         .info-item { font-size: 13px; color: #475569; display: flex; align-items: center; gap: 8px; }
-        .info-item i { color: #94a3b8; font-size: 14px; }
-        .info-item.phone { color: var(--dark); font-weight: 600; text-decoration: none; }
-
-        .address-section { background: #f8fafc; padding: 12px 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #f1f5f9; }
-        .address-section b { font-size: 12px; color: #64748b; display: block; margin-bottom: 4px; }
-        .address-text { font-size: 13px; color: var(--dark); line-height: 1.5; }
-
-        .trx-bar { 
-            display: flex; align-items: center; justify-content: space-between; 
-            background: #f0f9ff; padding: 12px 15px; border-radius: 12px; 
-            border: 1px solid #e0f2fe; margin-bottom: 15px; cursor: pointer;
-        }
-        .trx-info { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; color: #0369a1; }
-        .trx-bar img { width: 20px; height: 20px; object-fit: contain; }
-
-        .total-section { 
-            display: flex; justify-content: space-between; align-items: center; 
-            padding-top: 15px; border-top: 1px dashed #e2e8f0;
-        }
-        .method-name { font-size: 12px; color: #94a3b8; font-weight: 500; }
-        .amount { font-size: 18px; font-weight: 700; color: var(--dark); }
-
-        /* Action Buttons */
-        .s-btns { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 18px; }
-        .s-btn { 
-            padding: 10px 2px; border-radius: 10px; border: 1px solid #e2e8f0; 
-            background: white; font-size: 10px; cursor: pointer; font-weight: 700; 
-            transition: 0.2s; color: #64748b;
-        }
-        .s-btn:active { transform: scale(0.95); }
-        
-        .s-btn.active-Pending { background: var(--pending); color: white; border-color: var(--pending); }
-        .s-btn.active-Shipped { background: var(--shipped); color: white; border-color: var(--shipped); }
-        .s-btn.active-Delivered { background: var(--delivered); color: white; border-color: var(--delivered); }
-        .s-btn.active-Cancelled { background: var(--danger); color: white; border-color: var(--danger); }
-
-        .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--dark); color: white; padding: 10px 24px; border-radius: 30px; font-size: 13px; display: none; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+        .address-section { background: #f8fafc; padding: 12px 15px; border-radius: 12px; margin-bottom: 15px; }
+        .trx-bar { display: flex; align-items: center; justify-content: space-between; background: #f0f9ff; padding: 12px 15px; border-radius: 12px; margin-bottom: 15px; font-size: 13px; }
+        .total-section { display: flex; justify-content: space-between; padding-top: 15px; border-top: 1px dashed #e2e8f0; }
+        .amount { font-size: 18px; font-weight: 700; }
+        .s-btns { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top: 15px; }
+        .s-btn { padding: 8px 2px; border-radius: 8px; border: 1px solid #ddd; background: white; font-size: 10px; font-weight: bold; cursor: pointer; }
+        .s-btn.active-Pending { background: var(--pending); color: white; }
+        .s-btn.active-Shipped { background: var(--shipped); color: white; }
+        .s-btn.active-Delivered { background: var(--delivered); color: white; }
+        .s-btn.active-Cancelled { background: var(--danger); color: white; }
+        .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--dark); color: white; padding: 10px 24px; border-radius: 30px; display: none; }
     </style>
 </head>
 <body>
@@ -95,13 +42,13 @@
     <div class="toast" id="copyToast">কপি করা হয়েছে!</div>
 
     <div class="header">
-        <button onclick="location.href='admin_dashboard.html'" style="border:none; background:none; font-size:20px; color:var(--dark); cursor:pointer;"><i class="fa fa-arrow-left"></i></button>
-        <h2 style="margin:0; font-size:18px; font-weight:700;">অর্ডার ম্যানেজমেন্ট</h2>
+        <button onclick="location.href='admin.html'" style="border:none; background:none; font-size:20px;"><i class="fa fa-arrow-left"></i></button>
+        <h2 style="margin:0; font-size:18px;">অর্ডার ম্যানেজমেন্ট</h2>
     </div>
 
     <div class="search-box">
-        <i class="fa fa-search" style="color:#94a3b8;"></i>
-        <input type="text" id="orderSearch" placeholder="অর্ডার আইডি বা কাস্টমারের নাম..." onkeyup="handleSearch()">
+        <i class="fa fa-search"></i>
+        <input type="text" id="orderSearch" placeholder="আইডি বা নাম দিয়ে খুঁজুন..." onkeyup="handleSearch()">
     </div>
 
     <div class="tab-menu">
@@ -111,30 +58,42 @@
         <div class="tab" onclick="switchTab('Cancelled', this)">ক্যানসেল</div>
     </div>
 
-    <div id="orders-list">লোড হচ্ছে...</div>
+    <div id="orders-list">অর্ডার লোড হচ্ছে...</div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCu8lgGs3Q-qLeedhngQAVXtt8BHOAlWDg",
         authDomain: "ms-sp-97f78.firebaseapp.com",
         databaseURL: "https://ms-sp-97f78-default-rtdb.firebaseio.com",
         projectId: "ms-sp-97f78",
-        storageBucket: "ms-sp-97f78.appspot.com",
         appId: "1:880638162029:web:b99af5b5518b3e16a13b64"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
+    const auth = getAuth(app);
     let currentTab = 'Pending';
     let allOrders = {};
 
-    onValue(ref(db, 'orders'), (snapshot) => {
-        allOrders = snapshot.exists() ? snapshot.val() : {};
-        renderOrders();
+    // অ্যাডমিন চেক এবং ডাটা লোড
+    onAuthStateChanged(auth, (user) => {
+        if (user && user.email === 'tasnimtonni426@gmail.com') {
+            loadOrders();
+        } else {
+            document.getElementById('orders-list').innerHTML = `<div style="text-align:center; padding:50px; color:red;">আপনি অ্যাডমিন হিসেবে লগইন করা নেই!</div>`;
+        }
     });
+
+    function loadOrders() {
+        onValue(ref(db, 'orders'), (snapshot) => {
+            allOrders = snapshot.exists() ? snapshot.val() : {};
+            renderOrders();
+        });
+    }
 
     window.switchTab = (status, el) => {
         currentTab = status;
@@ -148,15 +107,6 @@
         renderOrders(q);
     };
 
-    window.copyText = (text) => {
-        if(!text) return;
-        navigator.clipboard.writeText(text).then(() => {
-            const toast = document.getElementById('copyToast');
-            toast.style.display = 'block';
-            setTimeout(() => { toast.style.display = 'none'; }, 2000);
-        });
-    };
-
     function renderOrders(filter = "") {
         const list = document.getElementById('orders-list');
         list.innerHTML = "";
@@ -164,80 +114,60 @@
 
         Object.keys(allOrders).reverse().forEach(id => {
             const o = allOrders[id];
-            const shortId = id.slice(-6).toUpperCase();
-            const userName = o.userName ? o.userName.toUpperCase() : "";
+            const userName = (o.userName || "").toUpperCase();
+            const orderIdShort = id.slice(-6).toUpperCase();
             
             if (o.status === currentTab || filter !== "") {
-                if (shortId.includes(filter) || userName.includes(filter)) {
+                if (userName.includes(filter) || orderIdShort.includes(filter)) {
                     count++;
                     list.appendChild(createOrderCard(id, o));
                 }
             }
         });
-        if (count === 0) list.innerHTML = `<div style="text-align:center; padding:50px; color:#94a3b8; font-size:14px;">কোনো অর্ডার খুঁজে পাওয়া যায়নি</div>`;
+        if (count === 0) list.innerHTML = `<div style="text-align:center; padding:50px; color:#94a3b8;">কোনো অর্ডার পাওয়া যায়নি</div>`;
     }
 
     function createOrderCard(id, o) {
         const card = document.createElement('div');
         card.className = 'order-card';
-        const statusColor = getCol(o.status);
-        card.style.setProperty('--status-color', statusColor);
+        const color = getCol(o.status);
+        card.style.setProperty('--status-color', color);
         
-        let gatewayLogo = "";
-        const gatewayName = o.paymentMethod ? o.paymentMethod.toLowerCase() : "";
-        if (gatewayName === 'bkash') gatewayLogo = "https://www.logo.wine/a/logo/BKash/BKash-bKash-Logo.wine.svg";
-        else if (gatewayName === 'nagad') gatewayLogo = "https://www.logo.wine/a/logo/Nagad/Nagad-Logo.wine.svg";
-        else gatewayLogo = "https://cdn-icons-png.flaticon.com/512/4341/4341764.png";
-
-        const trxId = o.trxID || 'N/A';
-
         card.innerHTML = `
             <div class="card-top">
                 <span class="order-id">ID: #${id.slice(-6).toUpperCase()}</span>
-                <span class="status-pill" style="color:${statusColor}">${o.status}</span>
+                <span class="status-pill" style="color:${color}">${o.status}</span>
             </div>
-
-            <h3 class="p-name">${o.productName || 'প্রোডাক্ট লোড হচ্ছে'}</h3>
-            <span class="p-size">Size: ${o.productSize || 'N/A'}</span>
-            
+            <h3 class="p-name">${o.productName || 'Product'}</h3>
             <div class="info-grid">
                 <div class="info-item"><i class="fa fa-user"></i> ${o.userName || 'N/A'}</div>
-                <div class="info-item phone" onclick="copyText('${o.userPhone}')">
-                    <i class="fa fa-phone"></i> ${o.userPhone || 'N/A'}
-                </div>
-                <div class="info-item"><i class="fa fa-map"></i> ${o.district || 'N/A'}</div>
-                <div class="info-item"><i class="fa fa-location-arrow"></i> ${o.area || 'N/A'}</div>
+                <div class="info-item"><i class="fa fa-phone"></i> ${o.userPhone || 'N/A'}</div>
             </div>
-
             <div class="address-section">
-                <b>ডেলিভারি ঠিকানা:</b>
-                <div class="address-text">${o.address || 'বিস্তারিত দেওয়া হয়নি'}</div>
+                <b>ঠিকানা:</b> ${o.address || 'N/A'}, ${o.area || ''}, ${o.district || ''}
             </div>
-
-            <div class="trx-bar" onclick="copyText('${trxId}')">
-                <div class="trx-info">
-                    <img src="${gatewayLogo}"> 
-                    <span>TrxID: ${trxId}</span>
-                </div>
-                <i class="fa fa-copy" style="color:#94a3b8; font-size:12px;"></i>
+            <div class="trx-bar">
+                <span><b>Method:</b> ${o.paymentMethod || 'COD'}</span>
+                <span><b>TrxID:</b> ${o.trxID || 'N/A'}</span>
             </div>
-
             <div class="total-section">
-                <span class="method-name">Payment: ${o.paymentMethod || 'N/A'}</span>
-                <span class="amount">${o.totalAmount || '0 ৳'}</span>
+                <span>Total:</span>
+                <span class="amount">${o.totalAmount || o.price || 0} ৳</span>
             </div>
-            
             <div class="s-btns">
-                <button class="s-btn ${o.status === 'Pending' ? 'active-Pending' : ''}" onclick="updateStatus('${id}', 'Pending')">Pending</button>
-                <button class="s-btn ${o.status === 'Shipped' ? 'active-Shipped' : ''}" onclick="updateStatus('${id}', 'Shipped')">Shipped</button>
-                <button class="s-btn ${o.status === 'Delivered' ? 'active-Delivered' : ''}" onclick="updateStatus('${id}', 'Delivered')">Delivered</button>
-                <button class="s-btn ${o.status === 'Cancelled' ? 'active-Cancelled' : ''}" onclick="updateStatus('${id}', 'Cancelled')">Cancel</button>
+                <button class="s-btn ${o.status==='Pending'?'active-Pending':''}" onclick="updateStatus('${id}','Pending')">Pending</button>
+                <button class="s-btn ${o.status==='Shipped'?'active-Shipped':''}" onclick="updateStatus('${id}','Shipped')">Shipped</button>
+                <button class="s-btn ${o.status==='Delivered'?'active-Delivered':''}" onclick="updateStatus('${id}','Delivered')">Delivered</button>
+                <button class="s-btn ${o.status==='Cancelled'?'active-Cancelled':''}" onclick="updateStatus('${id}','Cancelled')">Cancel</button>
             </div>
         `;
         return card;
     }
 
-    window.updateStatus = (id, s) => { update(ref(db, 'orders/' + id), { status: s }); };
+    window.updateStatus = (id, s) => { 
+        update(ref(db, 'orders/' + id), { status: s })
+        .then(() => { alert("Status Updated to " + s); });
+    };
     
     function getCol(s) { 
         if(s==='Pending') return '#f1c40f';
