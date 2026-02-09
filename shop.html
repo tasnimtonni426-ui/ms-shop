@@ -102,6 +102,7 @@
         .p-price { color: var(--primary); font-weight: bold; font-size: 15px; margin-top: 4px; }
         .sold-badge { position: absolute; top: 8px; left: 8px; background: #ef4444; color: white; font-size: 10px; padding: 2px 8px; border-radius: 6px; font-weight: bold; z-index: 10; }
 
+        /* হেল্পলাইন বাটন স্টাইল */
         .whatsapp-helpline {
             position: fixed;
             bottom: 30px;
@@ -186,62 +187,191 @@
 <div class="container"><div class="product-grid" id="p-list"></div></div>
 
 <script type="module">
-    // --- উন্নত অথেন্টিকেশন এবং ভেরিফিকেশন চেক ---
-onAuthStateChanged(auth, async (user) => {
-    if (user) {
-        try {
-            // ১. ভেরিফিকেশন স্ট্যাটাস জোরপূর্বক আপডেট করা
-            await user.reload(); 
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCu8lgGs3Q-qLeedhngQAVXtt8BHOAlWDg",
+        authDomain: "ms-sp-97f78.firebaseapp.com",
+        databaseURL: "https://ms-sp-97f78-default-rtdb.firebaseio.com",
+        projectId: "ms-sp-97f78",
+        storageBucket: "ms-sp-97f78.appspot.com",
+        appId: "1:880638162029:web:b99af5b5518b3e16a13b64"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    // --- অটো-লগইন সিকিউরিটি চেক ---
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            // ইউজার লগইন আছে
+            document.getElementById('loading-screen').style.display = 'none';
+            document.getElementById('u-name').innerText = user.displayName || "User";
+            document.getElementById('u-email').innerText = user.email;
+            document.getElementById('u-id').innerText = "#" + user.uid.slice(-6).toUpperCase();
             
-            // নতুন করে ইউজার অবজেক্ট নেওয়া (আপডেটেড স্ট্যাটাস সহ)
-            const updatedUser = auth.currentUser;
-
-            if (updatedUser.emailVerified) {
-                // ২. ইউজার ভেরিফাইড হলে লোডিং স্ক্রিন বন্ধ হবে
-                document.getElementById('loading-screen').style.display = 'none';
-                
-                // প্রোফাইল ডাটা দেখানো
-                document.getElementById('u-name').innerText = updatedUser.displayName || "User";
-                document.getElementById('u-email').innerText = updatedUser.email;
-                document.getElementById('u-id').innerText = "#" + updatedUser.uid.slice(-6).toUpperCase();
-
-                // ৩. শুধুমাত্র ভেরিফাইড হলেই ডাটাবেজে ইউজার প্রোফাইল তৈরি হবে
-                const userRef = ref(db, 'users/' + updatedUser.uid);
-                const snapshot = await get(userRef);
-                
-                if (!snapshot.exists()) {
-                    await set(userRef, {
-                        username: updatedUser.displayName || "New User",
-                        email: updatedUser.email,
-                        role: "customer",
-                        verified: true, // ডাটাবেজে স্ট্যাটাস রাখা
-                        joinedAt: serverTimestamp()
-                    });
-                    console.log("Verified User Saved to DB");
-                }
-
-                setupSlider();
-                fetchProducts();
-            } else {
-                // ৪. যদি ভেরিফাইড না হয়, তবে ১.৫ সেকেন্ড পর আরেকবার চেক করবে (সরাসরি বের করে দিবে না)
-                setTimeout(async () => {
-                    await user.reload();
-                    if (auth.currentUser.emailVerified) {
-                        window.location.reload(); // ভেরিফাইড হয়ে গেলে পেজ রিলোড হবে
-                    } else {
-                        alert("আপনার ইমেইল ভেরিফাই করা হয়নি। দয়া করে জিমেইল চেক করুন।");
-                        window.location.href = "index.html";
-                    }
-                }, 1500);
-            }
-        } catch (error) {
-            console.error("Auth Error:", error);
+            // ডাটা লোড শুরু
+            setupSlider();
+            fetchProducts();
+        } else {
+            // লগইন নেই, রিডাইরেক্ট টু লগইন পেজ
+            window.location.href = "index.html";
         }
-    } else {
-        window.location.href = "index.html";
+    });
+
+    let pArray = [];
+    function fetchProducts() {
+        onValue(ref(db, 'products'), (snap) => {
+            if(snap.exists()){
+                pArray = [];
+                snap.forEach(child => {
+                    let d = child.val();
+                    d.id = child.key;
+                    pArray.push(d);
+                });
+                render(pArray);
+            }
+        });
     }
-});
-                        
+
+    function setupSlider() {
+        const track = document.getElementById('sliderTrack');
+        const dots = document.querySelectorAll('.dot');
+        let current = 0;
+        let isDragging = false;
+        let startX = 0;
+
+        onValue(ref(db, 'banners'), (snap) => {
+            if (snap.exists()) {
+                const data = snap.val();
+                let slidesHtml = '';
+                for (let i = 1; i <= 3; i++) {
+                    const b = data[`banner${i}`] || { img: 'https://via.placeholder.com/800x400?text=MS+Store', link: '#' };
+                    slidesHtml += `<div class="slide" onclick="if('${b.link}' !== '#') window.location.href='${b.link}'"><img src="${b.img}"></div>`;
+                }
+                track.innerHTML = slidesHtml;
+            }
+        });
+
+        const updateSlider = () => {
+            track.style.transform = `translateX(-${current * 33.333}%)`;
+            dots.forEach((d, i) => d.classList.toggle('active', i === current));
+        };
+
+        setInterval(() => { if(!isDragging) { current = (current + 1) % 3; updateSlider(); } }, 4000);
+
+        const container = document.getElementById('sliderContainer');
+        container.ontouchstart = (e) => { startX = e.touches[0].clientX; isDragging = true; };
+        container.ontouchend = (e) => {
+            isDragging = false;
+            let endX = e.changedTouches[0].clientX;
+            if (startX - endX > 50 && current < 2) current++;
+            if (startX - endX < -50 && current > 0) current--;
+            updateSlider();
+        };
+    }
+
+    function render(data) {
+        document.getElementById('p-list').innerHTML = data.map(p => `
+            <div class="p-card" onclick="location.href='product_details.html?id=${p.id}'">
+                ${p.stock <= 0 ? '<div class="sold-badge">Sold Out</div>' : ''}
+                <img src="${p.img}" loading="lazy">
+                <div class="p-info">
+                    <div class="p-name">${p.name}</div>
+                    <div class="p-price">${p.price} ৳</div>
+                </div>
+            </div>`).join('');
+    }
+
+    window.searchFn = () => {
+        let v = document.getElementById('searchInput').value.toLowerCase();
+        render(pArray.filter(p => p.name.toLowerCase().includes(v)));
+    };
+
+    const subCats = {
+        'Sports': ['Jersey', 'Boots', 'Sports Equipment'],
+        'Electronics': ['Mobile Accessories', 'Gadgets', 'Headphones'],
+        'Fashion': ["Men's Fashion", "Women's Fashion", "Shoes"]
+    };
+
+    const handleCatSelection = (cat, el) => {
+        document.querySelectorAll('.cat-item').forEach(i => i.classList.remove('active'));
+        el.classList.add('active');
+        const subMenu = document.getElementById('subCatMenu');
+
+        if (cat === 'All') {
+            subMenu.style.display = 'none';
+            render(pArray);
+        } else {
+            subMenu.style.display = 'flex';
+            let html = `<div class="sub-cat-btn active" id="sub-all">সব ${cat}</div>`;
+            subCats[cat].forEach(sub => { html += `<div class="sub-cat-btn" data-sub="${sub}">${sub}</div>`; });
+            subMenu.innerHTML = html;
+            
+            subMenu.querySelectorAll('.sub-cat-btn').forEach(btn => {
+                btn.onclick = () => {
+                    subMenu.querySelectorAll('.sub-cat-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    const subVal = btn.getAttribute('data-sub');
+                    if(!subVal) render(pArray.filter(p => subCats[cat].includes(p.category)));
+                    else render(pArray.filter(p => p.category === subVal));
+                };
+            });
+            render(pArray.filter(p => subCats[cat].includes(p.category)));
+        }
+    };
+
+    document.getElementById('cat-all').onclick = function() { handleCatSelection('All', this); };
+    document.getElementById('cat-sports').onclick = function() { handleCatSelection('Sports', this); };
+    document.getElementById('cat-electronics').onclick = function() { handleCatSelection('Electronics', this); };
+    document.getElementById('cat-fashion').onclick = function() { handleCatSelection('Fashion', this); };
+
+    const profileMenu = document.getElementById('profileMenu');
+    document.getElementById('profileTrigger').onclick = (e) => { e.stopPropagation(); profileMenu.classList.toggle('show'); };
+    document.onclick = (e) => { if (!profileMenu.contains(e.target)) profileMenu.classList.remove('show'); };
+    document.getElementById('logoutBtn').onclick = () => { signOut(auth).then(() => window.location.href = "index.html"); };
+    document.getElementById('copyIdBtn').onclick = () => {
+        const id = document.getElementById('u-id').innerText;
+        navigator.clipboard.writeText(id).then(() => alert("ID কপি হয়েছে!"));
+    };
 </script>
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+    // আপনার ফায়ারবেস কনফিগারেশন (একই কনফিগ এখানেও দিন)
+    const firebaseConfig = {
+        apiKey: "AIzaSyCu8lgGs3Q-qLeedhngQAVXtt8BHOAlWDg",
+        authDomain: "ms-sp-97f78.firebaseapp.com",
+        projectId: "ms-sp-97f78",
+        databaseURL: "https://ms-sp-97f78-default-rtdb.firebaseio.com",
+        appId: "1:880638162029:web:b99af5b5518b3e16a13b64"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // ইউজার ভেরিফাইড কি না তা চেক করা
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            // ইউজারের বর্তমান অবস্থা রিলোড করে চেক করা
+            user.reload().then(() => {
+                if (!user.emailVerified) {
+                    alert("আপনার ইমেইল ভেরিফাই করা হয়নি। দয়া করে জিমেইল চেক করুন।");
+                    window.location.href = "index.html"; 
+                } else {
+                    console.log("ইউজার ভেরিফাইড এবং স্বাগতম!");
+                }
+            });
+        } else {
+            // লগইন করা না থাকলে ইনডেক্স পেজে পাঠিয়ে দিবে
+            window.location.href = "index.html";
+        }
+    });
+    </script>
+    
 </body>
 </html>
