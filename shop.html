@@ -187,59 +187,85 @@
 <div class="container"><div class="product-grid" id="p-list"></div></div>
 
 <script type="module">
-// --- দ্রুত লোডিং এবং ভেরিফিকেশন চেক ---
-onAuthStateChanged(auth, (user) => {
-    const loadingScreen = document.getElementById('loading-screen');
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut, reload } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getDatabase, ref, onValue, get, child, set, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-    if (user) {
-        // ১. সরাসরি ভেরিফিকেশন চেক (পেজ আটকে থাকবে না)
-        if (user.emailVerified) {
-            loadShopData(user);
-        } else {
-            // ২. জিমেইল থেকে ফিরলে স্ট্যাটাস আপডেট হতে ১ সেকেন্ড সময় দিন
-            user.reload().then(() => {
-                if (user.emailVerified) {
-                    loadShopData(user);
-                } else {
-                    alert("আপনার ইমেইল ভেরিফাই করা হয়নি। দয়া করে জিমেইল চেক করুন।");
-                    window.location.href = "index.html";
+    const firebaseConfig = {
+        apiKey: "AIzaSyCu8lgGs3Q-qLeedhngQAVXtt8BHOAlWDg",
+        authDomain: "ms-sp-97f78.firebaseapp.com",
+        databaseURL: "https://ms-sp-97f78-default-rtdb.firebaseio.com",
+        projectId: "ms-sp-97f78",
+        storageBucket: "ms-sp-97f78.appspot.com",
+        appId: "1:880638162029:web:b99af5b5518b3e16a13b64"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    // --- সুপার ফাস্ট ভেরিফিকেশন এবং লোডিং লজিক ---
+    onAuthStateChanged(auth, async (user) => {
+        const loading = document.getElementById('loading-screen');
+
+        if (user) {
+            // ১. যদি ইউজার সরাসরি ভেরিফাইড থাকে (নরমাল লগইন)
+            if (user.emailVerified) {
+                initApp(user);
+            } 
+            else {
+                // ২. জিমেইল লিঙ্ক থেকে আসার পর ভেরিফাই স্ট্যাটাস চেক (১ সেকেন্ড সময় দিন)
+                try {
+                    await reload(user); // ফায়ারবেস থেকে ফ্রেশ ডাটা আনা
+                    if (auth.currentUser.emailVerified) {
+                        initApp(auth.currentUser);
+                    } else {
+                        alert("আপনার ইমেইল ভেরিফাই করা হয়নি। জিমেইল চেক করুন!");
+                        window.location.href = "index.html";
+                    }
+                } catch (e) {
+                    console.error("Reload error", e);
+                    // এরর হলে ৩ সেকেন্ড পর অটোমেটিক ড্যাশবোর্ডে পাঠানোর চেষ্টা (যদি ভেরিফাইড হয়ে থাকে)
+                    setTimeout(() => window.location.reload(), 3000);
                 }
-            }).catch(() => {
-                // এরর হলেও লোডিং স্ক্রিন সরিয়ে দিন যাতে ইউজার আটকে না থাকে
-                loadingScreen.style.display = 'none';
-            });
-        }
-    } else {
-        window.location.href = "index.html";
-    }
-});
-
-// ৩. ডাটা লোড করার আলাদা ফাংশন (যাতে কোড পরিষ্কার থাকে)
-function loadShopData(user) {
-    document.getElementById('loading-screen').style.display = 'none';
-    document.getElementById('u-name').innerText = user.displayName || "User";
-    document.getElementById('u-email').innerText = user.email;
-    document.getElementById('u-id').innerText = "#" + user.uid.slice(-6).toUpperCase();
-
-    // ডাটাবেজে ইউজার প্রোফাইল সেভ (ব্যাকগ্রাউন্ডে হবে)
-    const userRef = ref(db, 'users/' + user.uid);
-    get(userRef).then((snapshot) => {
-        if (!snapshot.exists()) {
-            set(userRef, {
-                username: user.displayName || "New User",
-                email: user.email,
-                role: "customer",
-                joinedAt: serverTimestamp()
-            });
+            }
+        } else {
+            window.location.href = "index.html";
         }
     });
 
-    setupSlider();
-    fetchProducts();
-    }
-                        
+    // ৩. মেইন অ্যাপ ফাংশন (সব ডাটা লোড করার জন্য)
+    function initApp(user) {
+        // লোডিং স্ক্রিন সাথে সাথে বন্ধ
+        document.getElementById('loading-screen').style.display = 'none';
 
-    </script>
+        // প্রোফাইল ডাটা সেট করা
+        document.getElementById('u-name').innerText = user.displayName || "User";
+        document.getElementById('u-email').innerText = user.email;
+        document.getElementById('u-id').innerText = "#" + user.uid.slice(-6).toUpperCase();
+
+        // ডাটাবেজে ইউজার সেভ করার লজিক (ভেরিফাইড হওয়ার পর)
+        const userRef = ref(db, 'users/' + user.uid);
+        get(userRef).then((snap) => {
+            if (!snap.exists()) {
+                set(userRef, {
+                    username: user.displayName || "New User",
+                    email: user.email,
+                    role: "customer",
+                    joinedAt: serverTimestamp()
+                });
+            }
+        });
+
+        setupSlider();
+        fetchProducts();
+    }
+
+    // --- আপনার বাকি সব ফাংশন (fetchProducts, setupSlider, render, etc.) আগের মতোই থাকবে ---
+    // ... (নিচে আপনার বাকি কোডগুলো বসিয়ে দিন) ...
+
+ </script>
+    
     
 </body>
 </html>
