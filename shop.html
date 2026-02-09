@@ -102,7 +102,6 @@
         .p-price { color: var(--primary); font-weight: bold; font-size: 15px; margin-top: 4px; }
         .sold-badge { position: absolute; top: 8px; left: 8px; background: #ef4444; color: white; font-size: 10px; padding: 2px 8px; border-radius: 6px; font-weight: bold; z-index: 10; }
 
-        /* হেল্পলাইন বাটন স্টাইল */
         .whatsapp-helpline {
             position: fixed;
             bottom: 30px;
@@ -133,8 +132,9 @@
 </head>
 <body>
 
-<div id="loading-screen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; z-index: 9999; display: flex; align-items: center; justify-content: center; color: var(--primary); font-weight: bold;">
-    MS STORE Loading...
+<div id="loading-screen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--primary); font-weight: bold; text-align: center; padding: 20px;">
+    <div id="loading-text">MS STORE Loading...</div>
+    <div id="verify-msg" style="display: none; font-size: 14px; color: #cbd5e1; margin-top: 15px; font-weight: normal;">আপনার জিমেইল চেক করে লিঙ্কটিতে ক্লিক করুন।<br>ভেরিফাই হওয়া মাত্রই পেজটি ওপেন হবে।</div>
 </div>
 
 <header>
@@ -204,60 +204,61 @@
     const auth = getAuth(app);
     const db = getDatabase(app);
 
-    // --- পেজ লোড হওয়ার সাথে সাথে চেক ---
+    // --- অটোমেটিক ভেরিফিকেশন লজিক ---
     onAuthStateChanged(auth, async (user) => {
         const loadingScreen = document.getElementById('loading-screen');
+        const verifyMsg = document.getElementById('verify-msg');
 
         if (user) {
-            try {
-                // ১. জিমেইল স্ট্যাটাস আপডেট করার জন্য রিলোড (Timeout সহ)
-                await Promise.race([
-                    reload(user),
-                    new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 3500))
-                ]).catch(() => console.log("Reload timed out, checking current status..."));
-
-                if (user.emailVerified) {
-                    // ২. ভেরিফাইড ইউজার হলে তথ্য সেট করা
-                    document.getElementById('u-name').innerText = user.displayName || "User";
-                    document.getElementById('u-email').innerText = user.email;
-                    document.getElementById('u-id').innerText = "#" + user.uid.slice(-6).toUpperCase();
-
-                    // ৩. ডাটাবেজে ইউজার সেভ (শুধুমাত্র ভেরিফাইড হলে)
-                    const userRef = ref(db, 'users/' + user.uid);
-                    get(userRef).then((snap) => {
-                        if (!snap.exists()) {
-                            set(userRef, {
-                                username: user.displayName || "New User",
-                                email: user.email,
-                                role: "customer",
-                                joinedAt: serverTimestamp()
-                            });
-                        }
-                    });
-
-                    // ৪. স্লাইডার ও প্রোডাক্ট লোড করা
-                    setupSlider();
-                    fetchProducts();
-                    
-                    // ৫. সব কাজ শেষে লোডিং স্ক্রিন বন্ধ
-                    loadingScreen.style.display = 'none';
-
-                } else {
-                    // ইমেইল ভেরিফাই না থাকলে সরাসরি বের করে দেওয়া
-                    alert("আপনার ইমেইল ভেরিফাই করা হয়নি। জিমেইল চেক করুন!");
-                    await signOut(auth);
-                    window.location.href = "index.html";
-                }
-            } catch (error) {
-                console.error("Auth error:", error);
-                loadingScreen.style.display = 'none'; // এরর হলেও যেন ইউজার লোডিং স্ক্রিন না দেখে
+            // যদি ইউজার আগে থেকেই ভেরিফাইড থাকে
+            if (user.emailVerified) {
+                initApp(user);
+            } else {
+                // ভেরিফাইড না হলে জিমেইল চেক করার মেসেজ দেখাবে
+                verifyMsg.style.display = 'block';
+                
+                // প্রতি ২ সেকেন্ড পর পর সার্ভার চেক করবে ইউজার লিঙ্কে ক্লিক করেছে কি না
+                const checkInterval = setInterval(async () => {
+                    await reload(user);
+                    if (auth.currentUser.emailVerified) {
+                        clearInterval(checkInterval);
+                        initApp(auth.currentUser);
+                    }
+                }, 2000);
             }
         } else {
             window.location.href = "index.html";
         }
     });
 
-    // --- স্লাইডার ফাংশন ---
+    // মেইন অ্যাপ শুরু করার ফাংশন
+    async function initApp(user) {
+        document.getElementById('loading-screen').style.display = 'none';
+        
+        // প্রোফাইল তথ্য সেট করা
+        document.getElementById('u-name').innerText = user.displayName || "User";
+        document.getElementById('u-email').innerText = user.email;
+        document.getElementById('u-id').innerText = "#" + user.uid.slice(-6).toUpperCase();
+
+        // ডাটাবেজে ইউজার সেভ (শুধুমাত্র ভেরিফাইড হলে)
+        const userRef = ref(db, 'users/' + user.uid);
+        get(userRef).then((snap) => {
+            if (!snap.exists()) {
+                set(userRef, {
+                    username: user.displayName || "New User",
+                    email: user.email,
+                    role: "customer",
+                    joinedAt: serverTimestamp()
+                });
+            }
+        });
+
+        setupSlider();
+        fetchProducts();
+        setupProfileMenu();
+        setupCategories();
+    }
+
     function setupSlider() {
         const track = document.getElementById('sliderTrack');
         const dots = document.querySelectorAll('.dot');
@@ -274,14 +275,18 @@
                 if(track) track.innerHTML = html;
             }
         });
-        // স্লাইডার মুভমেন্টের বাকি কোড এখানে থাকবে...
+
+        // স্লাইডার অটো মুভমেন্ট
+        setInterval(() => {
+            current = (current + 1) % 3;
+            if(track) track.style.transform = `translateX(-${current * 33.333}%)`;
+            dots.forEach((d, i) => d.classList.toggle('active', i === current));
+        }, 4000);
     }
 
-    // --- প্রোডাক্ট ফাংশন ---
     let pArray = [];
     function fetchProducts() {
         onValue(ref(db, 'products'), (snap) => {
-            const list = document.getElementById('p-list');
             if(snap.exists()){
                 pArray = [];
                 snap.forEach(child => {
@@ -308,14 +313,42 @@
             </div>`).join('');
     }
 
-    // গ্লোবাল ফাংশন কানেক্ট করা (টাইপ মডিউলের জন্য প্রয়োজন)
+    function setupProfileMenu() {
+        const profileMenu = document.getElementById('profileMenu');
+        document.getElementById('profileTrigger').onclick = (e) => { 
+            e.stopPropagation(); 
+            profileMenu.classList.toggle('show'); 
+        };
+        document.onclick = (e) => { 
+            if (!profileMenu.contains(e.target)) profileMenu.classList.remove('show'); 
+        };
+        document.getElementById('logoutBtn').onclick = () => { 
+            signOut(auth).then(() => window.location.href = "index.html"); 
+        };
+        document.getElementById('copyIdBtn').onclick = () => {
+            const id = document.getElementById('u-id').innerText;
+            navigator.clipboard.writeText(id).then(() => alert("ID কপি হয়েছে!"));
+        };
+    }
+
+    function setupCategories() {
+        const cats = ['all', 'sports', 'electronics', 'fashion'];
+        cats.forEach(id => {
+            const el = document.getElementById('cat-' + id);
+            if(el) el.onclick = () => {
+                document.querySelectorAll('.cat-item').forEach(i => i.classList.remove('active'));
+                el.classList.add('active');
+                if(id === 'all') render(pArray);
+                else render(pArray.filter(p => p.category && p.category.toLowerCase().includes(id)));
+            }
+        });
+    }
+
     window.searchFn = () => {
         let v = document.getElementById('searchInput').value.toLowerCase();
         render(pArray.filter(p => p.name.toLowerCase().includes(v)));
     };
 </script>
-    
-    
-    
 </body>
-</html>
+    </html>
+    
