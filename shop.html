@@ -91,7 +91,6 @@
         .container { padding: 0 15px 15px 15px; }
         .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
         .p-card { background: var(--glass); border-radius: 18px; border: 1px solid var(--border); overflow: hidden; cursor: pointer; position: relative; transition: 0.3s; }
-        .p-card:active { transform: scale(0.95); }
         .p-card img { width: 100%; height: 130px; object-fit: cover; }
         .p-info { padding: 10px; }
         .p-name { font-size: 13px; font-weight: 600; color: #f1f5f9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -99,36 +98,22 @@
         .sold-badge { position: absolute; top: 8px; left: 8px; background: #ef4444; color: white; font-size: 10px; padding: 2px 8px; border-radius: 6px; font-weight: bold; z-index: 10; }
 
         .whatsapp-helpline {
-            position: fixed;
-            bottom: 30px;
-            right: 20px;
-            background: #25d366;
-            color: white;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 32px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            z-index: 9999; text-decoration: none;
-            animation: pulse-green 2s infinite;
+            position: fixed; bottom: 30px; right: 20px; background: #25d366; color: white;
+            width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 32px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 9999; text-decoration: none; animation: pulse-green 2s infinite;
         }
         @keyframes pulse-green {
             0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
             70% { transform: scale(1); box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
             100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
         }
-
         @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        @media (max-width: 480px) { .product-grid { grid-template-columns: 1fr 1fr; gap: 10px; } }
     </style>
 </head>
 <body>
 
-<div id="loading-screen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--primary); font-weight: bold; text-align: center; padding: 20px;">
-    <div id="loading-text" style="font-size: 20px; letter-spacing: 2px;">MS STORE</div>
-    <div id="verify-msg" style="display: none; font-size: 14px; color: #cbd5e1; margin-top: 15px; font-weight: normal; line-height: 1.6;">
-        আপনার জিমেইল চেক করে লিঙ্কটিতে ক্লিক করুন।<br>ভেরিফাই হওয়া মাত্রই অটোমেটিক হোম পেজ ওপেন হবে।
-    </div>
+<div id="loading-screen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; z-index: 9999; display: flex; align-items: center; justify-content: center; color: var(--primary); font-weight: bold; font-size: 20px;">
+    MS STORE
 </div>
 
 <header>
@@ -144,12 +129,10 @@
     </div>
 </header>
 
-<a href="https://wa.me/8801319474450" class="whatsapp-helpline" target="_blank">
-    <i class="fab fa-whatsapp"></i>
-</a>
+<a href="https://wa.me/8801319474450" class="whatsapp-helpline" target="_blank"><i class="fab fa-whatsapp"></i></a>
 
 <div class="slider-wrapper">
-    <div class="slider-container" id="sliderContainer">
+    <div class="slider-container">
         <div class="slider-track" id="sliderTrack"></div>
         <div class="dots" id="sliderDots">
             <div class="dot active"></div>
@@ -160,14 +143,12 @@
 </div>
 
 <div class="profile-menu" id="profileMenu">
-    <h3 style="margin:0 0 15px 0; font-size: 18px; color:var(--primary); text-align: center;">My Profile</h3>
-    <div class="id-box" id="copyIdBtn">
-        <div id="u-id" style="font-size: 18px; font-weight: bold; color: white;">#------</div>
-    </div>
-    <div class="user-data" id="u-name">লুড হচ্ছে...</div>
+    <h3 style="margin:0 0 15px 0; color:var(--primary); text-align: center;">My Profile</h3>
+    <div class="id-box" id="copyIdBtn"><div id="u-id" style="font-size: 18px; font-weight: bold;">#------</div></div>
+    <div class="user-data" id="u-name">Loading...</div>
     <div class="user-data" id="u-email">...</div>
-    <button style="width:100%; margin-top:20px; padding:12px; background:var(--primary); border:none; border-radius:12px; font-weight:bold; cursor:pointer;" onclick="location.href='my_orders.html'">My Orders</button>
-    <button style="width:100%; margin-top:10px; padding:10px; background:#e74c3c; border:none; border-radius:12px; color:white; cursor:pointer;" id="logoutBtn">Logout</button>
+    <button style="width:100%; margin-top:20px; padding:12px; background:var(--primary); border:none; border-radius:12px; font-weight:bold;" onclick="location.href='my_orders.html'">My Orders</button>
+    <button style="width:100%; margin-top:10px; padding:10px; background:#e74c3c; border:none; border-radius:12px; color:white;" id="logoutBtn">Logout</button>
 </div>
 
 <div class="cat-grid">
@@ -201,27 +182,20 @@
 
     let pArray = [];
 
-    // --- অথেন্টিকেশন লজিক (গুগল লগইনের জন্য সহজ করা হয়েছে) ---
     onAuthStateChanged(auth, async (user) => {
         if (user) {
-            // লোডিং স্ক্রিন বন্ধ করা
             document.getElementById('loading-screen').style.display = 'none';
-            
-            // অ্যাপের ফাংশনগুলো চালু করা
             initApp(user);
         } else {
-            // লগইন না থাকলে ইনডেক্স পেজে পাঠিয়ে দিবে
             window.location.href = "index.html";
         }
     });
 
     async function initApp(user) {
-        // প্রোফাইল তথ্য সেট করা
-        document.getElementById('u-name').innerText = user.displayName || "User";
+        document.getElementById('u-name').innerText = user.displayName || "Google User";
         document.getElementById('u-email').innerText = user.email;
         document.getElementById('u-id').innerText = "#" + user.uid.slice(-6).toUpperCase();
 
-        // ডাটাবেজে ইউজার সেভ করা (যদি না থাকে)
         const userRef = ref(db, 'users/' + user.uid);
         get(userRef).then((snap) => {
             if (!snap.exists()) {
@@ -234,14 +208,12 @@
             }
         });
 
-        // শপের মেইন ফাংশনগুলো কল করা
         setupSlider();
         fetchProducts();
         setupProfileMenu();
         setupEvents();
     }
 
-    // --- স্লাইডার ফাংশন (এটি ফিক্স করা হয়েছে) ---
     function setupSlider() {
         const track = document.getElementById('sliderTrack');
         const dots = document.querySelectorAll('.dot');
@@ -251,30 +223,25 @@
             if (snap.exists()) {
                 const data = snap.val();
                 let html = '';
-                // ৩টি ব্যানারের জন্য লুপ
                 for (let i = 1; i <= 3; i++) {
                     const b = data[`banner${i}`] || { img: 'https://via.placeholder.com/800x400', link: '#' };
-                    html += `<div class="slide" onclick="if('${b.link}'!=='#') window.location.href='${b.link}'">
-                                <img src="${b.img}">
-                             </div>`;
+                    html += `<div class="slide" onclick="if('${b.link}'!=='#') window.location.href='${b.link}'"><img src="${b.img}"></div>`;
                 }
-                if(track) track.innerHTML = html;
+                track.innerHTML = html;
             }
         });
 
-        // স্লাইডার অটো-মুভ লজিক
         setInterval(() => {
             current = (current + 1) % 3;
-            if(track) track.style.transform = `translateX(-${current * 33.333}%)`;
+            track.style.transform = `translateX(-${current * 33.333}%)`;
             dots.forEach((d, i) => d.classList.toggle('active', i === current));
-        }, 5000);
+        }, 4000);
     }
 
-    // --- প্রোডাক্ট লিস্ট লোড করা ---
     function fetchProducts() {
         onValue(ref(db, 'products'), (snap) => {
+            pArray = [];
             if(snap.exists()){
-                pArray = [];
                 snap.forEach(child => {
                     let d = child.val();
                     d.id = child.key;
@@ -287,7 +254,6 @@
 
     function render(data) {
         const list = document.getElementById('p-list');
-        if(!list) return;
         list.innerHTML = data.map(p => `
             <div class="p-card" onclick="location.href='product_details.html?id=${p.id}'">
                 ${p.stock <= 0 ? '<div class="sold-badge">Sold Out</div>' : ''}
@@ -299,56 +265,34 @@
             </div>`).join('');
     }
 
-    // --- প্রোফাইল মেনু ফাংশন ---
     function setupProfileMenu() {
-        const profileMenu = document.getElementById('profileMenu');
+        const menu = document.getElementById('profileMenu');
         const trigger = document.getElementById('profileTrigger');
         
-        if(trigger) {
-            trigger.onclick = (e) => { 
-                e.stopPropagation(); 
-                profileMenu.classList.toggle('show'); 
-            };
-        }
+        trigger.onclick = (e) => { e.stopPropagation(); menu.classList.toggle('show'); };
+        document.onclick = (e) => { if (!menu.contains(e.target)) menu.classList.remove('show'); };
 
-        document.onclick = (e) => { 
-            if (profileMenu && !profileMenu.contains(e.target)) {
-                profileMenu.classList.remove('show'); 
-            }
-        };
-
-        document.getElementById('logoutBtn').onclick = () => { 
-            signOut(auth).then(() => window.location.href = "index.html"); 
-        };
-
+        document.getElementById('logoutBtn').onclick = () => signOut(auth).then(() => location.href="index.html");
         document.getElementById('copyIdBtn').onclick = () => {
-            const id = document.getElementById('u-id').innerText;
-            navigator.clipboard.writeText(id).then(() => alert("ID কপি হয়েছে!"));
+            navigator.clipboard.writeText(document.getElementById('u-id').innerText).then(() => alert("ID Copied!"));
         };
     }
 
-    // --- সার্চ এবং ক্যাটাগরি ইভেন্ট ---
     function setupEvents() {
-        const searchInput = document.getElementById('searchInput');
-        if(searchInput) {
-            searchInput.onkeyup = (e) => {
-                let v = e.target.value.toLowerCase();
-                render(pArray.filter(p => p.name.toLowerCase().includes(v)));
-            };
-        }
+        document.getElementById('searchInput').oninput = (e) => {
+            let v = e.target.value.toLowerCase();
+            render(pArray.filter(p => p.name.toLowerCase().includes(v)));
+        };
 
         document.querySelectorAll('.cat-item').forEach(item => {
             item.onclick = () => {
                 document.querySelectorAll('.cat-item').forEach(i => i.classList.remove('active'));
                 item.classList.add('active');
                 const cat = item.getAttribute('data-cat');
-                if(cat === 'all') render(pArray);
-                else render(pArray.filter(p => p.category && p.category.toLowerCase() === cat));
+                render(cat === 'all' ? pArray : pArray.filter(p => p.category?.toLowerCase() === cat));
             }
         });
     }
 </script>
-    
-    
 </body>
 </html>
