@@ -2,129 +2,349 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Account Verified - MS STORE</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MS STORE - Home</title>
+
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <link rel="apple-touch-icon" href="https://i.postimg.cc/cCkXGkPH/FB-IMG-1770094555781.jpg">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
         :root {
             --primary: #00d2ff;
+            --secondary: #3a7bd5;
             --dark: #0f172a;
             --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+        body { font-family: 'Poppins', sans-serif; margin: 0; background: #0f172a; color: white; min-height: 100vh; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
+        
+        header { 
+            background: rgba(15, 23, 42, 0.98); 
+            backdrop-filter: blur(15px); 
+            padding: 12px 15px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 12px;
+            position: sticky; 
+            top: 0; 
+            z-index: 5000; 
+            border-bottom: 1px solid var(--border); 
+            box-sizing: border-box;
         }
 
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--dark);
+        .header-top { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        .logo { font-size: 22px; font-weight: bold; color: var(--primary); letter-spacing: 1px; }
+        .search-container { width: 100%; }
+        .search-box { position: relative; width: 100%; }
+        .search-box input { 
+            width: 100%; padding: 10px 40px 10px 15px; border-radius: 12px; 
+            border: 1px solid var(--border); background: var(--glass); 
+            color: white; font-size: 14px; outline: none; box-sizing: border-box; transition: 0.3s;
+        }
+        .search-box input:focus { border-color: var(--primary); background: rgba(255,255,255,0.08); }
+        .search-box i { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--primary); }
+        .profile-btn { font-size: 32px; cursor: pointer; color: var(--primary); background: none; border: none; padding: 0; display: flex; align-items: center; }
+
+        .slider-wrapper { padding: 15px 15px 5px 15px; }
+        .slider-container {
+            width: 100%; height: 180px; border-radius: 15px;
+            overflow: hidden; position: relative; background: var(--glass);
+            border: 1px solid var(--border); touch-action: pan-y;
+        }
+        .slider-track {
+            display: flex; width: 300%; height: 100%;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: transform;
+        }
+        .slide { width: 33.333%; height: 100%; cursor: pointer; flex-shrink: 0; }
+        .slide img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+        
+        .dots {
+            position: absolute; bottom: 12px; left: 50%;
+            transform: translateX(-50%); display: flex; gap: 8px; pointer-events: none;
+        }
+        .dot { width: 8px; height: 8px; background: rgba(255,255,255,0.3); border-radius: 50%; transition: 0.3s; }
+        .dot.active { background: var(--primary); width: 20px; border-radius: 4px; }
+
+        .profile-menu { 
+            display: none; position: fixed; top: 70px; right: 15px; 
+            width: 260px; background: #1e293b; border-radius: 20px; 
+            padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); 
+            z-index: 6000; border: 1px solid var(--border); 
+        }
+        .profile-menu.show { display: block; animation: slideIn 0.3s ease; }
+
+        .id-box { background: rgba(0, 210, 255, 0.1); border: 1px dashed var(--primary); padding: 12px; border-radius: 12px; text-align: center; margin-bottom: 15px; cursor: pointer; }
+        .user-data { background:rgba(0,0,0,0.2); padding:8px; border-radius:8px; margin-bottom:10px; font-size: 13px; word-wrap: break-word; }
+
+        .cat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 15px; margin-top: 5px; }
+        .cat-item { background: var(--glass); border: 1px solid var(--border); border-radius: 15px; padding: 12px 5px; text-align: center; cursor: pointer; transition: 0.3s; }
+        .cat-item i { font-size: 20px; color: var(--primary); margin-bottom: 5px; display: block; }
+        .cat-item span { font-size: 11px; font-weight: 500; color: #cbd5e1; }
+        .cat-item.active { background: var(--primary); border-color: var(--primary); }
+        .cat-item.active i, .cat-item.active span { color: #0f172a; }
+
+        .container { padding: 0 15px 15px 15px; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
+        .p-card { background: var(--glass); border-radius: 18px; border: 1px solid var(--border); overflow: hidden; cursor: pointer; position: relative; transition: 0.3s; }
+        .p-card:active { transform: scale(0.95); }
+        .p-card img { width: 100%; height: 130px; object-fit: cover; }
+        .p-info { padding: 10px; }
+        .p-name { font-size: 13px; font-weight: 600; color: #f1f5f9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .p-price { color: var(--primary); font-weight: bold; font-size: 15px; margin-top: 4px; }
+        .sold-badge { position: absolute; top: 8px; left: 8px; background: #ef4444; color: white; font-size: 10px; padding: 2px 8px; border-radius: 6px; font-weight: bold; z-index: 10; }
+
+        .whatsapp-helpline {
+            position: fixed;
+            bottom: 30px;
+            right: 20px;
+            background: #25d366;
             color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        .card {
-            background: var(--glass);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 40px 30px;
-            border-radius: 24px;
-            text-align: center;
-            max-width: 400px;
-            width: 90%;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-            animation: fadeIn 0.8s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .success-icon {
-            width: 80px;
-            height: 80px;
-            background: rgba(0, 210, 255, 0.1);
-            color: var(--primary);
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            margin: 0 auto 20px;
-            border: 2px solid var(--primary);
-            animation: scaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.3s both;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 32px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 9999; text-decoration: none;
+            animation: pulse-green 2s infinite;
+        }
+        @keyframes pulse-green {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
         }
 
-        @keyframes scaleIn {
-            from { transform: scale(0); }
-            to { transform: scale(1); }
-        }
-
-        h1 {
-            font-size: 24px;
-            margin-bottom: 10px;
-            color: #f1f5f9;
-        }
-
-        p {
-            color: #94a3b8;
-            font-size: 15px;
-            line-height: 1.6;
-            margin-bottom: 30px;
-        }
-
-        .btn {
-            display: block;
-            background: var(--primary);
-            color: var(--dark);
-            text-decoration: none;
-            padding: 14px;
-            border-radius: 14px;
-            font-weight: 600;
-            transition: 0.3s;
-            box-shadow: 0 4px 15px rgba(0, 210, 255, 0.3);
-        }
-
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 210, 255, 0.5);
-        }
-
-        .footer-text {
-            margin-top: 20px;
-            font-size: 12px;
-            color: #64748b;
-        }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        @media (max-width: 480px) { .product-grid { grid-template-columns: 1fr 1fr; gap: 10px; } }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <div class="success-icon">
-            <i class="fa fa-check"></i>
-        </div>
-        <h1>অ্যাকাউন্ট ভেরিফাইড!</h1>
-        <p>অভিনন্দন! আপনার ইমেইল সফলভাবে ভেরিফাই করা হয়েছে। আপনার শপিং অ্যাপটি এখন পুরোপুরি সক্রিয়।</p>
-        
-        <a href="shop.html" class="btn">হোম পেজে ফিরে যান</a>
+<div id="loading-screen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--primary); font-weight: bold; text-align: center; padding: 20px;">
+    <div id="loading-text" style="font-size: 20px; letter-spacing: 2px;">MS STORE</div>
+    <div id="verify-msg" style="display: none; font-size: 14px; color: #cbd5e1; margin-top: 15px; font-weight: normal; line-height: 1.6;">
+        আপনার জিমেইল চেক করে লিঙ্কটিতে ক্লিক করুন।<br>ভেরিফাই হওয়া মাত্রই অটোমেটিক হোম পেজ ওপেন হবে।
+    </div>
+</div>
 
-        <div class="footer-text">
-            আপনি এই ট্যাবটি বন্ধ করে আগের ট্যাবে ফিরে যেতে পারেন।
+<header>
+    <div class="header-top">
+        <div class="logo">MS STORE</div> 
+        <button class="profile-btn" id="profileTrigger"><i class="fa fa-user-circle"></i></button>
+    </div>
+    <div class="search-container">
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="পছন্দের পণ্যটি খুঁজুন...">
+            <i class="fa fa-search"></i>
         </div>
     </div>
+</header>
 
-    <script>
-        // ৫ সেকেন্ড পর অটোমেটিক রিডাইরেক্ট করার অপশন (ঐচ্ছিক)
-        /*
-        setTimeout(() => {
-            window.location.href = "shop.html";
+<a href="https://wa.me/8801319474450" class="whatsapp-helpline" target="_blank">
+    <i class="fab fa-whatsapp"></i>
+</a>
+
+<div class="slider-wrapper">
+    <div class="slider-container" id="sliderContainer">
+        <div class="slider-track" id="sliderTrack"></div>
+        <div class="dots" id="sliderDots">
+            <div class="dot active"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+    </div>
+</div>
+
+<div class="profile-menu" id="profileMenu">
+    <h3 style="margin:0 0 15px 0; font-size: 18px; color:var(--primary); text-align: center;">My Profile</h3>
+    <div class="id-box" id="copyIdBtn">
+        <div id="u-id" style="font-size: 18px; font-weight: bold; color: white;">#------</div>
+    </div>
+    <div class="user-data" id="u-name">...</div>
+    <div class="user-data" id="u-email">...</div>
+    <button style="width:100%; margin-top:20px; padding:12px; background:var(--primary); border:none; border-radius:12px; font-weight:bold; cursor:pointer;" onclick="location.href='my_orders.html'">My Orders</button>
+    <button style="width:100%; margin-top:10px; padding:10px; background:#e74c3c; border:none; border-radius:12px; color:white; cursor:pointer;" id="logoutBtn">Logout</button>
+</div>
+
+<div class="cat-grid">
+    <div class="cat-item active" data-cat="all"><i class="fa fa-th-large"></i><span>ALL</span></div>
+    <div class="cat-item" data-cat="sports"><i class="fa-solid fa-baseball-bat-ball"></i><span>SPORTS</span></div>
+    <div class="cat-item" data-cat="electronics"><i class="fa-solid fa-microchip"></i><span>DEVICE</span></div>
+    <div class="cat-item" data-cat="fashion"><i class="fa fa-tshirt"></i><span>FASHION</span></div>
+</div>
+
+<div class="container">
+    <div class="product-grid" id="p-list"></div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut, reload } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getDatabase, ref, onValue, get, set, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCu8lgGs3Q-qLeedhngQAVXtt8BHOAlWDg",
+        authDomain: "ms-sp-97f78.firebaseapp.com",
+        databaseURL: "https://ms-sp-97f78-default-rtdb.firebaseio.com",
+        projectId: "ms-sp-97f78",
+        storageBucket: "ms-sp-97f78.appspot.com",
+        appId: "1:880638162029:web:b99af5b5518b3e16a13b64"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    let pArray = [];
+
+    // --- অথেন্টিকেশন এবং ডিরেক্ট হোম পেজ ওপেন লজিক ---
+    onAuthStateChanged(auth, async (user) => {
+        const verifyMsg = document.getElementById('verify-msg');
+
+        if (user) {
+            // ১. ডাটা রিফ্রেশ (জিমেইল ক্লিক হয়েছে কি না চেক করতে)
+            await reload(user).catch(() => {});
+
+            if (auth.currentUser.emailVerified) {
+                // ভেরিফাইড হলে সরাসরি কোনো মেসেজ ছাড়াই অ্যাপ শুরু
+                initApp(auth.currentUser);
+            } else {
+                // ভেরিফাইড না হওয়া পর্যন্ত মেসেজ দেখাবে এবং ২ সেকেন্ড পর পর চেক করবে
+                verifyMsg.style.display = 'block';
+                
+                const checkInterval = setInterval(async () => {
+                    await reload(user).catch(() => {});
+                    if (auth.currentUser.emailVerified) {
+                        clearInterval(checkInterval);
+                        // ভেরিফাই হওয়া মাত্রই মেসেজ মুছে যাবে এবং পেজ রিলোড হয়ে অ্যাপে ঢুকবে
+                        window.location.reload(); 
+                    }
+                }, 2000);
+            }
+        } else {
+            window.location.href = "index.html";
+        }
+    });
+
+    async function initApp(user) {
+        // সরাসরি লোডিং স্ক্রিন হাইড করা
+        document.getElementById('loading-screen').style.display = 'none';
+        
+        // প্রোফাইল ডাটা সেট
+        document.getElementById('u-name').innerText = user.displayName || "User";
+        document.getElementById('u-email').innerText = user.email;
+        document.getElementById('u-id').innerText = "#" + user.uid.slice(-6).toUpperCase();
+
+        // ডাটাবেজে ইউজার ডাটা সেভ
+        const userRef = ref(db, 'users/' + user.uid);
+        get(userRef).then((snap) => {
+            if (!snap.exists()) {
+                set(userRef, {
+                    username: user.displayName || "New User",
+                    email: user.email,
+                    role: "customer",
+                    joinedAt: serverTimestamp()
+                });
+            }
+        });
+
+        setupSlider();
+        fetchProducts();
+        setupProfileMenu();
+        setupEvents();
+    }
+
+    function setupSlider() {
+        const track = document.getElementById('sliderTrack');
+        const dots = document.querySelectorAll('.dot');
+        let current = 0;
+
+        onValue(ref(db, 'banners'), (snap) => {
+            if (snap.exists()) {
+                const data = snap.val();
+                let html = '';
+                for (let i = 1; i <= 3; i++) {
+                    const b = data[`banner${i}`] || { img: 'https://via.placeholder.com/800x400', link: '#' };
+                    html += `<div class="slide" onclick="if('${b.link}'!=='#') window.location.href='${b.link}'"><img src="${b.img}"></div>`;
+                }
+                if(track) track.innerHTML = html;
+            }
+        });
+
+        setInterval(() => {
+            current = (current + 1) % 3;
+            if(track) track.style.transform = `translateX(-${current * 33.333}%)`;
+            dots.forEach((d, i) => d.classList.toggle('active', i === current));
         }, 5000);
-        */
-    </script>
+    }
+
+    function fetchProducts() {
+        onValue(ref(db, 'products'), (snap) => {
+            if(snap.exists()){
+                pArray = [];
+                snap.forEach(child => {
+                    let d = child.val();
+                    d.id = child.key;
+                    pArray.push(d);
+                });
+                render(pArray);
+            }
+        });
+    }
+
+    function render(data) {
+        const list = document.getElementById('p-list');
+        if(!list) return;
+        list.innerHTML = data.map(p => `
+            <div class="p-card" onclick="location.href='product_details.html?id=${p.id}'">
+                ${p.stock <= 0 ? '<div class="sold-badge">Sold Out</div>' : ''}
+                <img src="${p.img}" loading="lazy">
+                <div class="p-info">
+                    <div class="p-name">${p.name}</div>
+                    <div class="p-price">${p.price} ৳</div>
+                </div>
+            </div>`).join('');
+    }
+
+    function setupProfileMenu() {
+        const profileMenu = document.getElementById('profileMenu');
+        document.getElementById('profileTrigger').onclick = (e) => { 
+            e.stopPropagation(); 
+            profileMenu.classList.toggle('show'); 
+        };
+        document.onclick = (e) => { 
+            if (!profileMenu.contains(e.target)) profileMenu.classList.remove('show'); 
+        };
+        document.getElementById('logoutBtn').onclick = () => { 
+            signOut(auth).then(() => window.location.href = "index.html"); 
+        };
+        document.getElementById('copyIdBtn').onclick = () => {
+            const id = document.getElementById('u-id').innerText;
+            navigator.clipboard.writeText(id).then(() => alert("ID কপি হয়েছে!"));
+        };
+    }
+
+    function setupEvents() {
+        document.getElementById('searchInput').onkeyup = (e) => {
+            let v = e.target.value.toLowerCase();
+            render(pArray.filter(p => p.name.toLowerCase().includes(v)));
+        };
+
+        document.querySelectorAll('.cat-item').forEach(item => {
+            item.onclick = () => {
+                document.querySelectorAll('.cat-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                const cat = item.getAttribute('data-cat');
+                if(cat === 'all') render(pArray);
+                else render(pArray.filter(p => p.category && p.category.toLowerCase() === cat));
+            }
+        });
+    }
+</script>
 </body>
-</html>
+    </html>
+    
