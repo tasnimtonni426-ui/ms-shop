@@ -187,7 +187,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getAuth, onAuthStateChanged, signOut, reload } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getDatabase, ref, onValue, get, child, set, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
     const firebaseConfig = {
@@ -203,47 +203,46 @@
     const auth = getAuth(app);
     const db = getDatabase(app);
 
-    // --- অটো-ভেরিফিকেশন চেক লজিক ---
-    onAuthStateChanged(auth, (user) => {
+    // --- উন্নত অথেন্টিকেশন এবং ভেরিফিকেশন চেক ---
+    onAuthStateChanged(auth, async (user) => {
         if (user) {
-            // রিফ্রেশ করা যাতে লেটেস্ট ভেরিফিকেশন স্ট্যাটাস পাওয়া যায়
-            user.reload().then(() => {
-                if (user.emailVerified) {
-                    // ভেরিফাইড ইউজার
-                    document.getElementById('loading-screen').style.display = 'none';
-                    document.getElementById('u-name').innerText = user.displayName || "User";
-                    document.getElementById('u-email').innerText = user.email;
-                    document.getElementById('u-id').innerText = "#" + user.uid.slice(-6).toUpperCase();
-                    
-                    // প্রথমবার ডাটাবেজে ডাটা সেভ
-                    const dbRef = ref(db);
-                    get(child(dbRef, `users/${user.uid}`)).then((snapshot) => {
-                        if (!snapshot.exists()) {
-                            set(ref(db, 'users/' + user.uid), {
-                                username: user.displayName || "New User",
-                                email: user.email,
-                                role: "customer",
-                                joinedAt: serverTimestamp()
-                            });
-                        }
-                    });
+            // ১. ফোর্লি রিফ্রেশ করা টোকেন আপডেট করার জন্য
+            await reload(user); 
 
-                    setupSlider();
-                    fetchProducts();
-                } else {
-                    // যদি ভেরিফাই না থাকে, ১.৫ সেকেন্ড পর আবার চেক করবে (সিঙ্ক ইস্যু সমাধানের জন্য)
-                    setTimeout(() => {
-                        user.reload().then(() => {
-                            if (user.emailVerified) {
-                                window.location.reload(); // ভেরিফাইড হলে পেজ রিফ্রেশ করে ভেতরে ঢুকাবে
-                            } else {
-                                alert("আপনার ইমেইল ভেরিফাই করা হয়নি। দয়া করে জিমেইল চেক করুন।");
-                                window.location.href = "index.html"; 
-                            }
-                        });
-                    }, 1500);
+            if (user.emailVerified) {
+                // ভেরিফাইড হলে মেইন কন্টেন্ট দেখাবে
+                document.getElementById('loading-screen').style.display = 'none';
+                document.getElementById('u-name').innerText = user.displayName || "User";
+                document.getElementById('u-email').innerText = user.email;
+                document.getElementById('u-id').innerText = "#" + user.uid.slice(-6).toUpperCase();
+                
+                // ২. ভেরিফাইড ইউজারকে ডাটাবেজে রেকর্ড করা (যদি আগে না থাকে)
+                const userRef = ref(db, 'users/' + user.uid);
+                const snapshot = await get(userRef);
+                if (!snapshot.exists()) {
+                    await set(userRef, {
+                        username: user.displayName || "New User",
+                        email: user.email,
+                        role: "customer",
+                        verified: true,
+                        joinedAt: serverTimestamp()
+                    });
                 }
-            });
+
+                setupSlider();
+                fetchProducts();
+            } else {
+                // ৩. যদি ভেরিফাইড না হয়, তবে ২ সেকেন্ড অপেক্ষা করে আরেকবার চেক করবে (সিঙ্ক ডিলে হ্যান্ডলিং)
+                setTimeout(async () => {
+                    await reload(user);
+                    if (user.emailVerified) {
+                        window.location.reload(); 
+                    } else {
+                        alert("আপনার ইমেইল ভেরিফাই করা হয়নি। দয়া করে জিমেইল চেক করুন।");
+                        window.location.href = "index.html";
+                    }
+                }, 2000);
+            }
         } else {
             window.location.href = "index.html";
         }
