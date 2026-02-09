@@ -27,14 +27,17 @@ const auth = getAuth(app);
 const db = getDatabase(app);
 const provider = new GoogleAuthProvider();
 
-// লগইন সেশন ধরে রাখা
 setPersistence(auth, browserLocalPersistence);
 
-// --- ২. পপ-আপ (Modal) কন্ট্রোল ---
+// --- ২. পপ-আপ কন্ট্রোল (সুন্দর জিমেইল বাটন সহ) ---
 window.showModal = (email) => {
     const modal = document.getElementById('customModal');
     if(modal) {
-        document.getElementById('modalMessage').innerText = `আমরা ${email} ঠিকানায় একটি লিঙ্ক পাঠিয়েছি। ভেরিফাই করার পর আপনি সরাসরি শপে যেতে পারবেন।`;
+        document.getElementById('modalMessage').innerHTML = `
+            আমরা <b>${email}</b> ঠিকানায় একটি লিঙ্ক পাঠিয়েছি। <br> 
+            লিঙ্কে ক্লিক করে ভেরিফাই করার পর আপনি সরাসরি শপে যেতে পারবেন। <br><br>
+            <a href="https://mail.google.com/" target="_blank" style="background:#db4437; color:white; padding:10px 15px; text-decoration:none; border-radius:5px; display:inline-block;">জিমেইল চেক করুন</a>
+        `;
         modal.style.display = 'flex';
     }
 }
@@ -44,11 +47,12 @@ window.closeModal = () => {
     if(modal) modal.style.display = 'none';
 }
 
-// --- ৩. অটো-রিডাইরেক্ট লজিক (ইন্ডেক্স পেজে থাকলে) ---
+// --- ৩. অটো-রিডাইরেক্ট লজিক ---
 onAuthStateChanged(auth, (user) => {
     if (user) {
         user.reload().then(() => {
             if (user.emailVerified) {
+                // ভেরিফাইড হলে শপে পাঠাবে
                 if (window.location.pathname.includes("index.html") || window.location.pathname.endsWith("/")) {
                     window.location.href = "shop.html"; 
                 }
@@ -57,7 +61,7 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
-// --- ৪. সাইন-আপ লজিক (Redirect Settings সহ) ---
+// --- ৪. সাইন-আপ লজিক (ডাটাবেজ সেভ সরানো হয়েছে) ---
 const regForm = document.getElementById('registerForm');
 if (regForm) {
     regForm.addEventListener('submit', (e) => {
@@ -67,33 +71,20 @@ if (regForm) {
         const pass = document.getElementById('regPass').value;
 
         const actionCodeSettings = {
-    // সঠিক এবং ফুল লিঙ্ক
-    url: 'https://tasnimtonni426-ui.github.io/ms-shop/shop.html', 
-    handleCodeInApp: true,
-};
-
+            url: 'https://tasnimtonni426-ui.github.io/ms-shop/shop.html', 
+            handleCodeInApp: true,
+        };
 
         createUserWithEmailAndPassword(auth, email, pass).then((res) => {
-            // ভেরিফিকেশন ইমেইল পাঠানো
-            sendEmailVerification(res.user, actionCodeSettings).then(() => {
-                showModal(email); // পপ-আপ দেখাবে
-                
-                // ডাটাবেসে তথ্য রাখা
-                updateProfile(res.user, { displayName: name }).then(() => {
-                    set(ref(db, 'users/' + res.user.uid), {
-                        username: name,
-                        email: email,
-                        joinedAt: serverTimestamp()
-                    });
+            // শুধুমাত্র ডিসপ্লে নাম আপডেট হবে
+            updateProfile(res.user, { displayName: name }).then(() => {
+                // ভেরিফিকেশন ইমেইল পাঠানো
+                sendEmailVerification(res.user, actionCodeSettings).then(() => {
+                    showModal(email); 
                 });
             });
-        }).catch(err => {
-            if(err.code === 'auth/invalid-continue-uri') {
-                alert("Error: ফায়ারবেস কনসোলে ডোমেইনটি (tasnimtonni426-ui.github.io) অ্যাড করা নেই।");
-            } else {
-                alert("Error: " + err.message);
-            }
-        });
+            // এখানে ডাটাবেজে (set ref) আর কোনো কোড নেই, তাই ভেরিফাই ছাড়া ডাটা সেভ হবে না
+        }).catch(err => alert("Error: " + err.message));
     });
 }
 
