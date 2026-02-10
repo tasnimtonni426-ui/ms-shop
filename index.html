@@ -9,82 +9,118 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     
     <style>
-    /* মাউস ফলোয়ার গ্লো */
-    .cursor-glow {
-        position: fixed;
-        width: 300px;
-        height: 300px;
-        background: radial-gradient(circle, rgba(0, 210, 255, 0.1), transparent 70%);
-        border-radius: 50%;
-        pointer-events: none;
-        z-index: 0;
-        transform: translate(-50%, -50%);
-        transition: 0.1s linear;
-    }
+        :root {
+            --deep-sky: #001a2c;
+            --accent: #00d2ff;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.1);
+        }
 
-    /* টেক্সট এনিমেশন - টাইপিং ইফেক্ট বা গ্রেডিয়েন্ট এনিমেশন */
-    .hero-text h1 {
-        background: linear-gradient(90deg, #fff, var(--accent), #fff);
-        background-size: 200% auto;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        animation: shine 3s linear infinite;
-    }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    @keyframes shine {
-        to { background-position: 200% center; }
-    }
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: radial-gradient(circle at top right, #003d5b, #001a2c, #000a12);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
 
-    /* শপ স্ট্যাটাস (Trust Builder) */
-    .live-status {
-        margin-top: 15px;
-        font-size: 13px;
-        color: #22c55e;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        justify-content: center;
-        font-weight: 500;
-    }
-    .live-dot {
-        width: 8px;
-        height: 8px;
-        background: #22c55e;
-        border-radius: 50%;
-        animation: pulse 1.5s infinite;
-    }
-    @keyframes pulse {
-        0% { transform: scale(1); opacity: 1; }
-        100% { transform: scale(2.5); opacity: 0; }
-    }
-</style>
+        /* মাউস ফলোয়ার গ্লো */
+        .cursor-glow {
+            position: fixed; width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(0, 210, 255, 0.08), transparent 70%);
+            border-radius: 50%; pointer-events: none; z-index: 0;
+            transform: translate(-50%, -50%); transition: 0.1s linear;
+        }
 
-<div class="cursor-glow" id="cursorGlow"></div>
+        nav {
+            padding: 25px 5%; display: flex; justify-content: space-between;
+            align-items: center; position: fixed; width: 100%; z-index: 1000;
+            backdrop-filter: blur(15px); border-bottom: 1px solid var(--border);
+        }
 
-<div class="live-status">
-    <div class="live-dot"></div>
-    <span>১২ জন এই মুহূর্তে কেনাকাটা করছেন</span>
-</div>
+        .logo {
+            font-size: 26px; font-weight: 900; color: var(--accent);
+            letter-spacing: 2px; text-shadow: 0 0 20px rgba(0, 210, 255, 0.5);
+        }
 
-<script>
-    // মাউস গ্লো লজিক
-    const glow = document.getElementById('cursorGlow');
-    document.addEventListener('mousemove', (e) => {
-        glow.style.left = e.clientX + 'px';
-        glow.style.top = e.clientY + 'px';
-    });
-</script>
-    
+        .hero { padding-top: 140px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+
+        /* স্লাইডার উইন্ডো */
+        .slider-window {
+            width: 92%; max-width: 850px; height: 380px;
+            border-radius: 35px; overflow: hidden; position: relative;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.7); border: 1px solid var(--border);
+            margin-bottom: 50px; background: var(--glass);
+        }
+
+        .swiper-slide img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.7); }
+
+        .slide-overlay {
+            position: absolute; bottom: 0; left: 0; width: 100%;
+            padding: 50px 30px 30px; background: linear-gradient(transparent, rgba(0,26,44,0.95));
+            text-align: left;
+        }
+
+        /* টেক্সট এনিমেশন */
+        .hero-text h1 {
+            font-size: clamp(2.5rem, 10vw, 5rem); font-weight: 900; line-height: 1;
+            margin-bottom: 15px; background: linear-gradient(90deg, #fff, var(--accent), #fff);
+            background-size: 200% auto; -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent; animation: shine 4s linear infinite;
+        }
+
+        @keyframes shine { to { background-position: 200% center; } }
+
+        .hero-text p { font-size: 1.1rem; color: #94a3b8; max-width: 600px; margin: 0 auto 35px; }
+
+        .google-btn {
+            background: white; color: #001a2c; padding: 20px 50px;
+            border-radius: 100px; font-weight: 700; font-size: 1.1rem;
+            border: none; cursor: pointer; display: flex; align-items: center; gap: 15px;
+            transition: 0.5s cubic-bezier(0.2, 1, 0.3, 1); box-shadow: 0 15px 30px rgba(0, 210, 255, 0.3);
+        }
+
+        .google-btn:hover { transform: scale(1.05) translateY(-5px); }
+
+        /* লাইভ স্ট্যাটাস */
+        .live-status {
+            margin-top: 20px; font-size: 14px; color: #4ade80;
+            display: flex; align-items: center; gap: 10px; justify-content: center;
+        }
+        .live-dot { width: 10px; height: 10px; background: #4ade80; border-radius: 50%; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(2.5); opacity: 0; } }
+
+        .features-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+            width: 90%; max-width: 900px; margin: 60px 0;
+        }
+
+        .f-card { background: var(--glass); padding: 30px 20px; border-radius: 25px; border: 1px solid var(--border); transition: 0.4s; }
+        .f-card i { font-size: 1.8rem; color: var(--accent); margin-bottom: 15px; display: block; }
+
+        .three-dots-btn { width: 45px; height: 45px; background: var(--glass); display: grid; place-items: center; border-radius: 15px; cursor: pointer; border: 1px solid var(--border); }
+        .admin-dropdown {
+            display: none; position: absolute; right: 5%; top: 90px;
+            background: #001a2c; border: 1px solid var(--border);
+            width: 200px; border-radius: 20px; overflow: hidden;
+        }
+        .admin-dropdown.show { display: block; animation: slideDown 0.3s ease; }
+
+        @media (max-width: 768px) { .features-grid { grid-template-columns: 1fr; } .slider-window { height: 280px; } }
+    </style>
 </head>
 <body>
+
+    <div class="cursor-glow" id="cursorGlow"></div>
 
     <nav>
         <div class="logo">MS STORE</div>
         <div class="admin-nav">
             <div class="three-dots-btn" id="menuToggle"><i class="fa fa-ellipsis-v"></i></div>
             <div class="admin-dropdown" id="dropdownMenu">
-                <a href="admin_login.html"><i class="fa fa-user-shield"></i> Admin Access</a>
-                <a href="#"><i class="fa fa-headset"></i> Get Help</a>
+                <a href="admin_login.html" style="display: block; padding: 15px 20px; color: white; text-decoration: none;">Admin Access</a>
             </div>
         </div>
     </nav>
@@ -95,15 +131,15 @@
                 <div class="swiper-wrapper">
                     <div class="swiper-slide">
                         <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=2070">
-                        <div class="slide-overlay"><h2>Nike Air Max</h2></div>
+                        <div class="slide-overlay"><h2>Exclusive Nike Collection</h2></div>
                     </div>
                     <div class="swiper-slide">
                         <img src="https://images.unsplash.com/photo-1491553895911-0055eca6402d?q=80&w=2070">
-                        <div class="slide-overlay"><h2>Premium Sports</h2></div>
+                        <div class="slide-overlay"><h2>Premium Sports Gear</h2></div>
                     </div>
                     <div class="swiper-slide">
                         <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=2070">
-                        <div class="slide-overlay"><h2>Luxury Fashion</h2></div>
+                        <div class="slide-overlay"><h2>Classic Urban Fashion</h2></div>
                     </div>
                 </div>
             </div>
@@ -117,14 +153,18 @@
         <div class="login-section">
             <button class="google-btn" id="googleLoginBtn">
                 <img src="https://img.icons8.com/color/48/000000/google-logo.png" width="28">
-                Google দিয়ে লগইন
+                Google দিয়ে লগইন করুন
             </button>
+            <div class="live-status">
+                <div class="live-dot"></div>
+                <span>১২ জন এই মুহূর্তে কেনাকাটা করছেন</span>
+            </div>
         </div>
 
         <div class="features-grid">
             <div class="f-card"><i class="fa fa-gem"></i><h3>PREMIUM QUALITY</h3></div>
-            <div class="f-card"><i class="fa fa-bolt"></i><h3>FASTEST SHIP</h3></div>
-            <div class="f-card"><i class="fa fa-shield-alt"></i><h3>SECURE PAY</h3></div>
+            <div class="f-card"><i class="fa fa-bolt"></i><h3>FAST DELIVERY</h3></div>
+            <div class="f-card"><i class="fa fa-shield-alt"></i><h3>SECURE ACCESS</h3></div>
         </div>
     </section>
 
@@ -147,37 +187,28 @@
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
 
-        // লগইন লজিক
         document.getElementById('googleLoginBtn').onclick = () => {
-            signInWithPopup(auth, provider)
-            .then(() => window.location.href = "shop.html")
-            .catch((e) => console.log(e.message));
+            signInWithPopup(auth, provider).then(() => window.location.href = "shop.html");
         };
 
-        onAuthStateChanged(auth, (user) => {
-            if (user) window.location.href = "shop.html";
-        });
+        onAuthStateChanged(auth, (user) => { if (user) window.location.href = "shop.html"; });
 
-        // স্লাইডার কন্ট্রোল (Swiper)
         var swiper = new Swiper(".mySwiper", {
-            effect: "coverflow",
-            grabCursor: true,
-            centeredSlides: true,
-            slidesPerView: "auto",
-            loop: true,
-            autoplay: { delay: 3000, disableOnInteraction: false },
+            grabCursor: true, loop: true, autoplay: { delay: 3000 }
         });
 
-        // ড্রপডাউন
+        // Mouse Glow
+        const glow = document.getElementById('cursorGlow');
+        document.addEventListener('mousemove', (e) => {
+            glow.style.left = e.clientX + 'px';
+            glow.style.top = e.clientY + 'px';
+        });
+
+        // Dropdown
         const menuToggle = document.getElementById('menuToggle');
         const dropdown = document.getElementById('dropdownMenu');
-        menuToggle.onclick = (e) => {
-            e.stopPropagation();
-            dropdown.classList.toggle('show');
-        };
+        menuToggle.onclick = (e) => { e.stopPropagation(); dropdown.classList.toggle('show'); };
         window.onclick = () => dropdown.classList.remove('show');
     </script>
 </body>
-    </html>
-
-    
+</html>
