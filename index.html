@@ -119,6 +119,8 @@
             display: flex; align-items: center; gap: 15px;
             transition: 0.5s cubic-bezier(0.2, 1, 0.3, 1);
             box-shadow: 0 15px 30px rgba(0, 210, 255, 0.2);
+            user-select: none; /* Long press এর সময় টেক্সট সিলেক্ট হবে না */
+            -webkit-user-select: none;
         }
 
         .google-btn:hover {
@@ -174,8 +176,8 @@
         <div class="admin-nav">
             <div class="three-dots-btn" id="menuToggle"><i class="fa fa-ellipsis-v"></i></div>
             <div class="admin-dropdown" id="dropdownMenu">
-                <a href="admin_login.html"><i class="fa fa-user-shield"></i> Admin Access</a>
                 <a href="#"><i class="fa fa-headset"></i> Get Help</a>
+                <a href="#"><i class="fa fa-info-circle"></i> About Us</a>
             </div>
         </div>
     </nav>
@@ -238,12 +240,34 @@
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
 
-        // লগইন লজিক
-        document.getElementById('googleLoginBtn').onclick = () => {
+        const loginBtn = document.getElementById('googleLoginBtn');
+
+        // লগইন লজিক (সাধারণ ক্লিক)
+        loginBtn.onclick = () => {
             signInWithPopup(auth, provider)
             .then(() => window.location.href = "shop.html")
             .catch((e) => console.log(e.message));
         };
+
+        // --- সিক্রেট এডমিন এক্সেস (Long Press Logic) ---
+        let pressTimer;
+        
+        const startPress = () => {
+            pressTimer = setTimeout(() => {
+                window.location.href = "admin_login.html";
+            }, 3000); // ৩ সেকেন্ড চেপে ধরে রাখলে এডমিন পেজ আসবে
+        };
+
+        const endPress = () => {
+            clearTimeout(pressTimer);
+        };
+
+        // মাউস এবং টাচ ইভেন্ট
+        loginBtn.addEventListener('mousedown', startPress);
+        loginBtn.addEventListener('touchstart', startPress);
+        loginBtn.addEventListener('mouseup', endPress);
+        loginBtn.addEventListener('mouseleave', endPress);
+        loginBtn.addEventListener('touchend', endPress);
 
         onAuthStateChanged(auth, (user) => {
             if (user) window.location.href = "shop.html";
@@ -269,4 +293,4 @@
         window.onclick = () => dropdown.classList.remove('show');
     </script>
 </body>
-</html> 
+</html>
