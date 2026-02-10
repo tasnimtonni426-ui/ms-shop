@@ -216,25 +216,31 @@
 
     function setupSlider() {
         const track = document.getElementById('sliderTrack');
-        const dots = document.querySelectorAll('.dot');
+        const dotsContainer = document.getElementById('sliderDots');
         let current = 0;
 
         onValue(ref(db, 'banners'), (snap) => {
             if (snap.exists()) {
                 const data = snap.val();
                 let html = '';
-                for (let i = 1; i <= 3; i++) {
-                    const b = data[`banner${i}`] || { img: 'https://via.placeholder.com/800x400', link: '#' };
+                // অরিজিনাল ৩টি ব্যানার রেন্ডার
+                const bannerKeys = ['banner1', 'banner2', 'banner3'];
+                bannerKeys.forEach(key => {
+                    const b = data[key] || { img: 'https://via.placeholder.com/800x400', link: '#' };
                     html += `<div class="slide" onclick="if('${b.link}'!=='#') window.location.href='${b.link}'"><img src="${b.img}"></div>`;
-                }
+                });
                 track.innerHTML = html;
             }
         });
 
         setInterval(() => {
-            current = (current + 1) % 3;
-            track.style.transform = `translateX(-${current * 33.333}%)`;
-            dots.forEach((d, i) => d.classList.toggle('active', i === current));
+            const slides = track.querySelectorAll('.slide');
+            if(slides.length > 0) {
+                current = (current + 1) % slides.length;
+                track.style.transform = `translateX(-${current * 33.333}%)`;
+                const dots = dotsContainer.querySelectorAll('.dot');
+                dots.forEach((d, i) => d.classList.toggle('active', i === current));
+            }
         }, 4000);
     }
 
@@ -289,15 +295,17 @@
                 document.querySelectorAll('.cat-item').forEach(i => i.classList.remove('active'));
                 item.classList.add('active');
                 
-                const selectedCat = item.getAttribute('data-cat').toLowerCase();
+                const cat = item.getAttribute('data-cat').toLowerCase();
                 
-                if (selectedCat === 'all') {
+                if (cat === 'all') {
                     render(pArray);
                 } else {
                     const filtered = pArray.filter(p => {
-                        // ডাটাবেসে থাকা ক্যাটাগরিকে ছোট হাতের অক্ষরে কনভার্ট করে ফিল্টার করা হচ্ছে
-                        // যাতে 'Sports' এবং 'sports' এর মধ্যে কোনো পার্থক্য না থাকে।
-                        return p.category && p.category.toLowerCase() === selectedCat;
+                        // অরিজিনাল ক্যাটাগরি এবং সাব-ক্যাটাগরি চেক
+                        // (বড় হাতের বা ছোট হাতের যেকোনো অক্ষর থাকলেই কাজ করবে)
+                        const mainCat = (p.category || "").toLowerCase();
+                        const subCat = (p.subCategory || "").toLowerCase();
+                        return mainCat === cat || subCat === cat;
                     });
                     render(filtered);
                 }
