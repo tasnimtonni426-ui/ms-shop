@@ -288,8 +288,29 @@
             item.onclick = () => {
                 document.querySelectorAll('.cat-item').forEach(i => i.classList.remove('active'));
                 item.classList.add('active');
-                const cat = item.getAttribute('data-cat');
-                render(cat === 'all' ? pArray : pArray.filter(p => p.category?.toLowerCase() === cat));
+                
+                const selectedCat = item.getAttribute('data-cat').toLowerCase();
+                
+                if (selectedCat === 'all') {
+                    render(pArray);
+                } else {
+                    const filtered = pArray.filter(p => {
+                        const pCat = (p.category || "").toLowerCase();
+                        
+                        // লজিক: মেইন ক্যাটাগরির সাথে সাব-ক্যাটাগরিগুলোকে ম্যাপ করা
+                        if (selectedCat === 'sports') {
+                            return pCat === 'sports' || pCat === 'jersey' || pCat === 'boots' || pCat === 'sports equipment';
+                        }
+                        if (selectedCat === 'electronics') {
+                            return pCat === 'electronics' || pCat === 'device' || pCat === 'mobile accessories' || pCat === 'gadgets' || pCat === 'headphones';
+                        }
+                        if (selectedCat === 'fashion') {
+                            return pCat === 'fashion' || pCat === "men's fashion" || pCat === "women's fashion" || pCat === "shoes";
+                        }
+                        return pCat === selectedCat;
+                    });
+                    render(filtered);
+                }
             }
         });
     }
