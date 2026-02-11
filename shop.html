@@ -202,6 +202,7 @@
         setupEvents();
     }
 
+    // স্লাইডার ফাংশন (ফিক্সড)
     function setupSlider() {
         const track = document.getElementById('sliderTrack');
         const dotsContainer = document.getElementById('sliderDots');
@@ -227,10 +228,7 @@
                 current = (current + 1) % slides.length;
                 track.style.transform = `translateX(-${current * 33.333}%)`;
                 const dots = dotsContainer.querySelectorAll('.dot');
-                if(dots[current]) {
-                    dots.forEach(d => d.classList.remove('active'));
-                    dots[current].classList.add('active');
-                }
+                dots.forEach((d, i) => d.classList.toggle('active', i === current));
             }
         }, 4000);
     }
@@ -249,9 +247,10 @@
         });
     }
 
+    // প্রোডাক্ট রেন্ডার ফাংশন
     function render(data) {
         const list = document.getElementById('p-list');
-        if (data.length === 0) {
+        if (!data || data.length === 0) {
             list.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 20px; color: #94a3b8;">এই ক্যাটাগরিতে কোনো পণ্য নেই।</div>`;
             return;
         }
@@ -275,13 +274,11 @@
     }
 
     function setupEvents() {
-        // সার্চ ফাংশন
         document.getElementById('searchInput').oninput = (e) => {
             let v = e.target.value.toLowerCase();
             render(pArray.filter(p => p.name.toLowerCase().includes(v)));
         };
 
-        // ক্যাটাগরি ফিল্টার - এইখানে পরিবর্তন করা হয়েছে
         document.querySelectorAll('.cat-item').forEach(item => {
             item.onclick = () => {
                 document.querySelectorAll('.cat-item').forEach(i => i.classList.remove('active'));
@@ -291,21 +288,253 @@
                 
                 if (selectedCat === 'all') {
                     render(pArray);
+                    removeSubCatUI(); // সাব-ক্যাটাগরি অপশন মুছে ফেলবে
                 } else {
+                    // ফিল্টার লজিক উন্নত করা হয়েছে (আগের প্রোডাক্ট পাওয়ার জন্য)
                     const filtered = pArray.filter(p => {
-                        // ডাটাবেসের ক্যাটাগরি এবং সাব-ক্যাটাগরি উভয়ই চেক করবে
-                        // trims() ব্যবহার করা হয়েছে যাতে কোনো স্পেস থাকলেও সমস্যা না হয়
-                        const mainCat = (p.category || "").toString().toLowerCase().trim();
-                        const subCat = (p.subCategory || "").toString().toLowerCase().trim();
-                        
-                        return mainCat === selectedCat || subCat === selectedCat;
+                        const pCat = (p.category || p.cat || "").toString().toLowerCase().trim();
+                        return pCat === selectedCat;
                     });
                     render(filtered);
+                    
+                    // সাব-ক্যাটাগরি অপশন দেখানোর লজিক
+                    showSubCategories(selectedCat, filtered);
                 }
             }
         });
     }
+
+    // সাব-ক্যাটাগরি দেখানোর নতুন ফাংশন
+    function showSubCategories(mainCat, products) {
+        removeSubCatUI();
+        
+        // বর্তমান ফিল্টার করা প্রোডাক্ট থেকে ইউনিক সাব-ক্যাটাগরি বের করা
+        const subCats = [...new Set(products.map(p => p.subCategory).filter(s => s))];
+        
+        if (subCats.length > 0) {
+            const subContainer = document.createElement('div');
+            subContainer.id = 'sub-cat-wrapper';
+            subContainer.style = "display: flex; gap: 10px; padding: 10px 15px; overflow-x: auto; margin-bottom: 10px;";
+            
+            subContainer.innerHTML = subCats.map(sc => `
+                <div class="sub-cat-item" style="background: var(--glass); border: 1px solid var(--border); padding: 5px 15px; border-radius: 20px; font-size: 12px; white-space: nowrap; cursor: pointer;">
+                    ${sc}
+                </div>
+            `).join('');
+
+            const container = document.querySelector('.container');
+            container.parentNode.insertBefore(subContainer, container);
+
+            // সাব-ক্যাটাগরিতে ক্লিক করলে ফিল্টার হওয়া
+            subContainer.querySelectorAll('.sub-cat-item').forEach(btn => {
+                btn.onclick = () => {
+                    const scName = btn.innerText.trim().toLowerCase();
+                    const scFiltered = pArray.filter(p => 
+                        (p.category || p.cat || "").toLowerCase().trim() === mainCat && 
+                        (p.subCategory || "").toLowerCase().trim() === scName
+                    );
+                    render(scFiltered);
+                    
+                    // একটিভ স্টাইল
+                    subContainer.querySelectorAll('.sub-cat-item').forEach(b => b.style.borderColor = "var(--border)");
+                    btn.style.borderColor = "var(--primary)";
+                };
+            });
+        }
+    }
+
+    function removeSubCatUI() {
+        const old = document.getElementById('sub-cat-wrapper');
+        if (old) old.remove();
+    }
 </script>
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getDatabase, ref, onValue, get, set, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCu8lgGs3Q-qLeedhngQAVXtt8BHOAlWDg",
+        authDomain: "ms-sp-97f78.firebaseapp.com",
+        databaseURL: "https://ms-sp-97f78-default-rtdb.firebaseio.com",
+        projectId: "ms-sp-97f78",
+        storageBucket: "ms-sp-97f78.appspot.com",
+        appId: "1:880638162029:web:b99af5b5518b3e16a13b64"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    let pArray = [];
+
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            document.getElementById('loading-screen').style.display = 'none';
+            initApp(user);
+        } else {
+            window.location.href = "index.html";
+        }
+    });
+
+    async function initApp(user) {
+        document.getElementById('u-name').innerText = user.displayName || "Google User";
+        document.getElementById('u-email').innerText = user.email;
+        document.getElementById('u-id').innerText = "#" + user.uid.slice(-6).toUpperCase();
+
+        setupSlider();
+        fetchProducts();
+        setupProfileMenu();
+        setupEvents();
+    }
+
+    // স্লাইডার ফাংশন (ফিক্সড)
+    function setupSlider() {
+        const track = document.getElementById('sliderTrack');
+        const dotsContainer = document.getElementById('sliderDots');
+        let current = 0;
+
+        onValue(ref(db, 'banners'), (snap) => {
+            if (snap.exists()) {
+                const data = snap.val();
+                let html = '';
+                const bannerKeys = ['banner1', 'banner2', 'banner3'];
+                bannerKeys.forEach(key => {
+                    if(data[key]) {
+                        html += `<div class="slide" onclick="window.location.href='${data[key].link || '#'}'"><img src="${data[key].img}"></div>`;
+                    }
+                });
+                track.innerHTML = html;
+            }
+        });
+
+        setInterval(() => {
+            const slides = track.querySelectorAll('.slide');
+            if(slides.length > 0) {
+                current = (current + 1) % slides.length;
+                track.style.transform = `translateX(-${current * 33.333}%)`;
+                const dots = dotsContainer.querySelectorAll('.dot');
+                dots.forEach((d, i) => d.classList.toggle('active', i === current));
+            }
+        }, 4000);
+    }
+
+    function fetchProducts() {
+        onValue(ref(db, 'products'), (snap) => {
+            pArray = [];
+            if(snap.exists()){
+                snap.forEach(child => {
+                    let d = child.val();
+                    d.id = child.key;
+                    pArray.push(d);
+                });
+                render(pArray);
+            }
+        });
+    }
+
+    // প্রোডাক্ট রেন্ডার ফাংশন
+    function render(data) {
+        const list = document.getElementById('p-list');
+        if (!data || data.length === 0) {
+            list.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 20px; color: #94a3b8;">এই ক্যাটাগরিতে কোনো পণ্য নেই।</div>`;
+            return;
+        }
+        list.innerHTML = data.map(p => `
+            <div class="p-card" onclick="location.href='product_details.html?id=${p.id}'">
+                ${p.stock <= 0 ? '<div class="sold-badge">Sold Out</div>' : ''}
+                <img src="${p.img}" loading="lazy">
+                <div class="p-info">
+                    <div class="p-name">${p.name}</div>
+                    <div class="p-price">${p.price} ৳</div>
+                </div>
+            </div>`).join('');
+    }
+
+    function setupProfileMenu() {
+        const menu = document.getElementById('profileMenu');
+        const trigger = document.getElementById('profileTrigger');
+        trigger.onclick = (e) => { e.stopPropagation(); menu.classList.toggle('show'); };
+        document.onclick = (e) => { if (!menu.contains(e.target)) menu.classList.remove('show'); };
+        document.getElementById('logoutBtn').onclick = () => signOut(auth).then(() => location.href="index.html");
+    }
+
+    function setupEvents() {
+        document.getElementById('searchInput').oninput = (e) => {
+            let v = e.target.value.toLowerCase();
+            render(pArray.filter(p => p.name.toLowerCase().includes(v)));
+        };
+
+        document.querySelectorAll('.cat-item').forEach(item => {
+            item.onclick = () => {
+                document.querySelectorAll('.cat-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                
+                const selectedCat = item.getAttribute('data-cat').toLowerCase();
+                
+                if (selectedCat === 'all') {
+                    render(pArray);
+                    removeSubCatUI(); // সাব-ক্যাটাগরি অপশন মুছে ফেলবে
+                } else {
+                    // ফিল্টার লজিক উন্নত করা হয়েছে (আগের প্রোডাক্ট পাওয়ার জন্য)
+                    const filtered = pArray.filter(p => {
+                        const pCat = (p.category || p.cat || "").toString().toLowerCase().trim();
+                        return pCat === selectedCat;
+                    });
+                    render(filtered);
+                    
+                    // সাব-ক্যাটাগরি অপশন দেখানোর লজিক
+                    showSubCategories(selectedCat, filtered);
+                }
+            }
+        });
+    }
+
+    // সাব-ক্যাটাগরি দেখানোর নতুন ফাংশন
+    function showSubCategories(mainCat, products) {
+        removeSubCatUI();
+        
+        // বর্তমান ফিল্টার করা প্রোডাক্ট থেকে ইউনিক সাব-ক্যাটাগরি বের করা
+        const subCats = [...new Set(products.map(p => p.subCategory).filter(s => s))];
+        
+        if (subCats.length > 0) {
+            const subContainer = document.createElement('div');
+            subContainer.id = 'sub-cat-wrapper';
+            subContainer.style = "display: flex; gap: 10px; padding: 10px 15px; overflow-x: auto; margin-bottom: 10px;";
+            
+            subContainer.innerHTML = subCats.map(sc => `
+                <div class="sub-cat-item" style="background: var(--glass); border: 1px solid var(--border); padding: 5px 15px; border-radius: 20px; font-size: 12px; white-space: nowrap; cursor: pointer;">
+                    ${sc}
+                </div>
+            `).join('');
+
+            const container = document.querySelector('.container');
+            container.parentNode.insertBefore(subContainer, container);
+
+            // সাব-ক্যাটাগরিতে ক্লিক করলে ফিল্টার হওয়া
+            subContainer.querySelectorAll('.sub-cat-item').forEach(btn => {
+                btn.onclick = () => {
+                    const scName = btn.innerText.trim().toLowerCase();
+                    const scFiltered = pArray.filter(p => 
+                        (p.category || p.cat || "").toLowerCase().trim() === mainCat && 
+                        (p.subCategory || "").toLowerCase().trim() === scName
+                    );
+                    render(scFiltered);
+                    
+                    // একটিভ স্টাইল
+                    subContainer.querySelectorAll('.sub-cat-item').forEach(b => b.style.borderColor = "var(--border)");
+                    btn.style.borderColor = "var(--primary)";
+                };
+            });
+        }
+    }
+
+    function removeSubCatUI() {
+        const old = document.getElementById('sub-cat-wrapper');
+        if (old) old.remove();
+    }
+            </script>
+    
     
 </body>
 </html>
