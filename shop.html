@@ -196,18 +196,6 @@
         document.getElementById('u-email').innerText = user.email;
         document.getElementById('u-id').innerText = "#" + user.uid.slice(-6).toUpperCase();
 
-        const userRef = ref(db, 'users/' + user.uid);
-        get(userRef).then((snap) => {
-            if (!snap.exists()) {
-                set(userRef, {
-                    username: user.displayName || "Google User",
-                    email: user.email,
-                    role: "customer",
-                    joinedAt: serverTimestamp()
-                });
-            }
-        });
-
         setupSlider();
         fetchProducts();
         setupProfileMenu();
@@ -223,7 +211,6 @@
             if (snap.exists()) {
                 const data = snap.val();
                 let html = '';
-                // অরিজিনাল ৩টি ব্যানার রেন্ডার
                 const bannerKeys = ['banner1', 'banner2', 'banner3'];
                 bannerKeys.forEach(key => {
                     const b = data[key] || { img: 'https://via.placeholder.com/800x400', link: '#' };
@@ -274,14 +261,9 @@
     function setupProfileMenu() {
         const menu = document.getElementById('profileMenu');
         const trigger = document.getElementById('profileTrigger');
-        
         trigger.onclick = (e) => { e.stopPropagation(); menu.classList.toggle('show'); };
         document.onclick = (e) => { if (!menu.contains(e.target)) menu.classList.remove('show'); };
-
-        document.getElementById('logoutBtn').onclick = () => signOut(auth).then(() => location.href="index.html");
-        document.getElementById('copyIdBtn').onclick = () => {
-            navigator.clipboard.writeText(document.getElementById('u-id').innerText).then(() => alert("ID Copied!"));
-        };
+        document.getElementById('logoutBtn').onclick = () => signOut(auth);
     }
 
     function setupEvents() {
@@ -295,17 +277,17 @@
                 document.querySelectorAll('.cat-item').forEach(i => i.classList.remove('active'));
                 item.classList.add('active');
                 
-                const cat = item.getAttribute('data-cat').toLowerCase();
+                const selectedCat = item.getAttribute('data-cat').toLowerCase();
                 
-                if (cat === 'all') {
+                if (selectedCat === 'all') {
                     render(pArray);
                 } else {
                     const filtered = pArray.filter(p => {
-                        // অরিজিনাল ক্যাটাগরি এবং সাব-ক্যাটাগরি চেক
-                        // (বড় হাতের বা ছোট হাতের যেকোনো অক্ষর থাকলেই কাজ করবে)
-                        const mainCat = (p.category || "").toLowerCase();
-                        const subCat = (p.subCategory || "").toLowerCase();
-                        return mainCat === cat || subCat === cat;
+                        // ডাটাবেস থেকে আসা ডাটা যাতে ভুল না হয় তাই একাধিক নাম চেক করা হচ্ছে
+                        const pCat = (p.category || p.Category || p.cat || "").toLowerCase();
+                        const pSubCat = (p.subCategory || p.SubCategory || "").toLowerCase();
+                        
+                        return pCat === selectedCat || pSubCat === selectedCat;
                     });
                     render(filtered);
                 }
