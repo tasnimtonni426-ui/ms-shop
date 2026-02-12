@@ -68,7 +68,7 @@
     </div>
 
     <div class="nav-grid">
-        <button class="nav-btn btn-orders" onclick="window.location.href='admin_orders.html'">
+        <button class="nav-btn btn-orders" onclick="window.location.href='orders.html'">
             <i class="fa fa-shopping-cart"></i>অর্ডার রিকোয়েস্ট
         </button>
         <button class="nav-btn btn-users" onclick="window.location.href='user_details.html'">
@@ -150,20 +150,6 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     const auth = getAuth(app);
-
-    let deferredPrompt;
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        document.getElementById('admin-install-container').style.display = 'flex';
-    });
-    document.getElementById('admin-install-btn').onclick = async () => {
-        if (deferredPrompt) {
-            deferredPrompt.prompt();
-            deferredPrompt = null;
-            document.getElementById('admin-install-container').style.display = 'none';
-        }
-    };
 
     onAuthStateChanged(auth, (user) => {
         if (user && user.email === 'tasnimtonni426@gmail.com') {
@@ -347,5 +333,5 @@
     };
 </script>
 </body>
-    </html>
+                                                                         </html>
     
