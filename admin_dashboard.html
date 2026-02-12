@@ -68,10 +68,10 @@
     </div>
 
     <div class="nav-grid">
-        <button class="nav-btn btn-orders" onclick="location.href='orders.html'">
+        <button class="nav-btn btn-orders" onclick="window.location.href='admin_orders.html'">
             <i class="fa fa-shopping-cart"></i>অর্ডার রিকোয়েস্ট
         </button>
-        <button class="nav-btn btn-users" onclick="location.href='user_details.html'">
+        <button class="nav-btn btn-users" onclick="window.location.href='user_details.html'">
             <i class="fa fa-user-check"></i>ইউজার সার্চ
         </button>
     </div>
@@ -151,7 +151,6 @@
     const db = getDatabase(app);
     const auth = getAuth(app);
 
-    // --- ৩. অ্যাপ ইন্সটল স্ক্রিপ্ট ---
     let deferredPrompt;
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
@@ -276,11 +275,8 @@
             const p = s.val();
             document.getElementById('edit-id').value = id;
             document.getElementById('p-name').value = p.name;
-            
-            // মেইন ক্যাটাগরি সেট করা
             document.getElementById('p-main-category').value = p.category;
-            updateSubCats(p.subCategory); // সাব-ক্যাটাগরি পপুলেট করা
-            
+            updateSubCats(p.subCategory);
             document.getElementById('p-price').value = p.price;
             document.getElementById('p-stock').value = p.stock;
             document.getElementById('p-img').value = p.img;
@@ -324,7 +320,6 @@
         let sizeList = [];
         if(sizeInput.trim() !== "") sizeList = sizeInput.split(',').map(s => s.trim());
 
-        // ডাটাবেস স্ট্রাকচার ফিক্স: category তে মেইন নাম যাবে, subCategory তে সাব-নাম যাবে
         return { 
             name, 
             category: mainCat, 
@@ -352,5 +347,5 @@
     };
 </script>
 </body>
-            </html>
-                                                                                                                                                                             
+    </html>
+    
