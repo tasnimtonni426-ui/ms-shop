@@ -23,7 +23,6 @@
         .header-top { display: flex; justify-content: space-between; align-items: center; }
         .logo { font-size: 22px; font-weight: bold; color: var(--primary); letter-spacing: 1px; }
         
-        /* প্রোফাইল বাটন ডিজাইন পরিবর্তন */
         .profile-btn { width: 35px; height: 35px; border-radius: 50%; cursor: pointer; border: 1.5px solid var(--primary); object-fit: cover; }
 
         .search-box { position: relative; width: 100%; }
@@ -51,11 +50,12 @@
         .p-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .p-price { color: var(--primary); font-weight: bold; margin-top: 5px; }
 
-        /* প্রোফাইল মেনু নতুন ডিজাইন */
         .profile-menu { display: none; position: fixed; top: 70px; right: 15px; width: 260px; background: #1e293b; border-radius: 20px; padding: 20px; z-index: 6000; border: 1px solid var(--border); box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
         .profile-menu.show { display: block; }
         
-        .u-id-badge { font-size: 9px; color: var(--primary); background: rgba(0,210,255,0.1); padding: 4px 8px; border-radius: 5px; display: block; text-align: center; margin-bottom: 15px; border: 1px dashed var(--primary); word-break: break-all; }
+        /* ইউনিক আইডি ব্যাজ ডিজাইন */
+        .u-id-badge { font-size: 12px; font-weight: bold; color: #0f172a; background: var(--primary); padding: 6px 12px; border-radius: 8px; display: block; text-align: center; margin-bottom: 15px; letter-spacing: 1px; }
+        
         .menu-profile-card { text-align: center; margin-bottom: 20px; }
         .menu-profile-card img { width: 65px; height: 65px; border-radius: 50%; border: 2px solid var(--primary); margin-bottom: 10px; }
         
@@ -98,7 +98,7 @@
 <div class="product-grid" id="p-list"></div>
 
 <div class="profile-menu" id="profileMenu">
-    <span class="u-id-badge" id="u-uid">ID: Loading...</span>
+    <span class="u-id-badge" id="u-uid">ID: MS-XXXXXX</span>
     
     <div class="menu-profile-card">
         <img id="u-photo" src="" alt="Profile">
@@ -144,16 +144,18 @@
         if (user) {
             document.getElementById('loading-screen').style.display = 'none';
             
-            // প্রোফাইল ডাটা আপডেট
             const photo = user.photoURL || "https://www.w3schools.com/howto/img_avatar.png";
             const trigger = document.getElementById('profileTrigger');
             trigger.src = photo;
             trigger.style.display = 'block';
             
+            // আইডি তৈরির লজিক (UID এর শেষ ৬ সংখ্যা)
+            const shortID = user.uid.slice(-6).toUpperCase();
+            
             document.getElementById('u-photo').src = photo;
             document.getElementById('u-name').innerText = user.displayName || "User";
             document.getElementById('u-email').innerText = user.email;
-            document.getElementById('u-uid').innerText = "ID: " + user.uid;
+            document.getElementById('u-uid').innerText = "UID: MS-" + shortID;
 
             fetchProducts();
             fetchBanners();
