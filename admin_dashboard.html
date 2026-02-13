@@ -61,15 +61,6 @@
         </button>
     </div>
 
-    <div class="card" style="background: #1e293b; color: white;">
-        <h3 style="color: var(--primary); border-color: var(--primary);">🔍 UID & Order Tracker</h3>
-        <div style="display: flex; gap: 8px;">
-            <input type="text" id="adminSearchInput" placeholder="UID (MS-XXXXXXXX) বা অর্ডার আইডি" style="margin:0; background: rgba(255,255,255,0.1); border: 1px solid var(--primary); color: white;">
-            <button id="adminSearchBtn" style="width: 80px; background: var(--primary); border: none; border-radius: 12px; cursor: pointer; color: #0f172a; font-weight: bold;">Search</button>
-        </div>
-        <div id="searchResultDisplay" style="margin-top: 15px; display: none;"></div>
-    </div>
-
     <div class="card" id="form-card">
         <h3 id="form-title">🚀 নতুন প্রোডাক্ট যোগ করুন</h3>
         <input type="hidden" id="edit-id"> 
@@ -126,52 +117,44 @@
     });
 
     function initDashboard() {
+        // প্রোডাক্ট লোড
         onValue(ref(db, 'products'), (snap) => {
             const list = document.getElementById('admin-product-list');
             list.innerHTML = ""; let count = 0;
             if(snap.exists()){
                 snap.forEach(c => {
                     count++; const p = c.val();
-                    list.innerHTML += `<div class="p-item"><img src="${p.img}"><div class="p-info"><b>${p.name}</b><small>${p.price} ৳</small></div>
-                    <button class="action-btn btn-edit" onclick="editProduct('${c.key}')"><i class="fa fa-pen"></i></button>
-                    <button class="action-btn btn-del" onclick="deleteItem('${c.key}')"><i class="fa fa-trash"></i></button></div>`;
+                    list.innerHTML += `<div class="p-item">
+                        <img src="${p.img}">
+                        <div class="p-info"><b>${p.name}</b><small>${p.price} ৳</small></div>
+                        <button class="action-btn btn-edit" onclick="window.editProduct('${c.key}')"><i class="fa fa-pen"></i></button>
+                        <button class="action-btn btn-del" onclick="window.deleteItem('${c.key}')"><i class="fa fa-trash"></i></button>
+                    </div>`;
                 });
             }
             document.getElementById('p-total').innerText = count;
         });
 
+        // মোট অর্ডার সংখ্যা
         onValue(ref(db, 'orders'), (snap) => {
             document.getElementById('o-total').innerText = snap.exists() ? Object.keys(snap.val()).length : 0;
         });
     }
 
-    document.getElementById('adminSearchBtn').onclick = () => {
-        const val = document.getElementById('adminSearchInput').value.trim().toUpperCase();
-        const res = document.getElementById('searchResultDisplay');
-        if(!val) return;
-        res.style.display = 'block'; res.innerHTML = "খোঁজা হচ্ছে...";
-
-        if(val.startsWith("MS-")){
-            const sid = val.replace("MS-", "");
-            get(ref(db, 'users')).then(snap => {
-                let user = null; let uid = "";
-                snap.forEach(c => { if(c.key.slice(-8).toUpperCase() === sid) { user = c.val(); uid = c.key; } });
-                if(user) {
-                    res.innerHTML = `<div style="padding:10px; background:rgba(255,255,255,0.1); border-radius:10px;">
-                    <b>${user.displayName}</b><br><small>${user.email}</small><br>UID: ${uid}</div>`;
-                } else res.innerHTML = "ইউজার পাওয়া যায়নি";
-            });
-        }
-    };
-
+    // সাব ক্যাটাগরি আপডেট
     window.updateSubCats = () => {
         const main = document.getElementById('p-main-category').value;
         const sub = document.getElementById('p-category');
-        const options = { 'Sports':['Jersey','Boots'], 'Electronics':['Gadget','Mobile'], 'Fashion':['Men','Women'] };
+        const options = { 
+            'Sports':['Jersey','Boots', 'Equipment'], 
+            'Electronics':['Gadget','Mobile', 'Accessories'], 
+            'Fashion':['Men','Women', 'Shoes'] 
+        };
         sub.innerHTML = '<option value="" disabled selected>সাব-ক্যাটাগরি</option>';
         if(options[main]) options[main].forEach(s => { sub.innerHTML += `<option value="${s}">${s}</option>`; });
     };
 
+    // প্রোডাক্ট ডেটা সংগ্রহ
     function getFormData() {
         const name = document.getElementById('p-name').value;
         const mainCat = document.getElementById('p-main-category').value;
@@ -180,18 +163,45 @@
         const stock = document.getElementById('p-stock').value;
         const img = document.getElementById('p-img').value;
         const desc = document.getElementById('p-desc').value;
-        if(!name || !price || !img) return null;
+        if(!name || !price || !img || !mainCat) { alert("সব তথ্য পূরণ করুন!"); return null; }
         return { name, category: mainCat, subCategory: subCat, price: parseInt(price), stock: parseInt(stock), img, description: desc };
     }
 
+    // পাবলিশ বাটন
     document.getElementById('uploadBtn').onclick = () => {
         const data = getFormData();
-        if(data) push(ref(db, 'products'), data).then(() => { alert("সফল!"); location.reload(); });
+        if(data) push(ref(db, 'products'), data).then(() => { alert("সফলভাবে যোগ হয়েছে!"); location.reload(); });
     };
 
+    // এডিট ফাংশন
+    window.editProduct = (id) => {
+        get(ref(db, 'products/' + id)).then(snap => {
+            const p = snap.val();
+            document.getElementById('edit-id').value = id;
+            document.getElementById('p-name').value = p.name;
+            document.getElementById('p-main-category').value = p.category;
+            window.updateSubCats();
+            document.getElementById('p-category').value = p.subCategory;
+            document.getElementById('p-price').value = p.price;
+            document.getElementById('p-stock').value = p.stock;
+            document.getElementById('p-img').value = p.img;
+            document.getElementById('p-desc').value = p.description;
+            document.getElementById('uploadBtn').style.display = 'none';
+            document.getElementById('updateBtn').style.display = 'block';
+            window.scrollTo(0,0);
+        });
+    };
+
+    // আপডেট সেভ বাটন
+    document.getElementById('updateBtn').onclick = () => {
+        const id = document.getElementById('edit-id').value;
+        const data = getFormData();
+        if(data) update(ref(db, 'products/' + id), data).then(() => { alert("আপডেট সফল!"); location.reload(); });
+    };
+
+    // ডিলিট ফাংশন
     window.deleteItem = (id) => { if(confirm("ডিলিট করবেন?")) remove(ref(db, 'products/'+id)); };
 
-    function showToast(m) { const t = document.getElementById('toast'); t.innerText = m; t.style.display = 'block'; setTimeout(()=>t.style.display='none', 2000); }
 </script>
 </body>
 </html>
