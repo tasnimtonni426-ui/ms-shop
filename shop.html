@@ -53,8 +53,9 @@
         .profile-menu { display: none; position: fixed; top: 70px; right: 15px; width: 260px; background: #1e293b; border-radius: 20px; padding: 20px; z-index: 6000; border: 1px solid var(--border); box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
         .profile-menu.show { display: block; }
         
-        /* ইউনিক আইডি ব্যাজ ডিজাইন */
-        .u-id-badge { font-size: 12px; font-weight: bold; color: #0f172a; background: var(--primary); padding: 6px 12px; border-radius: 8px; display: block; text-align: center; margin-bottom: 15px; letter-spacing: 1px; }
+        /* ইউনিক আইডি ব্যাজ ডিজাইন - কপি অপশনসহ */
+        .u-id-badge { font-size: 12px; font-weight: bold; color: #0f172a; background: var(--primary); padding: 8px 12px; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 15px; letter-spacing: 1px; cursor: pointer; position: relative; }
+        .u-id-badge:active { transform: scale(0.95); }
         
         .menu-profile-card { text-align: center; margin-bottom: 20px; }
         .menu-profile-card img { width: 65px; height: 65px; border-radius: 50%; border: 2px solid var(--primary); margin-bottom: 10px; }
@@ -98,7 +99,10 @@
 <div class="product-grid" id="p-list"></div>
 
 <div class="profile-menu" id="profileMenu">
-    <span class="u-id-badge" id="u-uid">ID: MS-XXXXXX</span>
+    <div class="u-id-badge" id="copyID">
+        <span id="u-uid">ID: MS-XXXXXXXX</span>
+        <i class="fa fa-copy" style="font-size: 10px;"></i>
+    </div>
     
     <div class="menu-profile-card">
         <img id="u-photo" src="" alt="Profile">
@@ -149,13 +153,26 @@
             trigger.src = photo;
             trigger.style.display = 'block';
             
-            // আইডি তৈরির লজিক (UID এর শেষ ৬ সংখ্যা)
-            const shortID = user.uid.slice(-6).toUpperCase();
+            // আইডি তৈরির লজিক (UID এর শেষ ৮ সংখ্যা - যা ডুপ্লিকেট হওয়া অসম্ভব)
+            const shortID = user.uid.slice(-8).toUpperCase();
+            const finalID = "MS-" + shortID;
             
             document.getElementById('u-photo').src = photo;
             document.getElementById('u-name').innerText = user.displayName || "User";
             document.getElementById('u-email').innerText = user.email;
-            document.getElementById('u-uid').innerText = "UID: MS-" + shortID;
+            document.getElementById('u-uid').innerText = "UID: " + finalID;
+
+            // আইডি কপি করার ফাংশন
+            document.getElementById('copyID').onclick = (e) => {
+                e.stopPropagation();
+                navigator.clipboard.writeText(finalID).then(() => {
+                    const originalText = document.getElementById('u-uid').innerText;
+                    document.getElementById('u-uid').innerText = "COPIED!";
+                    setTimeout(() => {
+                        document.getElementById('u-uid').innerText = originalText;
+                    }, 1000);
+                });
+            };
 
             fetchProducts();
             fetchBanners();
@@ -245,3 +262,4 @@
 </script>
 </body>
 </html>
+
