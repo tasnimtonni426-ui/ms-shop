@@ -25,7 +25,7 @@
         #profile-card { display: none; background: white; border-radius: 20px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
 
         .user-header { border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px; text-align: center; }
-        #u-img { width: 70px; height: 70px; border-radius: 50%; border: 3px solid var(--primary); margin-bottom: 10px; }
+        #u-img { width: 85px; height: 85px; border-radius: 50%; border: 3px solid var(--primary); margin-bottom: 10px; object-fit: cover; background: #eee; }
         
         .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
         .stat-item { padding: 15px 5px; border-radius: 15px; text-align: center; color: white; }
@@ -57,7 +57,7 @@
 
     <div id="profile-card">
         <div class="user-header">
-            <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" id="u-img">
+            <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" id="u-img" onerror="this.src='https://cdn-icons-png.flaticon.com/512/149/149071.png'">
             <h3 id="u-name">...</h3>
             <p id="u-email">...</p>
             <p id="u-id-display" style="color: var(--primary); font-weight: bold; font-size: 14px; margin-top: 5px;"></p>
@@ -99,7 +99,6 @@
         loading.style.display = 'block';
         profile.style.display = 'none';
 
-        // ইনপুট থেকে MS- বাদ দিয়ে শুধু লাস্ট ৮ ডিজিট নেওয়া
         let searchTag = input.replace("MS-", "");
 
         try {
@@ -110,8 +109,7 @@
 
             if (userSnap.exists()) {
                 userSnap.forEach(child => {
-                    const fullUid = child.key; // ফায়ারবেসের আসল লম্বা আইডি
-                    // আসল আইডির শেষ ৮ ডিজিট চেক করা
+                    const fullUid = child.key; 
                     if (fullUid.toUpperCase().endsWith(searchTag)) {
                         foundFullUid = fullUid;
                         userData = child.val();
@@ -119,7 +117,13 @@
                 });
             }
 
-            if (foundFullUid) {
+            if (foundFullUid && userData) {
+                // নাম এবং ইমেইল লোড করা (বিভিন্ন ফিল্ড নাম চেক করা হচ্ছে)
+                const name = userData.displayName || userData.name || userData.userName || "নাম পাওয়া যায়নি";
+                const email = userData.email || userData.userEmail || "ইমেইল পাওয়া যায়নি";
+                // ইমেজ লোড করা (বিভিন্ন সম্ভাব্য ফিল্ড নাম চেক করা হচ্ছে)
+                const photo = userData.photoURL || userData.profilePic || userData.image || userData.userImage;
+
                 const ordersRef = ref(db, 'orders');
                 const orderSnap = await get(ordersRef);
                 
@@ -141,9 +145,15 @@
                 loading.style.display = 'none';
                 profile.style.display = 'block';
                 
-                document.getElementById('u-name').innerText = userData.displayName || "নাম নেই";
-                document.getElementById('u-email').innerText = userData.email || "ইমেইল নেই";
+                document.getElementById('u-name').innerText = name;
+                document.getElementById('u-email').innerText = email;
                 document.getElementById('u-id-display').innerText = "MS-" + foundFullUid.slice(-8).toUpperCase();
+                
+                // ইমেজ সেট করা
+                if(photo) {
+                    document.getElementById('u-img').src = photo;
+                }
+
                 document.getElementById('total-o').innerText = total;
                 document.getElementById('done-o').innerText = done;
                 document.getElementById('cancel-o').innerText = cancel;
@@ -164,11 +174,12 @@
 
             } else {
                 loading.style.display = 'none';
-                alert("দুঃখিত, এই লাস্ট ৮ ডিজিটের ( " + searchTag + " ) কোনো ইউজার পাওয়া যায়নি!");
+                alert("দুঃখিত, এই লাস্ট ৮ ডিজিটের কোনো ইউজার পাওয়া যায়নি!");
             }
         } catch (e) {
             loading.style.display = 'none';
             alert("সার্ভার ত্রুটি!");
+            console.error(e);
         }
     };
 
