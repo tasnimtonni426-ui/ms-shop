@@ -28,10 +28,11 @@
         .search-box { position: relative; width: 100%; }
         .search-box input { width: 100%; padding: 10px 40px 10px 15px; border-radius: 12px; border: 1px solid var(--border); background: var(--glass); color: white; outline: none; box-sizing: border-box; }
 
-        .slider-container { width: 92%; height: 160px; margin: 15px auto; border-radius: 15px; overflow: hidden; position: relative; border: 1px solid var(--border); }
-        .slider-track { display: flex; width: 300%; height: 100%; transition: transform 0.5s ease; }
-        .slide { width: 33.333%; height: 100%; flex-shrink: 0; }
-        .slide img { width: 100%; height: 100%; object-fit: cover; }
+        /* স্লাইডার স্টাইল */
+        .slider-container { width: 92%; height: 160px; margin: 15px auto; border-radius: 15px; overflow: hidden; position: relative; border: 1px solid var(--border); touch-action: pan-y; }
+        .slider-track { display: flex; width: 100%; height: 100%; transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); cursor: grab; }
+        .slide { min-width: 100%; height: 100%; flex-shrink: 0; }
+        .slide img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
 
         .cat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 15px; }
         .cat-item { background: var(--glass); border: 1px solid var(--border); border-radius: 12px; padding: 12px 5px; text-align: center; cursor: pointer; transition: 0.3s; }
@@ -82,7 +83,7 @@
     </div>
 </header>
 
-<div class="slider-container">
+<div class="slider-container" id="sliderContainer">
     <div class="slider-track" id="sliderTrack"></div>
 </div>
 
@@ -167,26 +168,68 @@
         } else { window.location.href = "index.html"; }
     });
 
-    // স্লাইডার সচল করার লজিক
-    function startSlider() {
+    // স্লাইডার কন্ট্রোল (Touch + Auto + Click)
+    function initSlider(totalSlides) {
         const track = document.getElementById('sliderTrack');
+        const container = document.getElementById('sliderContainer');
         let index = 0;
-        setInterval(() => {
-            index = (index + 1) % 3; // ৩টি ব্যানার থাকলে
-            track.style.transform = `translateX(-${index * 33.333}%)`;
-        }, 3000);
+        let startX = 0;
+        let isDragging = false;
+        let autoPlayTimer;
+
+        function updateSlide() {
+            track.style.transform = `translateX(-${index * 100}%)`;
+        }
+
+        function startAutoPlay() {
+            autoPlayTimer = setInterval(() => {
+                index = (index + 1) % totalSlides;
+                updateSlide();
+            }, 4000);
+        }
+
+        function stopAutoPlay() { clearInterval(autoPlayTimer); }
+
+        container.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+            stopAutoPlay();
+            isDragging = true;
+        });
+
+        container.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            const diff = startX - e.touches[0].clientX;
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) index = (index + 1) % totalSlides;
+                else index = (index - 1 + totalSlides) % totalSlides;
+                updateSlide();
+                isDragging = false;
+            }
+        });
+
+        container.addEventListener('touchend', () => {
+            isDragging = false;
+            startAutoPlay();
+        });
+
+        startAutoPlay();
     }
 
     function fetchBanners() {
         onValue(ref(db, 'banners'), (snap) => {
             if (snap.exists()) {
                 const d = snap.val();
-                document.getElementById('sliderTrack').innerHTML = ['banner1', 'banner2', 'banner3'].map(k => d[k] ? `<div class="slide"><img src="${d[k].img}"></div>` : '').join('');
-                startSlider(); // ডাটা আসার পর স্লাইডার শুরু
+                const banners = ['banner1', 'banner2', 'banner3'].filter(k => d[k]);
+                document.getElementById('sliderTrack').innerHTML = banners.map(k => `
+                    <div class="slide" onclick="if(window.event.target.tagName !== 'IMG' || '${d[k].link}') window.location.href='${d[k].link}'">
+                        <img src="${d[k].img}" style="pointer-events: auto; cursor: pointer;">
+                    </div>`).join('');
+                if (banners.length > 0) initSlider(banners.length);
             }
         });
     }
 
+    // পন্য লোড করার ফাংশনসমূহ (আগের মতোই)
     function fetchProducts() {
         onValue(ref(db, 'products'), (snap) => {
             pArray = [];
@@ -216,13 +259,9 @@
     function applyFilter(mainCat) {
         const subBox = document.getElementById('sub-cat-container');
         subBox.innerHTML = ""; 
-        if (mainCat === 'all') {
-            render(pArray);
-        } else {
-            const filtered = pArray.filter(p => {
-                const dbCat = (p.category || "").toString().toLowerCase().trim();
-                return dbCat === mainCat.toLowerCase();
-            });
+        if (mainCat === 'all') render(pArray);
+        else {
+            const filtered = pArray.filter(p => (p.category || "").toString().toLowerCase().trim() === mainCat.toLowerCase());
             render(filtered);
             const subCats = [...new Set(filtered.map(p => p.subCategory).filter(s => s))];
             subCats.forEach(scName => {
@@ -232,8 +271,7 @@
                 btn.onclick = () => {
                     document.querySelectorAll('.sub-cat-btn').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
-                    const final = filtered.filter(p => p.subCategory === scName);
-                    render(final);
+                    render(filtered.filter(p => p.subCategory === scName));
                 };
                 subBox.appendChild(btn);
             });
