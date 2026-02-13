@@ -6,40 +6,70 @@
     <title>Admin - Order Requests</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --primary: #00d2ff; --dark: #0f172a; --bg: #f1f5f9; }
+        :root { --primary: #00d2ff; --dark: #0f172a; --bg: #f1f5f9; --danger: #dc2626; --warning: #f59e0b; --success: #10b981; }
         body { font-family: 'Poppins', sans-serif; background: var(--bg); margin: 0; padding: 15px; }
         
-        header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .back-btn { background: white; border: none; padding: 10px; border-radius: 12px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         
+        /* সার্চ বার */
+        .search-area { display: flex; gap: 5px; background: white; padding: 5px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .search-area input { border: none; outline: none; padding: 5px; width: 120px; font-size: 13px; }
+        .search-area button { border: none; background: var(--dark); color: white; border-radius: 8px; padding: 5px 10px; cursor: pointer; }
+
+        /* ফিল্টার ট্যাব */
+        .filter-tabs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 15px; margin-top: 10px; scrollbar-width: none; }
+        .tab { white-space: nowrap; padding: 8px 15px; background: white; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.05); color: #64748b; }
+        .tab.active { background: var(--dark); color: white; }
+
         .order-card { background: white; border-radius: 20px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-left: 5px solid var(--primary); }
         .order-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
         .order-id { font-weight: bold; color: var(--dark); font-size: 14px; }
         .status-badge { font-size: 10px; padding: 4px 10px; border-radius: 20px; font-weight: bold; text-transform: uppercase; }
+        
+        /* স্ট্যাটাস কালার */
         .pending { background: #fff3cd; color: #856404; }
-        .completed { background: #d4edda; color: #155724; }
+        .shipped { background: #e0f2fe; color: #0369a1; }
+        .delivered { background: #d4edda; color: #155724; }
+        .cancelled { background: #fee2e2; color: #dc2626; }
 
         .item-details { display: flex; gap: 12px; background: #f8fafc; padding: 10px; border-radius: 12px; margin: 10px 0; }
         .item-details img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; }
         .item-info b { display: block; font-size: 13px; }
         
         .user-info { font-size: 12px; color: #64748b; line-height: 1.6; }
-        .user-info i { width: 18px; color: var(--primary); }
-        .payment-info { background: #e0f2fe; padding: 8px; border-radius: 8px; margin-top: 10px; font-size: 12px; color: #0369a1; }
+        .payment-info { background: #f1f5f9; padding: 8px; border-radius: 8px; margin-top: 10px; font-size: 11px; }
 
-        .actions { display: flex; gap: 10px; margin-top: 15px; }
-        .btn { flex: 1; padding: 10px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 13px; transition: 0.3s; }
-        .btn-call { background: #e0f2fe; color: #0369a1; }
-        .btn-complete { background: var(--dark); color: white; }
+        .actions { display: flex; gap: 8px; margin-top: 15px; align-items: center; }
+        .status-select { flex: 1; padding: 10px; border-radius: 10px; border: 1.5px solid #e2e8f0; font-size: 12px; outline: none; background: #f8fafc; }
+        .btn { padding: 10px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 12px; }
+        .btn-call { background: #e0f2fe; color: #0369a1; text-decoration: none; text-align: center; }
         .btn-delete { background: #fee2e2; color: #dc2626; }
+        
+        .cancel-reason { margin-top: 10px; display: none; }
+        .cancel-reason input { width: 100%; padding: 8px; border-radius: 8px; border: 1px solid var(--danger); font-size: 12px; box-sizing: border-box; }
     </style>
 </head>
 <body>
 
 <header>
-    <button class="back-btn" onclick="history.back()"><i class="fa fa-arrow-left"></i></button>
-    <h3 style="margin:0;">অর্ডার রিকোয়েস্ট সমূহ</h3>
+    <div style="display:flex; align-items:center; gap:10px;">
+        <button class="back-btn" onclick="history.back()"><i class="fa fa-arrow-left"></i></button>
+        <h3 style="margin:0; font-size: 16px;">অর্ডার লিস্ট</h3>
+    </div>
+    <div class="search-area">
+        <input type="text" id="searchInput" placeholder="ID (শেষ ৬ ডিজিট)">
+        <button onclick="searchOrder()"><i class="fa fa-search"></i></button>
+    </div>
 </header>
+
+<div class="filter-tabs" id="tabs">
+    <div class="tab active" onclick="filterOrders('all', this)">All</div>
+    <div class="tab" onclick="filterOrders('pending', this)">Pending</div>
+    <div class="tab" onclick="filterOrders('shipped', this)">Shipped</div>
+    <div class="tab" onclick="filterOrders('delivered', this)">Delivered</div>
+    <div class="tab" onclick="filterOrders('cancelled', this)">Cancelled</div>
+</div>
 
 <div id="order-list">লোড হচ্ছে...</div>
 
@@ -59,76 +89,126 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    const orderListRef = ref(db, 'orders');
+    let allOrders = [];
+    let currentFilter = 'all';
 
-    onValue(orderListRef, (snap) => {
+    // ডাটা লোড করা
+    onValue(ref(db, 'orders'), (snap) => {
+        allOrders = [];
+        if(snap.exists()){
+            snap.forEach(child => {
+                allOrders.push({ id: child.key, ...child.val() });
+            });
+            allOrders.reverse();
+            renderOrders(allOrders);
+        } else {
+            document.getElementById('order-list').innerHTML = "কোনো অর্ডার নেই।";
+        }
+    });
+
+    // অর্ডার রেন্ডার করা
+    function renderOrders(data) {
         const list = document.getElementById('order-list');
         list.innerHTML = "";
         
-        if(!snap.exists()) {
-            list.innerHTML = "<p style='text-align:center; padding:50px; color:gray;'>কোনো অর্ডার পাওয়া যায়নি।</p>";
-            return;
-        }
+        data.forEach(o => {
+            if(currentFilter !== 'all' && o.status !== currentFilter) return;
 
-        let ordersData = [];
-        snap.forEach(child => {
-            ordersData.push({ id: child.key, ...child.val() });
-        });
-
-        // নতুন অর্ডার সবার আগে দেখানোর জন্য (Descending order)
-        ordersData.reverse().forEach(o => {
-            const id = o.id;
-            
             list.innerHTML += `
-                <div class="order-card">
+                <div class="order-card" id="card-${o.id}">
                     <div class="order-header">
-                        <span class="order-id">ID: #${id.slice(-6).toUpperCase()}</span>
-                        <span class="status-badge ${o.status === 'completed' ? 'completed' : 'pending'}">${o.status || 'pending'}</span>
+                        <span class="order-id">ID: #${o.id.slice(-6).toUpperCase()}</span>
+                        <span class="status-badge ${o.status || 'pending'}">${o.status || 'pending'}</span>
                     </div>
                     
                     <div class="item-details">
                         <img src="${o.productImg || 'https://via.placeholder.com/60'}">
                         <div class="item-info">
                             <b>${o.productName}</b>
-                            <span>দাম: ${o.price} ৳ | সাইজ: ${o.size || 'N/A'}</span>
+                            <span>${o.price}৳ | সাইজ: ${o.size || 'N/A'}</span>
                         </div>
                     </div>
 
                     <div class="user-info">
-                        <div><i class="fa fa-user"></i> ${o.userName || 'Unknown'}</div>
-                        <div><i class="fa fa-phone"></i> ${o.phone || 'N/A'}</div>
-                        <div><i class="fa fa-location-dot"></i> ${o.address || 'N/A'}</div>
+                        <div><i class="fa fa-user"></i> ${o.userName}</div>
+                        <div><i class="fa fa-phone"></i> ${o.phone}</div>
+                        <div><i class="fa fa-location-dot"></i> ${o.address}</div>
                     </div>
 
                     <div class="payment-info">
-                        <b>পেমেন্ট:</b> ${o.paymentType} (${o.paymentMethod})<br>
-                        <b>TrxID:</b> <span style="color: #dc2626;">${o.trxID || 'N/A'}</span>
+                        <b>TrxID:</b> ${o.trxID || 'N/A'} | <b>Method:</b> ${o.paymentMethod}
+                        ${o.cancelReason ? `<br><b style="color:red">Reason:</b> ${o.cancelReason}` : ''}
                     </div>
 
                     <div class="actions">
-                        <a href="tel:${o.phone}" class="btn btn-call" style="text-align:center; text-decoration:none;"><i class="fa fa-phone"></i> কল দিন</a>
-                        ${o.status !== 'completed' ? `<button class="btn btn-complete" onclick="markComplete('${id}')">ডেলিভারি ডান</button>` : ''}
-                        <button class="btn btn-delete" onclick="deleteOrder('${id}')"><i class="fa fa-trash"></i></button>
+                        <a href="tel:${o.phone}" class="btn btn-call"><i class="fa fa-phone"></i></a>
+                        
+                        <select class="status-select" onchange="handleStatusChange('${o.id}', this.value)">
+                            <option value="pending" ${o.status === 'pending' ? 'selected' : ''}>Pending</option>
+                            <option value="shipped" ${o.status === 'shipped' ? 'selected' : ''}>Shipped</option>
+                            <option value="delivered" ${o.status === 'delivered' ? 'selected' : ''}>Delivered</option>
+                            <option value="cancelled" ${o.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                        </select>
+
+                        <button class="btn btn-delete" onclick="deleteOrder('${o.id}')"><i class="fa fa-trash"></i></button>
+                    </div>
+
+                    <div class="cancel-reason" id="reason-box-${o.id}">
+                        <input type="text" id="reason-input-${o.id}" placeholder="বাতিল করার কারণ লিখুন..." onkeypress="confirmCancel(event, '${o.id}')">
                     </div>
                 </div>
             `;
         });
-    });
+    }
 
-    // গ্লোবাল ফাংশন হিসেবে সেট করা
-    window.markComplete = (id) => {
-        if(confirm("অর্ডারটি কি ডেলিভারি হয়ে গেছে?")) {
-            update(ref(db, 'orders/' + id), { status: 'completed' })
-            .then(() => alert("Status Updated!"))
-            .catch(err => alert("Error: " + err.message));
+    // ফিল্টার ফাংশন
+    window.filterOrders = (status, el) => {
+        currentFilter = status;
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        el.classList.add('active');
+        renderOrders(allOrders);
+    };
+
+    // সার্চ ফাংশন
+    window.searchOrder = () => {
+        const val = document.getElementById('searchInput').value.trim().toUpperCase();
+        if(!val) return renderOrders(allOrders);
+        const filtered = allOrders.filter(o => o.id.slice(-6).toUpperCase() === val);
+        renderOrders(filtered);
+    };
+
+    // স্ট্যাটাস পরিবর্তন হ্যান্ডল
+    window.handleStatusChange = (id, newStatus) => {
+        if(newStatus === 'cancelled') {
+            document.getElementById(`reason-box-${id}`).style.display = 'block';
+        } else {
+            document.getElementById(`reason-box-${id}`).style.display = 'none';
+            updateStatus(id, newStatus, null);
         }
     };
 
+    // ক্যানসেল কনফার্ম (Enter চাপলে)
+    window.confirmCancel = (e, id) => {
+        if(e.key === 'Enter') {
+            const reason = document.getElementById(`reason-input-${id}`).value;
+            if(!reason) return alert("কারণ লিখুন!");
+            updateStatus(id, 'cancelled', reason);
+        }
+    };
+
+    // ফায়ারবেস আপডেট
+    function updateStatus(id, status, reason) {
+        const data = { status: status };
+        if(reason) data.cancelReason = reason;
+        
+        update(ref(db, 'orders/' + id), data)
+        .then(() => alert("স্ট্যাটাস আপডেট হয়েছে!"))
+        .catch(err => alert("Error: " + err.message));
+    }
+
     window.deleteOrder = (id) => {
         if(confirm("অর্ডারটি ডিলিট করতে চান?")) {
-            remove(ref(db, 'orders/' + id))
-            .then(() => alert("Order Deleted!"))
-            .catch(err => alert("Error: " + err.message));
+            remove(ref(db, 'orders/' + id));
         }
     };
 </script>
