@@ -22,7 +22,9 @@
         }
         .header-top { display: flex; justify-content: space-between; align-items: center; }
         .logo { font-size: 22px; font-weight: bold; color: var(--primary); letter-spacing: 1px; }
-        .profile-btn { font-size: 32px; cursor: pointer; color: var(--primary); background: none; border: none; }
+        
+        /* প্রোফাইল বাটন ডিজাইন পরিবর্তন */
+        .profile-btn { width: 35px; height: 35px; border-radius: 50%; cursor: pointer; border: 1.5px solid var(--primary); object-fit: cover; }
 
         .search-box { position: relative; width: 100%; }
         .search-box input { width: 100%; padding: 10px 40px 10px 15px; border-radius: 12px; border: 1px solid var(--border); background: var(--glass); color: white; outline: none; box-sizing: border-box; }
@@ -49,8 +51,19 @@
         .p-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .p-price { color: var(--primary); font-weight: bold; margin-top: 5px; }
 
-        .profile-menu { display: none; position: fixed; top: 70px; right: 15px; width: 260px; background: #1e293b; border-radius: 20px; padding: 20px; z-index: 6000; border: 1px solid var(--border); }
+        /* প্রোফাইল মেনু নতুন ডিজাইন */
+        .profile-menu { display: none; position: fixed; top: 70px; right: 15px; width: 260px; background: #1e293b; border-radius: 20px; padding: 20px; z-index: 6000; border: 1px solid var(--border); box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
         .profile-menu.show { display: block; }
+        
+        .u-id-badge { font-size: 9px; color: var(--primary); background: rgba(0,210,255,0.1); padding: 4px 8px; border-radius: 5px; display: block; text-align: center; margin-bottom: 15px; border: 1px dashed var(--primary); word-break: break-all; }
+        .menu-profile-card { text-align: center; margin-bottom: 20px; }
+        .menu-profile-card img { width: 65px; height: 65px; border-radius: 50%; border: 2px solid var(--primary); margin-bottom: 10px; }
+        
+        .menu-links { display: flex; flex-direction: column; gap: 10px; }
+        .m-link { display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--glass); border-radius: 12px; text-decoration: none; color: white; font-size: 14px; transition: 0.3s; }
+        .m-link i { color: var(--primary); width: 18px; }
+        .m-link:hover { background: var(--border); }
+
         .whatsapp-helpline { position: fixed; bottom: 30px; right: 20px; background: #25d366; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; z-index: 9999; }
         #loading-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; z-index: 9999; display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 20px; }
     </style>
@@ -62,7 +75,7 @@
 <header>
     <div class="header-top">
         <div class="logo">MS STORE</div> 
-        <button class="profile-btn" id="profileTrigger"><i class="fa fa-user-circle"></i></button>
+        <img src="" class="profile-btn" id="profileTrigger" style="display:none;" alt="P">
     </div>
     <div class="search-box">
         <input type="text" id="searchInput" placeholder="Search products...">
@@ -85,8 +98,25 @@
 <div class="product-grid" id="p-list"></div>
 
 <div class="profile-menu" id="profileMenu">
-    <div id="u-name" style="font-weight: bold; margin-bottom: 10px;">User</div>
-    <button id="logoutBtn" style="width:100%; padding:10px; background:#ef4444; border:none; color:white; border-radius:10px; cursor:pointer;">Logout</button>
+    <span class="u-id-badge" id="u-uid">ID: Loading...</span>
+    
+    <div class="menu-profile-card">
+        <img id="u-photo" src="" alt="Profile">
+        <div id="u-name" style="font-weight: bold; font-size: 15px;">User Name</div>
+        <div id="u-email" style="font-size: 11px; color: #94a3b8;">email@gmail.com</div>
+    </div>
+
+    <div class="menu-links">
+        <a href="my_orders.html" class="m-link">
+            <i class="fa fa-shopping-cart"></i>
+            <span>My Orders</span>
+        </a>
+        
+        <div class="m-link" id="logoutBtn" style="border: 1px solid rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.05);">
+            <i class="fa fa-sign-out-alt" style="color: #ef4444;"></i>
+            <span style="color: #ef4444; font-weight: 600;">Logout</span>
+        </div>
+    </div>
 </div>
 
 <a href="https://wa.me/8801319474450" class="whatsapp-helpline"><i class="fab fa-whatsapp"></i></a>
@@ -113,7 +143,18 @@
     onAuthStateChanged(auth, (user) => {
         if (user) {
             document.getElementById('loading-screen').style.display = 'none';
+            
+            // প্রোফাইল ডাটা আপডেট
+            const photo = user.photoURL || "https://www.w3schools.com/howto/img_avatar.png";
+            const trigger = document.getElementById('profileTrigger');
+            trigger.src = photo;
+            trigger.style.display = 'block';
+            
+            document.getElementById('u-photo').src = photo;
             document.getElementById('u-name').innerText = user.displayName || "User";
+            document.getElementById('u-email').innerText = user.email;
+            document.getElementById('u-uid').innerText = "ID: " + user.uid;
+
             fetchProducts();
             fetchBanners();
         } else { window.location.href = "index.html"; }
@@ -136,7 +177,6 @@
                 d.id = child.key;
                 pArray.push(d);
             });
-            // পেজ লোড হওয়ার পর ডিফল্টভাবে 'all' দেখাবে
             const activeCat = document.querySelector('.cat-item.active').getAttribute('data-cat');
             applyFilter(activeCat);
         });
@@ -155,25 +195,18 @@
             </div>`).join('');
     }
 
-    // ফিল্টার করার মেইন ফাংশন
     function applyFilter(mainCat) {
         const subBox = document.getElementById('sub-cat-container');
         subBox.innerHTML = ""; 
-
         if (mainCat === 'all') {
             render(pArray);
         } else {
-            // ডাটাবেসের category ফিল্ডের সাথে মিলানো (বড়/ছোট হাতের অক্ষর হ্যান্ডেল করা হয়েছে)
             const filtered = pArray.filter(p => {
                 const dbCat = (p.category || "").toString().toLowerCase().trim();
                 return dbCat === mainCat.toLowerCase();
             });
-
             render(filtered);
-
-            // সাব-ক্যাটাগরি বাটন তৈরি (অটোমেটিক)
             const subCats = [...new Set(filtered.map(p => p.subCategory).filter(s => s))];
-            
             subCats.forEach(scName => {
                 const btn = document.createElement('div');
                 btn.className = 'sub-cat-btn';
@@ -189,13 +222,11 @@
         }
     }
 
-    // ক্যাটাগরি ক্লিকের ইভেন্ট
     document.querySelectorAll('.cat-item').forEach(item => {
         item.onclick = () => {
             document.querySelectorAll('.cat-item').forEach(i => i.classList.remove('active'));
             item.classList.add('active');
-            const selectedMain = item.getAttribute('data-cat');
-            applyFilter(selectedMain);
+            applyFilter(item.getAttribute('data-cat'));
         };
     });
 
