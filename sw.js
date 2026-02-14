@@ -1,6 +1,5 @@
-const CACHE_NAME = 'ms-store-v5';
+const CACHE_NAME = 'ms-store-final-v1';
 
-// ইন্সটল করার সময় কোনো ফিক্সড পেজ ক্যাশ করার দরকার নেই
 self.addEventListener('install', (event) => {
     self.skipWaiting();
 });
@@ -9,8 +8,8 @@ self.addEventListener('activate', (event) => {
     event.waitUntil(clients.claim());
 });
 
-// এই অংশটিই আপনার সব পেজ ওপেন হতে সাহায্য করবে
 self.addEventListener('fetch', (event) => {
+    // শুধুমাত্র নেভিগেশন রিকোয়েস্ট (পেজ পরিবর্তন) হ্যান্ডেল করবে
     if (event.request.mode === 'navigate') {
         event.respondWith(
             fetch(event.request).catch(() => {
