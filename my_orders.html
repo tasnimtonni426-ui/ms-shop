@@ -19,102 +19,44 @@
             --cancelled: #ef4444;
         }
 
-        body { 
-            font-family: 'Poppins', sans-serif; 
-            background: var(--bg); 
-            color: var(--text); 
-            margin: 0; 
-            padding: 15px; 
-            min-height: 100vh;
-        }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; min-height: 100vh; }
         
-        .header { 
-            display: flex; 
-            align-items: center; 
-            gap: 15px; 
-            margin-bottom: 20px; 
-            padding: 10px 5px;
-            position: sticky;
-            top: 0;
-            background: var(--bg);
-            z-index: 100;
-        }
+        .header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; padding: 10px 5px; position: sticky; top: 0; background: var(--bg); z-index: 100; }
         .header i { font-size: 20px; color: var(--text); cursor: pointer; }
         .header h2 { margin: 0; font-size: 18px; font-weight: 600; }
 
-        .order-card { 
-            background: var(--card-bg); 
-            border-radius: 18px; 
-            padding: 16px; 
-            margin-bottom: 15px; 
-            border: 1px solid var(--border); 
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-        }
+        .order-card { background: var(--card-bg); border-radius: 18px; padding: 16px; margin-bottom: 15px; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
 
-        .card-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid var(--border);
-        }
+        .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
 
-        .id-badge {
-            background: rgba(0, 210, 255, 0.08);
-            padding: 4px 10px;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--primary);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
+        .id-badge { background: rgba(0, 210, 255, 0.08); padding: 4px 10px; border-radius: 8px; font-size: 12px; font-weight: 600; color: var(--primary); display: flex; align-items: center; gap: 6px; }
 
-        .status-tag { 
-            padding: 4px 10px; 
-            border-radius: 8px; 
-            font-size: 11px; 
-            font-weight: bold; 
-            text-transform: uppercase;
-        }
-
+        .status-tag { padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
         .Pending { background: #fef3c7; color: var(--pending); }
         .Shipped { background: #dbeafe; color: var(--shipped); }
         .Delivered { background: #d1fae5; color: var(--delivered); }
         .Cancelled { background: #fee2e2; color: var(--cancelled); }
 
-        .p-info b { font-size: 15px; display: block; margin-bottom: 10px; color: var(--dark); line-height: 1.4; }
-        .p-info small { color: #64748b; display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 12.5px; }
-        .p-info i { width: 16px; color: var(--primary); font-size: 14px; }
+        /* প্রোডাক্ট সেকশন ডিজাইন */
+        .product-box { display: flex; gap: 12px; margin-bottom: 15px; }
+        .product-img { width: 70px; height: 70px; border-radius: 12px; object-fit: cover; background: #f1f5f9; border: 1px solid var(--border); }
+        .product-details { flex: 1; }
+        .product-details b { font-size: 14px; color: var(--text); display: block; margin-bottom: 4px; }
+        .product-details span { font-size: 12px; color: #64748b; font-weight: 500; }
 
-        .payment-box {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            background: #f1f5f9;
-            padding: 12px;
-            border-radius: 12px;
-            margin-top: 12px;
-        }
+        .info-list { margin-bottom: 12px; }
+        .info-list small { color: #64748b; display: flex; align-items: center; gap: 8px; margin-bottom: 5px; font-size: 12px; }
+        .info-list i { width: 14px; color: var(--primary); text-align: center; }
 
+        .payment-box { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: #f1f5f9; padding: 12px; border-radius: 12px; margin-top: 10px; }
         .pay-item { display: flex; flex-direction: column; }
         .pay-item span { font-size: 10px; color: #64748b; text-transform: uppercase; font-weight: 600; }
-        .pay-item b { font-size: 14px; color: var(--text); }
+        .pay-item b { font-size: 13px; color: var(--text); }
         .pay-item.due b { color: var(--cancelled); }
         .pay-item.paid b { color: var(--delivered); }
 
-        .help-text {
-            margin-top: 12px;
-            font-size: 11px;
-            color: #94a3b8;
-            padding-top: 8px;
-            border-top: 1px dashed var(--border);
-        }
-
+        .help-text { margin-top: 12px; font-size: 11px; color: #94a3b8; padding-top: 8px; border-top: 1px dashed var(--border); }
         #empty-msg { text-align: center; padding: 100px 20px; color: #94a3b8; }
-        #empty-msg i { font-size: 50px; margin-bottom: 15px; opacity: 0.5; }
     </style>
 </head>
 <body>
@@ -161,27 +103,32 @@
                     if(orderUID === user.uid) {
                         found = true;
                         const shortId = c.key.slice(-6).toUpperCase();
+                        
+                        // তারিখ
                         const d = o.timestamp ? new Date(o.timestamp).toLocaleDateString('en-GB') : "N/A";
 
-                        // লজিক: Total, Paid, and Due calculation
-                        const total = parseInt(o.totalAmount || o.totalPrice || 0);
-                        const paid = parseInt(o.paidAmount || o.payAmount || 0);
-                        const due = total - paid;
+                        // লজিক: 
+                        const productPrice = parseInt(o.productPrice || 0); // প্রোডাক্টের দাম
+                        const deliveryCharge = parseInt(o.deliveryCharge || 0); // ডেলিভারি চার্জ
+                        const paid = parseInt(o.paidAmount || o.payAmount || 0); // পরিশোধিত টাকা
+                        const total = productPrice + deliveryCharge; // মোট দাম
+                        const due = total - paid; // বকেয়া
 
                         ordersData.push({ 
                             ...o, 
                             shortId, 
                             displayDate: d,
-                            total,
+                            productPrice,
+                            deliveryCharge,
                             paid,
                             due,
-                            displayAddress: o.address || "ঠিকানা পাওয়া যায়নি"
+                            img: o.productImg || o.img || "" // প্রোডাক্ট ছবি
                         });
                     }
                 });
 
                 if(!found) {
-                    list.innerHTML = `<div id="empty-msg"><i class="fa fa-shopping-bag"></i><p>আপনি এখনো কোনো অর্ডার করেননি।</p></div>`;
+                    list.innerHTML = `<div id="empty-msg"><i class="fa fa-shopping-bag" style="font-size:40px;"></i><p>আপনি এখনো কোনো অর্ডার করেননি।</p></div>`;
                     return;
                 }
 
@@ -189,18 +136,23 @@
                     list.innerHTML += `
                         <div class="order-card">
                             <div class="card-top">
-                                <div class="id-badge">
-                                    #${o.shortId} 
-                                    <i class="fa fa-copy" style="cursor:pointer; font-size:10px;" onclick="copyToClipboard('${o.shortId}')"></i>
-                                </div>
+                                <div class="id-badge">#${o.shortId} <i class="fa fa-copy" style="font-size:10px; cursor:pointer;" onclick="copyToClipboard('${o.shortId}')"></i></div>
                                 <span class="status-tag ${o.status}">${o.status}</span>
                             </div>
 
-                            <div class="p-info">
-                                <b>${o.productName} (Size: ${o.productSize || 'N/A'})</b>
-                                <small><i class="fa fa-calendar-check"></i> ${o.displayDate}</small>
-                                <small><i class="fa fa-location-dot"></i> ${o.displayAddress}</small>
-                                <small><i class="fa fa-wallet"></i> Method: ${o.paymentMethod}</small>
+                            <div class="product-box">
+                                <img src="${o.img}" class="product-img" alt="Product">
+                                <div class="product-details">
+                                    <b>${o.productName}</b>
+                                    <span>Size: ${o.productSize || 'N/A'}</span>
+                                    <div style="font-size: 13px; font-weight: 600; color: var(--primary); margin-top:4px;">৳ ${o.productPrice}</div>
+                                </div>
+                            </div>
+
+                            <div class="info-list">
+                                <small><i class="fa fa-truck"></i> Charge: ৳ ${o.deliveryCharge}</small>
+                                <small><i class="fa fa-calendar-alt"></i> Date: ${o.displayDate}</small>
+                                <small><i class="fa fa-map-marker-alt"></i> ${o.address || 'No Address'}</small>
                             </div>
 
                             <div class="payment-box">
@@ -215,7 +167,7 @@
                             </div>
 
                             <div class="help-text">
-                                <i class="fa fa-fingerprint"></i> Transaction ID: ${o.trxID || 'N/A'}
+                                <i class="fa fa-info-circle"></i> TrxID: ${o.trxID || 'N/A'} | Method: ${o.paymentMethod || 'N/A'}
                             </div>
                         </div>`;
                 });
@@ -227,8 +179,7 @@
 
     window.copyToClipboard = (text) => {
         navigator.clipboard.writeText(text).then(() => {
-            // সিম্পল ব্রাউজার এলার্ট অথবা টোস্ট
-            alert("ID copied: #" + text);
+            alert("Order ID copied!");
         });
     }
 </script>
