@@ -25,6 +25,12 @@
 
         * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
         
+        /* Page Load Animation */
+        @keyframes pageFade {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         body { 
             font-family: 'Roboto', sans-serif; 
             margin: 0; 
@@ -32,6 +38,7 @@
             color: var(--text-main); 
             padding-bottom: 70px; 
             overflow-x: hidden;
+            animation: pageFade 0.5s ease-out;
         }
 
         header { 
@@ -53,55 +60,57 @@
         }
 
         .slider-container { 
-            width: 100%; height: 190px; overflow: hidden; position: relative; 
-            background: #eee; touch-action: pan-y;
+            width: 100%; height: 180px; overflow: hidden; position: relative; 
+            background: #eee; touch-action: pan-y; margin-bottom: 5px;
         }
-        .slider-track { 
-            display: flex; height: 100%; width: 100%;
-            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); 
-            will-change: transform;
-        }
-        .slide { min-width: 100%; height: 100%; flex-shrink: 0; cursor: pointer; }
-        .slide img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+        .slider-track { display: flex; height: 100%; width: 100%; transition: transform 0.4s ease-out; }
+        .slide { min-width: 100%; height: 100%; flex-shrink: 0; }
+        .slide img { width: 100%; height: 100%; object-fit: cover; }
 
-        .section-title { padding: 15px 16px 5px; font-size: 16px; font-weight: 700; }
-        .cat-grid { display: flex; justify-content: space-between; padding: 15px 16px; background: white; overflow-x: auto; gap: 15px; scrollbar-width: none; }
+        .section-title { padding: 15px 16px 5px; font-size: 15px; font-weight: 700; color: var(--text-main); }
+        
+        /* Category Circle Style */
+        .cat-grid { display: flex; justify-content: space-between; padding: 10px 16px; background: white; overflow-x: auto; gap: 15px; scrollbar-width: none; }
         .cat-grid::-webkit-scrollbar { display: none; }
-        .cat-item { min-width: 70px; text-align: center; cursor: pointer; }
+        .cat-item { min-width: 70px; text-align: center; cursor: pointer; transition: 0.2s; }
+        .cat-item:active { transform: scale(0.9); }
         .cat-icon-box {
-            width: 50px; height: 50px; background: #eff6ff; border-radius: 50%;
+            width: 50px; height: 50px; background: #f0f4f8; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 8px; color: var(--primary); font-size: 20px; transition: 0.3s;
+            margin: 0 auto 8px; color: var(--text-muted); font-size: 20px;
         }
         .cat-item.active .cat-icon-box { background: var(--primary); color: white; }
-        .cat-item span { font-size: 11px; font-weight: 500; color: var(--text-main); display: block; }
+        .cat-item span { font-size: 11px; font-weight: 600; }
 
+        /* Sub-Category Container */
+        #sub-cat-container { display: flex; gap: 8px; padding: 5px 16px 15px; overflow-x: auto; scrollbar-width: none; background: white; }
+        .sub-cat-btn { 
+            background: #f1f5f9; border: 1px solid var(--border); padding: 6px 15px; 
+            border-radius: 20px; font-size: 12px; white-space: nowrap; color: var(--text-main); 
+            font-weight: 500; transition: 0.3s;
+        }
+        .sub-cat-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+        /* Product Grid Animation */
         .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 10px; }
-        .p-card { background: white; border-radius: 4px; overflow: hidden; border: 1px solid #eee; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .p-card img { width: 100%; height: 150px; object-fit: contain; padding: 10px; background: #fff; }
+        .p-card { 
+            background: white; border-radius: 8px; overflow: hidden; 
+            border: 1px solid #eee; transition: 0.3s;
+        }
+        .p-card:active { transform: scale(0.97); }
+        .p-card img { width: 100%; height: 140px; object-fit: contain; padding: 10px; }
         .p-info { padding: 10px; border-top: 1px solid #f8f8f8; }
-        .p-name { font-size: 13px; color: var(--text-main); height: 36px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+        .p-name { font-size: 13px; color: var(--text-main); height: 36px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.4; }
         .p-price { font-size: 15px; font-weight: 700; color: #e11d48; margin-top: 5px; }
 
-        .bottom-nav { 
-            position: fixed; bottom: 0; left: 0; right: 0; 
-            background: white; border-top: 1px solid var(--border); 
-            display: flex; justify-content: space-around; padding: 8px 0; z-index: 2000; 
-        }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 8px 0; z-index: 2000; }
         .nav-item { text-align: center; color: var(--text-muted); font-size: 20px; flex: 1; cursor: pointer; }
         .nav-item.active { color: var(--primary); }
         .nav-item span { display: block; font-size: 10px; margin-top: 3px; font-weight: 500; }
 
-        .profile-menu { 
-            display: none; position: fixed; inset: 0; 
-            background: rgba(0,0,0,0.5); z-index: 9999; 
-        }
-        .profile-content { 
-            position: absolute; right: 0; top: 0; bottom: 0; width: 280px; 
-            background: white; padding: 20px; transition: 0.3s; 
-        }
+        .profile-menu { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999; }
+        .profile-content { position: absolute; right: 0; top: 0; bottom: 0; width: 280px; background: white; padding: 20px; transition: 0.3s; }
         .u-id-badge { background: #f1f5f9; padding: 10px; border-radius: 8px; margin-bottom: 20px; font-size: 12px; font-weight: bold; text-align: center; }
-        .menu-links div, .menu-links a { padding: 14px 0; border-bottom: 1px solid #f1f5f9; display: block; text-decoration: none; color: var(--text-main); font-weight: 500; }
 
         #loading-screen { position: fixed; inset: 0; background: #fff; z-index: 10000; display: flex; align-items: center; justify-content: center; }
         .loader { width: 30px; height: 30px; border: 3px solid #eee; border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
@@ -128,14 +137,17 @@
 </div>
 
 <div class="section-title">Categories</div>
-<div class="cat-grid">
+<div class="cat-grid" id="main-cat-grid">
     <div class="cat-item active" data-cat="all"><div class="cat-icon-box"><i class="fa fa-th-large"></i></div><span>All</span></div>
     <div class="cat-item" data-cat="sports"><div class="cat-icon-box"><i class="fa fa-baseball-bat-ball"></i></div><span>Sports</span></div>
     <div class="cat-item" data-cat="electronics"><div class="cat-icon-box"><i class="fa fa-mobile-screen"></i></div><span>Gadgets</span></div>
     <div class="cat-item" data-cat="fashion"><div class="cat-icon-box"><i class="fa fa-shirt"></i></div><span>Fashion</span></div>
 </div>
 
-<div class="section-title">Flash Sale</div>
+<!-- Sub Category Container -->
+<div id="sub-cat-container"></div>
+
+<div class="section-title">Products For You</div>
 <div class="product-grid" id="p-list"></div>
 
 <div class="bottom-nav">
@@ -155,8 +167,8 @@
         </div>
         <div class="u-id-badge" id="u-uid">UID: MS-XXXXXXXX</div>
         <div class="menu-links">
-            <a href="my_orders.html"><i class="fa fa-shopping-bag"></i> &nbsp; My Orders</a>
-            <div id="logoutBtn" style="color: #e11d48; cursor: pointer;"><i class="fa fa-sign-out-alt"></i> &nbsp; Logout</div>
+            <a href="my_orders.html" style="padding: 12px 0; border-bottom: 1px solid #eee; display: block; text-decoration: none; color: #333;"><i class="fa fa-shopping-bag"></i> &nbsp; My Orders</a>
+            <div id="logoutBtn" style="color: #e11d48; cursor: pointer; padding: 12px 0;"><i class="fa fa-sign-out-alt"></i> &nbsp; Logout</div>
         </div>
     </div>
 </div>
@@ -178,7 +190,10 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getDatabase(app);
-    let pArray = [];
+    let pArray = JSON.parse(localStorage.getItem('cached_products')) || [];
+
+    // Speed Optimization: Render from cache first
+    if(pArray.length > 0) { render(pArray); document.getElementById('loading-screen').style.display = 'none'; }
 
     onAuthStateChanged(auth, (user) => {
         if (user) {
@@ -198,14 +213,18 @@
 
     function fetchProducts() {
         onValue(ref(db, 'products'), (snap) => {
-            pArray = [];
-            snap.forEach(child => { pArray.push({...child.val(), id: child.key}); });
-            render(pArray);
+            let freshData = [];
+            snap.forEach(child => { freshData.push({...child.val(), id: child.key}); });
+            pArray = freshData;
+            localStorage.setItem('cached_products', JSON.stringify(pArray));
+            const currentCat = document.querySelector('.cat-item.active').getAttribute('data-cat');
+            applyFilter(currentCat);
         });
     }
 
     function render(data) {
-        document.getElementById('p-list').innerHTML = data.map(p => `
+        const list = document.getElementById('p-list');
+        list.innerHTML = data.map(p => `
             <div class="p-card" onclick="location.href='product_details.html?id=${p.id}'">
                 <img src="${p.img}" loading="lazy">
                 <div class="p-info">
@@ -213,6 +232,65 @@
                     <div class="p-price">৳ ${p.price}</div>
                 </div>
             </div>`).join('');
+    }
+
+    // New Category & Sub-Category Logic
+    function applyFilter(mainCat) {
+        const subBox = document.getElementById('sub-cat-container');
+        subBox.innerHTML = ""; 
+        
+        let filtered = mainCat === 'all' ? pArray : pArray.filter(p => (p.category||"").toString().toLowerCase() === mainCat.toLowerCase());
+        render(filtered);
+
+        if(mainCat !== 'all') {
+            const subCats = [...new Set(filtered.map(p => p.subCategory).filter(s => s))];
+            if(subCats.length > 0) {
+                subCats.forEach(scName => {
+                    const btn = document.createElement('div');
+                    btn.className = 'sub-cat-btn';
+                    btn.innerText = scName;
+                    btn.onclick = () => {
+                        document.querySelectorAll('.sub-cat-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        render(filtered.filter(p => p.subCategory === scName));
+                    };
+                    subBox.appendChild(btn);
+                });
+            }
+        }
+    }
+
+    // Touch Slider
+    function initSlider(totalSlides) {
+        const track = document.getElementById('sliderTrack');
+        const container = document.getElementById('sliderContainer');
+        let index = 0;
+        let startX = 0;
+        let isDragging = false;
+
+        function updateSlide() {
+            track.style.transition = "transform 0.4s ease-out";
+            track.style.transform = `translateX(-${index * 100}%)`;
+        }
+
+        container.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; isDragging = true; track.style.transition = "none"; });
+        container.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            const currentX = e.touches[0].clientX;
+            const diff = startX - currentX;
+            track.style.transform = `translateX(${-(index * container.offsetWidth) - diff}px)`;
+        });
+        container.addEventListener('touchend', (e) => {
+            if (!isDragging) return;
+            const diff = startX - e.changedTouches[0].clientX;
+            isDragging = false;
+            if (Math.abs(diff) > 50) {
+                if (diff > 0 && index < totalSlides - 1) index++;
+                else if (diff < 0 && index > 0) index--;
+            }
+            updateSlide();
+        });
+        setInterval(() => { index = (index + 1) % totalSlides; updateSlide(); }, 5000);
     }
 
     function fetchBanners() {
@@ -229,55 +307,11 @@
         });
     }
 
-    function initSlider(totalSlides) {
-        const track = document.getElementById('sliderTrack');
-        const container = document.getElementById('sliderContainer');
-        let index = 0;
-        let startX = 0;
-        let isDragging = false;
-
-        function updateSlide() {
-            track.style.transition = "transform 0.4s ease-out";
-            track.style.transform = `translateX(-${index * 100}%)`;
-        }
-
-        container.addEventListener('touchstart', (e) => {
-            startX = e.touches[0].clientX;
-            isDragging = true;
-            track.style.transition = "none";
-        });
-
-        container.addEventListener('touchmove', (e) => {
-            if (!isDragging) return;
-            const currentX = e.touches[0].clientX;
-            const diff = startX - currentX;
-            track.style.transform = `translateX(${-(index * container.offsetWidth) - diff}px)`;
-        });
-
-        container.addEventListener('touchend', (e) => {
-            if (!isDragging) return;
-            const diff = startX - e.changedTouches[0].clientX;
-            isDragging = false;
-            if (Math.abs(diff) > 50) {
-                if (diff > 0 && index < totalSlides - 1) index++;
-                else if (diff < 0 && index > 0) index--;
-            }
-            updateSlide();
-        });
-        
-        setInterval(() => {
-            index = (index + 1) % totalSlides;
-            updateSlide();
-        }, 5000);
-    }
-
-    // Filters and Menu Control
     document.querySelectorAll('.cat-item').forEach(item => {
         item.onclick = () => {
             document.querySelectorAll('.cat-item').forEach(i => i.classList.remove('active'));
             item.classList.add('active');
-            const cat = item.getAttribute('data-cat');
-            render(cat === 'all' ? pArray : pArray.filter(p => (p.category||"").toLowerCase() === cat));
+            applyFilter(item.getAttribute('data-cat'));
         };
     });
 
@@ -298,5 +332,4 @@
     }
 </script>
 </body>
-        </html>
-        
+  </html>
