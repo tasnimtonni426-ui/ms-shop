@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>My Orders - MS STORE</title>
     
-    <!-- PWA Manifest Link -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#2563eb">
     <link rel="apple-touch-icon" href="https://i.postimg.cc/cCkXGkPH/FB-IMG-1770094555781.jpg">
@@ -29,58 +28,21 @@
 
         * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
 
-        body { 
-            font-family: 'Roboto', sans-serif; 
-            background: var(--bg); 
-            color: var(--text-main); 
-            margin: 0; 
-            padding-bottom: 80px; 
-        }
+        body { font-family: 'Roboto', sans-serif; background: var(--bg); color: var(--text-main); margin: 0; padding-bottom: 80px; }
         
-        header { 
-            background: var(--primary); 
-            padding: 15px 16px; 
-            display: flex; 
-            align-items: center; 
-            gap: 15px; 
-            position: sticky; 
-            top: 0; 
-            z-index: 1000;
-            color: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
+        header { background: var(--primary); padding: 15px 16px; display: flex; align-items: center; gap: 15px; position: sticky; top: 0; z-index: 1000; color: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         header i { font-size: 18px; cursor: pointer; }
         header h2 { margin: 0; font-size: 18px; font-weight: 500; }
 
         .container { padding: 12px; }
 
-        .order-card { 
-            background: var(--surface); 
-            border-radius: 8px; 
-            padding: 15px; 
-            margin-bottom: 12px; 
-            border: 1px solid var(--border);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
-        }
+        .order-card { background: var(--surface); border-radius: 8px; padding: 15px; margin-bottom: 12px; border: 1px solid var(--border); box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
 
-        .card-header { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            margin-bottom: 12px; 
-            padding-bottom: 10px; 
-            border-bottom: 1px solid #f1f5f9; 
-        }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid #f1f5f9; }
 
         .order-id { font-size: 13px; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 6px; }
 
-        .status-badge { 
-            padding: 4px 10px; 
-            border-radius: 4px; 
-            font-size: 11px; 
-            font-weight: 700; 
-            text-transform: uppercase; 
-        }
+        .status-badge { padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
         .status-badge.Pending { background: #fff7ed; color: var(--pending); }
         .status-badge.Shipped { background: #eff6ff; color: var(--shipped); }
         .status-badge.Delivered { background: #ecfdf5; color: var(--delivered); }
@@ -93,34 +55,17 @@
         .product-meta span { font-size: 12px; color: var(--text-muted); display: block; }
         .product-meta .price { font-size: 15px; font-weight: 700; color: var(--primary); margin-top: 5px; }
 
-        .details-grid { 
-            display: grid; 
-            grid-template-columns: 1fr; 
-            gap: 8px; 
-            background: #f8fafc; 
-            padding: 12px; 
-            border-radius: 6px; 
-            margin-bottom: 12px;
-            font-size: 12px;
-            color: var(--text-muted);
-        }
+        .details-grid { display: grid; grid-template-columns: 1fr; gap: 8px; background: #f8fafc; padding: 12px; border-radius: 6px; margin-bottom: 12px; font-size: 12px; color: var(--text-muted); }
 
-        .payment-summary { 
-            display: flex; 
-            justify-content: space-between; 
-            padding-top: 10px; 
-            border-top: 1px dashed var(--border); 
-        }
+        .payment-summary { display: flex; justify-content: space-between; padding-top: 10px; border-top: 1px dashed var(--border); }
         .pay-col { display: flex; flex-direction: column; }
         .pay-col label { font-size: 10px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
         .pay-col b { font-size: 14px; }
 
-        .bottom-nav {
-            position: fixed; bottom: 0; left: 0; right: 0;
-            background: white; border-top: 1px solid var(--border);
-            display: flex; justify-content: space-around; padding: 8px 0;
-            z-index: 2000;
-        }
+        /* পেমেন্ট মেথড ডিজাইন */
+        .pay-method-badge { background: #1e293b; color: #fff; padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-left: 5px; }
+
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 8px 0; z-index: 2000; }
         .nav-item { text-align: center; color: var(--text-muted); font-size: 20px; flex: 1; cursor: pointer; text-decoration: none; }
         .nav-item.active { color: var(--primary); }
         .nav-item span { display: block; font-size: 10px; margin-top: 3px; font-weight: 500; }
@@ -144,22 +89,10 @@
 </div>
 
 <div class="bottom-nav">
-    <a href="shop.html" class="nav-item">
-        <i class="fa fa-home"></i>
-        <span>Home</span>
-    </a>
-    <a href="shop.html" class="nav-item">
-        <i class="fa fa-user"></i>
-        <span>Account</span>
-    </a>
-    <a href="my_orders.html" class="nav-item active">
-        <i class="fa fa-box"></i>
-        <span>Orders</span>
-    </a>
-    <a href="https://wa.me/8801319474450" class="nav-item">
-        <i class="fab fa-whatsapp"></i>
-        <span>Support</span>
-    </a>
+    <a href="shop.html" class="nav-item"><i class="fa fa-home"></i><span>Home</span></a>
+    <a href="shop.html" class="nav-item"><i class="fa fa-user"></i><span>Account</span></a>
+    <a href="my_orders.html" class="nav-item active"><i class="fa fa-box"></i><span>Orders</span></a>
+    <a href="https://wa.me/8801319474450" class="nav-item"><i class="fab fa-whatsapp"></i><span>Support</span></a>
 </div>
 
 <script type="module">
@@ -182,11 +115,10 @@
 
     onAuthStateChanged(auth, (user) => {
         if (user) {
-            console.log("Logged in as:", user.uid);
             fetchOrders(user.uid);
         } else {
             // যদি ইউজার লগইন না থাকে, তবে ইনডেক্সে পাঠিয়ে দাও
-            window.location.replace("index.html");
+            window.location.href = "index.html";
         }
     });
 
@@ -195,51 +127,84 @@
             const list = document.getElementById('order-list');
             list.innerHTML = "";
             let found = false;
-            
+            let ordersArray = [];
+
             snap.forEach(c => {
                 const o = c.val();
                 if((o.uid || o.userId) === uid) {
                     found = true;
-                    // ... এখানে আপনার আগের অর্ডারের ডিজাইন কোডটি থাকবে ...
-                    renderOrderCard(list, o, c.key);
+                    ordersArray.push({ ...o, key: c.key });
                 }
             });
 
-            document.getElementById('loading-screen').style.display = 'none';
             if(!found) {
                 list.innerHTML = "<p style='text-align:center; padding-top:50px;'>কোনো অর্ডার পাওয়া যায়নি।</p>";
+            } else {
+                // নতুন অর্ডার উপরে দেখানোর জন্য
+                ordersArray.reverse().forEach(order => {
+                    renderOrderCard(list, order, order.key);
+                });
             }
+            document.getElementById('loading-screen').style.display = 'none';
         });
     }
 
-    // অর্ডার রেন্ডার করার জন্য আলাদা ফাংশন (যাতে কোড পরিষ্কার থাকে)
     function renderOrderCard(list, o, key) {
         const shortId = key.slice(-6).toUpperCase();
+        
+        // --- পেমেন্ট লজিক ---
+        const productPrice = parseInt(o.productPrice || o.price || 0);
+        const deliveryCharge = parseInt(o.deliveryCharge || 0);
+        const totalAmount = productPrice + deliveryCharge;
+        const userPaid = parseInt(o.paidAmount || o.payAmount || 0);
+        
+        let dueDisplay;
+        let dueColor = "var(--cancelled)";
+        
+        if (userPaid >= totalAmount) {
+            dueDisplay = "COMPLETED";
+            dueColor = "var(--delivered)";
+        } else {
+            dueDisplay = "৳ " + (totalAmount - userPaid);
+        }
+
         list.innerHTML += `
             <div class="order-card">
                 <div class="card-header">
-                    <div class="order-id">#${shortId}</div>
+                    <div class="order-id">#${shortId} <span class="pay-method-badge">${o.paymentMethod || 'COD'}</span></div>
                     <div class="status-badge ${o.status}">${o.status}</div>
                 </div>
                 <div class="product-info">
-                    <img src="${o.productImg || o.img}" class="product-img">
+                    <img src="${o.productImg || o.img || 'https://placehold.co/100'}" class="product-img" onerror="this.src='https://placehold.co/100'">
                     <div class="product-meta">
                         <b>${o.productName}</b>
-                        <div class="price">৳ ${o.productPrice || 0}</div>
+                        <span>Size: ${o.productSize || o.size || 'N/A'}</span>
+                        <div class="price">৳ ${productPrice}</div>
+                    </div>
+                </div>
+                <div class="details-grid">
+                    <div><i class="fa fa-truck"></i> Delivery Charge: ৳ ${deliveryCharge}</div>
+                    <div><i class="fa fa-fingerprint"></i> TrxID: ${o.trxID || 'N/A'}</div>
+                </div>
+                <div class="payment-summary">
+                    <div class="pay-col">
+                        <label>PAID</label>
+                        <b style="color:var(--delivered)">৳ ${userPaid}</b>
+                    </div>
+                    <div class="pay-col" style="text-align:right">
+                        <label>DUE</label>
+                        <b style="color:${dueColor}">${dueDisplay}</b>
                     </div>
                 </div>
             </div>`;
     }
 
-    // পুরোনো সব সার্ভিস ওয়ার্কার ডিলিট করার এবং নতুনটি রেজিস্টার করার নিয়ম
+    // সার্ভিস ওয়ার্কার রেজিস্টার (লুপ ফিক্সড)
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then(registrations => {
-            for(let registration of registrations) {
-                registration.unregister(); // পুরোনোটি ডিলিট করবে
-            }
-            navigator.serviceWorker.register('sw.js?v=' + Date.now()); // নতুন ভার্সন লোড করবে
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js').catch(err => console.log(err));
         });
     }
-        </script>
+</script>
 </body>
-    </html>
+</html>
