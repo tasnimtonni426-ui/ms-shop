@@ -1,15 +1,24 @@
 {
-  "name": "MS STORE",
-  "short_name": "MS Store",
-  "start_url": "/shop.html",
+  "name": "MS STORE - Premium Shop",
+  "short_name": "MS STORE",
+  "description": "Best Sports Shop in Bangladesh",
+  "start_url": "index.html",
   "display": "standalone",
-  "background_color": "#f4f7fa",
-  "theme_color": "#2563eb",
+  "background_color": "#0f172a",
+  "theme_color": "#00d2ff",
+  "orientation": "portrait",
   "icons": [
     {
       "src": "https://i.postimg.cc/cCkXGkPH/FB-IMG-1770094555781.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://i.postimg.cc/cCkXGkPH/FB-IMG-1770094555781.jpg",
       "sizes": "512x512",
-      "type": "image/jpeg"
+      "type": "image/jpeg",
+      "purpose": "any maskable"
     }
   ]
 }
