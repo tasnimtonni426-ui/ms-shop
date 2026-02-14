@@ -15,35 +15,49 @@
     <style>
         :root { --primary: #00d2ff; --bg: #f8fafc; --card-bg: #ffffff; --border: #e2e8f0; --text: #1e293b; --dark: #0f172a; }
         body { font-family: 'Poppins', sans-serif; margin: 0; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+        
         header { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(15px); padding: 12px 15px; display: flex; flex-direction: column; gap: 12px; position: sticky; top: 0; z-index: 5000; border-bottom: 1px solid var(--border); box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
         .header-top { display: flex; justify-content: space-between; align-items: center; }
         .logo { font-size: 22px; font-weight: bold; color: var(--dark); letter-spacing: 1px; }
         .logo span { color: var(--primary); }
+        
         .profile-btn { width: 35px; height: 35px; border-radius: 50%; cursor: pointer; border: 1.5px solid var(--primary); object-fit: cover; background: #fff; }
         .search-box { position: relative; width: 100%; }
         .search-box input { width: 100%; padding: 10px 40px 10px 15px; border-radius: 12px; border: 1px solid var(--border); background: #fff; color: var(--text); outline: none; box-sizing: border-box; transition: 0.3s; }
-        .search-box input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0, 210, 255, 0.1); }
+
+        /* স্লাইডার অপ্টিমাইজড স্টাইল */
         .slider-container { width: 92%; height: 160px; margin: 15px auto; border-radius: 20px; overflow: hidden; position: relative; border: 1px solid var(--border); touch-action: pan-y; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .slider-track { display: flex; width: 100%; height: 100%; transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+        .slider-track { 
+            display: flex; 
+            width: 100%; 
+            height: 100%; 
+            transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1); /* সুপার স্মুথ ট্রানজিশন */
+            will-change: transform;
+        }
         .slide { min-width: 100%; height: 100%; flex-shrink: 0; }
-        .slide img { width: 100%; height: 100%; object-fit: cover; }
+        .slide img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+
         .cat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 15px; }
         .cat-item { background: var(--card-bg); border: 1px solid var(--border); border-radius: 15px; padding: 12px 5px; text-align: center; cursor: pointer; transition: 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
         .cat-item.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 4px 12px rgba(0, 210, 255, 0.3); }
         .cat-item i { font-size: 20px; display: block; margin-bottom: 5px; }
         .cat-item span { font-size: 10px; font-weight: 600; text-transform: uppercase; }
+
         #sub-cat-container { display: flex; gap: 10px; padding: 0 15px 15px; overflow-x: auto; scrollbar-width: none; }
         .sub-cat-btn { background: var(--card-bg); border: 1px solid var(--border); padding: 8px 18px; border-radius: 20px; font-size: 12px; white-space: nowrap; cursor: pointer; color: #64748b; font-weight: 500; }
         .sub-cat-btn.active { border-color: var(--primary); color: var(--primary); background: rgba(0, 210, 255, 0.05); }
+
         .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; padding: 15px; }
         .p-card { background: var(--card-bg); border-radius: 18px; border: 1px solid var(--border); overflow: hidden; transition: 0.3s; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
         .p-card img { width: 100%; height: 130px; object-fit: cover; background: #f1f5f9; }
         .p-info { padding: 12px; }
         .p-name { font-size: 13px; font-weight: 600; color: var(--dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .p-price { color: #0284c7; font-weight: bold; margin-top: 5px; font-size: 14px; }
+
         .profile-menu { display: none; position: fixed; top: 75px; right: 15px; width: 260px; background: white; border-radius: 22px; padding: 20px; z-index: 6000; border: 1px solid var(--border); box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
         .profile-menu.show { display: block; }
         .u-id-badge { font-size: 12px; font-weight: bold; color: white; background: var(--primary); padding: 10px 12px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 15px; cursor: pointer; }
+
         .whatsapp-helpline { position: fixed; bottom: 30px; right: 20px; background: #25d366; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; z-index: 9999; box-shadow: 0 8px 20px rgba(37, 211, 102, 0.4); }
         #loading-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; z-index: 9999; display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 24px; font-weight: bold; }
     </style>
@@ -113,7 +127,6 @@
     const db = getDatabase(app);
     let pArray = JSON.parse(localStorage.getItem('cached_products')) || [];
 
-    // Instant Render from Cache
     if(pArray.length > 0) { render(pArray); } 
     else { document.getElementById('loading-screen').style.display = 'flex'; }
 
@@ -138,7 +151,6 @@
     }
 
     function fetchProducts() {
-        // Use onValue for background updates without refreshing page
         onValue(ref(db, 'products'), (snap) => {
             let freshData = [];
             snap.forEach(child => { freshData.push({...child.val(), id: child.key}); });
@@ -177,33 +189,85 @@
         }
     }
 
-    // Slider, Search, and Menu logic preserved exactly as before but optimized
+    // স্লাইডার কন্ট্রোল (সুপার স্মুথ টাচ + অটো প্লে)
+    function initSlider(totalSlides) {
+        const track = document.getElementById('sliderTrack');
+        const container = document.getElementById('sliderContainer');
+        let index = 0;
+        let startX = 0;
+        let isDragging = false;
+        let autoPlayTimer;
+
+        function updateSlide() {
+            track.style.transform = `translateX(-${index * 100}%)`;
+        }
+
+        function startAutoPlay() {
+            stopAutoPlay();
+            autoPlayTimer = setInterval(() => {
+                index = (index + 1) % totalSlides;
+                updateSlide();
+            }, 4000);
+        }
+
+        function stopAutoPlay() { clearInterval(autoPlayTimer); }
+
+        container.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+            stopAutoPlay();
+            isDragging = true;
+            track.style.transition = 'none'; // টাচ করার সময় ট্রানজিশন অফ (রিয়েল টাইম রেসপন্স)
+        });
+
+        container.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            const diff = startX - e.touches[0].clientX;
+            const moveX = -(index * container.offsetWidth) - diff;
+            track.style.transform = `translateX(${moveX}px)`;
+        });
+
+        container.addEventListener('touchend', (e) => {
+            if (!isDragging) return;
+            const endX = e.changedTouches[0].clientX;
+            const diff = startX - endX;
+            isDragging = false;
+            
+            track.style.transition = 'transform 0.6s cubic-bezier(0.23, 1, 0.32, 1)'; // আবার স্মুথনেস অন
+
+            if (Math.abs(diff) > 50) { // স্লাইড চেঞ্জ করার জন্য মিনিমাম দূরত্ব
+                if (diff > 0 && index < totalSlides - 1) index++;
+                else if (diff < 0 && index > 0) index--;
+            }
+            updateSlide();
+            startAutoPlay();
+        });
+
+        startAutoPlay();
+    }
+
     function fetchBanners() {
         const cachedBanners = localStorage.getItem('cached_banners');
-        if(cachedBanners) document.getElementById('sliderTrack').innerHTML = cachedBanners;
+        if(cachedBanners) {
+            document.getElementById('sliderTrack').innerHTML = cachedBanners;
+            initSlider(document.querySelectorAll('.slide').length);
+        }
         
         get(ref(db, 'banners')).then((snap) => {
             if (snap.exists()) {
                 const d = snap.val();
                 const banners = ['banner1', 'banner2', 'banner3'].filter(k => d[k]);
                 const html = banners.map(k => `
-                    <div class="slide" onclick="window.location.href='${d[k].link}'">
+                    <div class="slide" onclick="if('${d[k].link}') window.location.href='${d[k].link}'">
                         <img src="${d[k].img}">
                     </div>`).join('');
-                document.getElementById('sliderTrack').innerHTML = html;
-                localStorage.setItem('cached_banners', html);
-                initSlider(banners.length);
+                
+                if (html !== cachedBanners) {
+                    document.getElementById('sliderTrack').innerHTML = html;
+                    localStorage.setItem('cached_banners', html);
+                    initSlider(banners.length);
+                }
             }
         });
-    }
-
-    function initSlider(totalSlides) {
-        const track = document.getElementById('sliderTrack');
-        let index = 0;
-        setInterval(() => {
-            index = (index + 1) % totalSlides;
-            track.style.transform = `translateX(-${index * 100}%)`;
-        }, 4000);
     }
 
     document.querySelectorAll('.cat-item').forEach(item => {
