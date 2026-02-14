@@ -3,55 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Order Requests</title>
+    <title>Admin - Order Management</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --primary: #00d2ff; --dark: #0f172a; --bg: #f1f5f9; --success: #2ecc71; --danger: #e74c3c; }
         body { font-family: 'Poppins', sans-serif; background: var(--bg); margin: 0; padding: 15px; }
         
-        header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .back-btn { background: white; border: none; padding: 10px; border-radius: 12px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         
+        /* ফিল্টার ট্যাব */
+        .filter-tabs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 15px; margin-top: 10px; scrollbar-width: none; }
+        .tab { white-space: nowrap; padding: 8px 15px; background: white; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.05); color: #64748b; }
+        .tab.active { background: var(--dark); color: white; }
+
         .order-card { background: white; border-radius: 20px; padding: 15px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-left: 5px solid var(--primary); }
         .order-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
         .order-id { font-weight: bold; color: var(--dark); font-size: 13px; }
         .status-badge { font-size: 10px; padding: 4px 10px; border-radius: 20px; font-weight: bold; text-transform: uppercase; }
-
-        /* ইউজার প্রোফাইল ও আইটেম বক্স */
-        .main-info-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 10px; margin: 10px 0; }
         
-        .item-details { display: flex; flex-direction: column; gap: 8px; background: #f8fafc; padding: 10px; border-radius: 12px; border: 1px solid #edf2f7; }
-        .item-details img { width: 100%; height: 80px; border-radius: 8px; object-fit: cover; }
+        /* স্ট্যাটাস কালার */
+        .pending { background: #fff3cd; color: #856404; }
+        .shipped { background: #e0f2fe; color: #0369a1; }
+        .delivered { background: #d4edda; color: #155724; }
+        .cancelled { background: #fee2e2; color: #dc2626; }
+
+        .main-info-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 10px; margin: 10px 0; }
+        .item-details { display: flex; flex-direction: column; gap: 5px; background: #f8fafc; padding: 10px; border-radius: 12px; border: 1px solid #edf2f7; }
+        .item-details img { width: 100%; height: 70px; border-radius: 8px; object-fit: cover; }
         
         .user-profile-box { background: #fff; border: 1.5px dashed var(--primary); padding: 8px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; text-align: center; cursor: pointer; }
-        .user-profile-box img { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--primary); margin-bottom: 5px; background: #eee; }
-        .user-profile-box b { font-size: 11px; color: var(--dark); display: block; overflow: hidden; text-overflow: ellipsis; width: 100%; }
-        .user-profile-box span { font-size: 9px; color: #64748b; word-break: break-all; }
+        .user-profile-box img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--primary); background: #eee; }
+        .user-profile-box b { font-size: 10px; color: var(--dark); margin-top: 4px; }
+        .user-profile-box span { font-size: 8px; color: #64748b; word-break: break-all; }
 
-        /* অ্যাড্রেস বক্স (কপি আইকন মুক্ত) */
-        .info-box { background: #f8fafc; padding: 12px; border-radius: 12px; margin-top: 10px; border: 1px solid #edf2f7; cursor: pointer; position: relative; }
-        .info-box:active { background: #f1f5f9; }
-        .info-row { display: block; margin-bottom: 6px; font-size: 12px; color: var(--dark); }
+        .info-box { background: #f8fafc; padding: 12px; border-radius: 12px; margin-top: 10px; border: 1px solid #edf2f7; cursor: pointer; }
+        .info-row { display: block; margin-bottom: 4px; font-size: 12px; color: var(--dark); }
         .info-row i { color: var(--primary); width: 18px; }
 
-        /* পেমেন্ট বক্স */
-        .payment-info { background: #e0f2fe; padding: 12px; border-radius: 12px; margin-top: 10px; font-size: 12px; border: 1px solid #bae6fd; }
+        .payment-info { background: #e0f2fe; padding: 12px; border-radius: 12px; margin-top: 10px; font-size: 11px; border: 1px solid #bae6fd; }
         .trx-id-box { background: #fff; padding: 8px; border-radius: 8px; margin-top: 8px; border: 1px solid #0369a1; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-        .trx-id-box b { color: var(--danger); font-size: 14px; }
 
-        .actions { display: flex; gap: 10px; margin-top: 15px; }
-        .btn { flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 13px; transition: 0.3s; }
-        .btn-call { background: #e0f2fe; color: #0369a1; text-decoration: none; text-align: center; }
-        .btn-complete { background: var(--dark); color: white; }
-        .btn-delete { background: #fee2e2; color: #dc2626; }
+        .actions { display: flex; gap: 8px; margin-top: 15px; align-items: center; }
+        .status-select { flex: 1; padding: 10px; border-radius: 10px; border: 1.5px solid #e2e8f0; font-size: 12px; outline: none; background: #f8fafc; }
+        .btn-call { background: #e0f2fe; color: #0369a1; padding: 10px; border-radius: 10px; text-decoration: none; }
+        .btn-delete { background: #fee2e2; color: #dc2626; padding: 10px; border-radius: 10px; border: none; cursor: pointer; }
+        
+        .cancel-reason-box { margin-top: 10px; display: none; }
+        .cancel-reason-box input { width: 100%; padding: 8px; border-radius: 8px; border: 1px solid var(--danger); font-size: 11px; box-sizing: border-box; }
     </style>
 </head>
 <body>
 
 <header>
     <button class="back-btn" onclick="history.back()"><i class="fa fa-arrow-left"></i></button>
-    <h3 style="margin:0;">অর্ডার ম্যানেজমেন্ট</h3>
+    <h3 style="margin:0; font-size: 16px;">অর্ডার লিস্ট</h3>
 </header>
+
+<div class="filter-tabs" id="tabs">
+    <div class="tab active" onclick="filterOrders('all', this)">All</div>
+    <div class="tab" onclick="filterOrders('pending', this)">Pending</div>
+    <div class="tab" onclick="filterOrders('shipped', this)">Shipped</div>
+    <div class="tab" onclick="filterOrders('delivered', this)">Delivered</div>
+    <div class="tab" onclick="filterOrders('cancelled', this)">Cancelled</div>
+</div>
 
 <div id="order-list">লোড হচ্ছে...</div>
 
@@ -71,119 +86,128 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // ডেটা লোড করার প্রধান ফাংশন
+    let allOrders = [];
+    let currentFilter = 'all';
+
+    // ডেটা লোড
     onValue(ref(db, 'orders'), async (snap) => {
+        allOrders = [];
+        if(snap.exists()){
+            const tempOrders = [];
+            snap.forEach(child => { tempOrders.push({ id: child.key, ...child.val() }); });
+            allOrders = tempOrders.reverse();
+            renderOrders();
+        } else {
+            document.getElementById('order-list').innerHTML = "কোনো অর্ডার নেই।";
+        }
+    });
+
+    async function renderOrders() {
         const list = document.getElementById('order-list');
         list.innerHTML = "";
         
-        if(!snap.exists()) {
-            list.innerHTML = "<p style='text-align:center; padding:50px; color:gray;'>কোনো অর্ডার পাওয়া যায়নি।</p>";
-            return;
-        }
+        for (let o of allOrders) {
+            if(currentFilter !== 'all' && o.status !== currentFilter) continue;
 
-        // সব অর্ডার ডেটা অ্যারেতে নেওয়া
-        let ordersArray = [];
-        snap.forEach(child => {
-            ordersArray.push({ id: child.key, ...child.val() });
-        });
-
-        // উল্টো দিক থেকে রেন্ডার (নতুন অর্ডার আগে)
-        for (let o of ordersArray.reverse()) {
-            // ইউজারের অরিজিনাল ডাটা ফেচ করা
-            const userRef = ref(db, 'users/' + o.uid);
-            const uSnap = await get(userRef);
+            // ইউজারের অরিজিনাল ডাটা ফেচ
+            const uSnap = await get(ref(db, 'users/' + o.uid));
             const u = uSnap.exists() ? uSnap.val() : {};
 
-            const totalPrice = parseFloat(o.price) || 0;
-            const paid = parseFloat(o.paidAmount) || 0;
-            const due = totalPrice - paid;
-
-            // ইউজার প্রোফাইল পিকচার ফিক্স
-            const userImg = u.photoURL || u.profilePic || u.image || 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
-            const userName = u.displayName || u.name || 'নাম নেই';
+            const due = (parseFloat(o.price) || 0) - (parseFloat(o.paidAmount) || 0);
 
             list.innerHTML += `
                 <div class="order-card">
                     <div class="order-header">
-                        <span class="order-id">ORDER ID: #${o.id.slice(-6).toUpperCase()}</span>
-                        <span class="status-badge ${o.status === 'completed' ? 'completed' : 'pending'}">${o.status || 'pending'}</span>
+                        <span class="order-id">ID: #${o.id.slice(-6).toUpperCase()}</span>
+                        <span class="status-badge ${o.status || 'pending'}">${o.status || 'pending'}</span>
                     </div>
                     
                     <div class="main-info-grid">
                         <div class="item-details">
-                            <img src="${o.productImg || 'https://via.placeholder.com/60'}">
+                            <img src="${o.productImg || ''}">
                             <b>${o.productName}</b>
-                            <small>দাম: ${totalPrice}৳ | সাইজ: ${o.size || 'N/A'}</small>
+                            <small>${o.price}৳ | Size: ${o.size || 'N/A'}</small>
                         </div>
                         
-                        <div class="user-profile-box" onclick="copyText('${o.uid}', 'User UID')">
-                            <img src="${userImg}">
-                            <b>${userName}</b>
-                            <span>${u.email || 'ইমেইল নেই'}</span>
-                            <div style="margin-top:5px; font-size:9px; color:var(--primary);">
-                                UID: ${o.uid ? o.uid.slice(0,8) : 'N/A'}... <i class="fa fa-copy"></i>
-                            </div>
+                        <div class="user-profile-box" onclick="copyTxt('${o.uid}', 'UID')">
+                            <img src="${u.photoURL || u.profilePic || 'https://cdn-icons-png.flaticon.com/512/149/149071.png'}">
+                            <b>${u.displayName || u.name || 'User'}</b>
+                            <span>${u.email || ''}</span>
+                            <small style="font-size:8px; color:var(--primary)">UID: ${o.uid ? o.uid.slice(0,8) : 'N/A'}... <i class="fa fa-copy"></i></small>
                         </div>
                     </div>
 
-                    <div class="info-box" onclick="copyAddress('${o.userName}', '${o.phone}', '${o.district}', '${o.upazila}', '${o.address}')">
+                    <div class="info-box" onclick="copyFullAddr('${o.userName}', '${o.phone}', '${o.district}', '${o.upazila}', '${o.address}')">
                         <div class="info-row"><i class="fa fa-user"></i> ${o.userName}</div>
                         <div class="info-row"><i class="fa fa-phone"></i> ${o.phone}</div>
-                        <div class="info-row"><i class="fa fa-map-marker-alt"></i> ${o.district || 'জেলা'}, ${o.upazila || 'উপজেলা'}</div>
-                        <div class="info-row" style="font-size:11px; color:#64748b;">${o.address}</div>
-                        <small style="position:absolute; bottom:5px; right:10px; font-size:9px; color:#cbd5e1;">Tap to copy address</small>
+                        <div class="info-row"><i class="fa fa-map-marker-alt"></i> ${o.district}, ${o.upazila}</div>
+                        <div class="info-row" style="font-size:10px; color:gray;">${o.address}</div>
                     </div>
 
                     <div class="payment-info">
                         <div style="display:flex; justify-content:space-between">
-                            <span>পেমেন্ট: <b>${o.paymentMethod || 'N/A'}</b></span>
-                            <span>পেইড: <b style="color:var(--success)">${paid}৳</b></span>
+                            <span>পেইড: <b>${o.paidAmount || 0}৳</b></span>
+                            <span style="color:${due > 0 ? 'var(--danger)' : 'var(--success)'}">বকেয়া: <b>${due}৳</b></span>
                         </div>
-                        <div style="margin-top:5px">
-                            বকেয়া টাকা: <b style="color:${due > 0 ? 'var(--danger)' : 'var(--success)'}">${due > 0 ? due + '৳' : '০৳ (Full Paid)'}</b>
-                        </div>
-                        <div class="trx-id-box" onclick="copyText('${o.trxID}', 'TrxID')">
-                            <div><small>TrxID:</small> <br><b>${o.trxID || 'N/A'}</b></div>
+                        <div class="trx-id-box" onclick="copyTxt('${o.trxID}', 'TrxID')">
+                            <span>TrxID: <b>${o.trxID || 'N/A'}</b></span>
                             <i class="fa fa-copy" style="color:var(--primary)"></i>
                         </div>
+                        ${o.cancelReason ? `<div style="color:red; margin-top:5px;">Reason: ${o.cancelReason}</div>` : ''}
                     </div>
 
                     <div class="actions">
-                        <a href="tel:${o.phone}" class="btn btn-call"><i class="fa fa-phone"></i> কল দিন</a>
-                        ${o.status !== 'completed' ? `<button class="btn btn-complete" onclick="markComplete('${o.id}')">ডেলিভারি ডান</button>` : ''}
-                        <button class="btn btn-delete" onclick="deleteOrder('${o.id}')"><i class="fa fa-trash"></i></button>
+                        <a href="tel:${o.phone}" class="btn-call"><i class="fa fa-phone"></i></a>
+                        <select class="status-select" onchange="handleStatus('${o.id}', this.value)">
+                            <option value="pending" ${o.status === 'pending' ? 'selected' : ''}>Pending</option>
+                            <option value="shipped" ${o.status === 'shipped' ? 'selected' : ''}>Shipped</option>
+                            <option value="delivered" ${o.status === 'delivered' ? 'selected' : ''}>Delivered</option>
+                            <option value="cancelled" ${o.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                        </select>
+                        <button class="btn-delete" onclick="deleteOrder('${o.id}')"><i class="fa fa-trash"></i></button>
+                    </div>
+
+                    <div class="cancel-reason-box" id="cancel-box-${o.id}">
+                        <input type="text" placeholder="বাতিল করার কারণ লিখে Enter চাপুন..." onkeypress="saveCancel(event, '${o.id}')">
                     </div>
                 </div>
             `;
         }
-    });
+    }
 
-    // কপি ফাংশন
-    window.copyText = (text, label) => {
-        if(!text || text === 'undefined') return;
-        navigator.clipboard.writeText(text).then(() => {
-            alert(label + " কপি করা হয়েছে!");
-        });
+    window.filterOrders = (status, el) => {
+        currentFilter = status;
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        el.classList.add('active');
+        renderOrders();
     };
 
-    // অ্যাড্রেস কপি করার স্পেশাল ফাংশন
-    window.copyAddress = (name, phone, dist, upa, addr) => {
-        const fullAddr = `নাম: ${name}\nফোন: ${phone}\nঠিকানা: ${dist}, ${upa}, ${addr}`;
-        navigator.clipboard.writeText(fullAddr).then(() => {
-            alert("পুরো ঠিকানা কপি করা হয়েছে!");
-        });
-    };
-
-    window.markComplete = (id) => {
-        if(confirm("অর্ডারটি কি ডেলিভারি হয়ে গেছে?")) {
-            update(ref(db, 'orders/' + id), { status: 'completed' });
+    window.handleStatus = (id, val) => {
+        if(val === 'cancelled') {
+            document.getElementById(`cancel-box-${id}`).style.display = 'block';
+        } else {
+            update(ref(db, 'orders/' + id), { status: val, cancelReason: null });
         }
+    };
+
+    window.saveCancel = (e, id) => {
+        if(e.key === 'Enter' && e.target.value) {
+            update(ref(db, 'orders/' + id), { status: 'cancelled', cancelReason: e.target.value });
+            alert("Cancelled with reason!");
+        }
+    };
+
+    window.copyTxt = (txt, label) => {
+        navigator.clipboard.writeText(txt).then(() => alert(label + " copied!"));
+    };
+
+    window.copyFullAddr = (name, phone, dist, upa, addr) => {
+        const full = `Name: ${name}\nPhone: ${phone}\nAddress: ${dist}, ${upa}, ${addr}`;
+        navigator.clipboard.writeText(full).then(() => alert("Address copied!"));
     };
 
     window.deleteOrder = (id) => {
-        if(confirm("ডিলিট করতে চান?")) {
-            remove(ref(db, 'orders/' + id));
-        }
+        if(confirm("Delete this order?")) remove(ref(db, 'orders/' + id));
     };
 </script>
 
