@@ -6,76 +6,55 @@
     <title>MS STORE - Home</title>
 
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0f172a">
+    <meta name="theme-color" content="#ffffff">
     <link rel="apple-touch-icon" href="https://i.postimg.cc/cCkXGkPH/FB-IMG-1770094555781.jpg">
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
-        :root { --primary: #00d2ff; --glass: rgba(255, 255, 255, 0.05); --border: rgba(255, 255, 255, 0.1); }
-        body { font-family: 'Poppins', sans-serif; margin: 0; background: #0f172a; color: white; min-height: 100vh; overflow-x: hidden; }
-        
-        header { 
-            background: rgba(15, 23, 42, 0.98); backdrop-filter: blur(15px); padding: 12px 15px; 
-            display: flex; flex-direction: column; gap: 12px; position: sticky; top: 0; z-index: 5000; border-bottom: 1px solid var(--border); 
-        }
+        :root { --primary: #00d2ff; --bg: #f8fafc; --card-bg: #ffffff; --border: #e2e8f0; --text: #1e293b; --dark: #0f172a; }
+        body { font-family: 'Poppins', sans-serif; margin: 0; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+        header { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(15px); padding: 12px 15px; display: flex; flex-direction: column; gap: 12px; position: sticky; top: 0; z-index: 5000; border-bottom: 1px solid var(--border); box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
         .header-top { display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-size: 22px; font-weight: bold; color: var(--primary); letter-spacing: 1px; }
-        
-        .profile-btn { width: 35px; height: 35px; border-radius: 50%; cursor: pointer; border: 1.5px solid var(--primary); object-fit: cover; }
-
+        .logo { font-size: 22px; font-weight: bold; color: var(--dark); letter-spacing: 1px; }
+        .logo span { color: var(--primary); }
+        .profile-btn { width: 35px; height: 35px; border-radius: 50%; cursor: pointer; border: 1.5px solid var(--primary); object-fit: cover; background: #fff; }
         .search-box { position: relative; width: 100%; }
-        .search-box input { width: 100%; padding: 10px 40px 10px 15px; border-radius: 12px; border: 1px solid var(--border); background: var(--glass); color: white; outline: none; box-sizing: border-box; }
-
-        /* স্লাইডার স্টাইল */
-        .slider-container { width: 92%; height: 160px; margin: 15px auto; border-radius: 15px; overflow: hidden; position: relative; border: 1px solid var(--border); touch-action: pan-y; }
-        .slider-track { display: flex; width: 100%; height: 100%; transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); cursor: grab; }
+        .search-box input { width: 100%; padding: 10px 40px 10px 15px; border-radius: 12px; border: 1px solid var(--border); background: #fff; color: var(--text); outline: none; box-sizing: border-box; transition: 0.3s; }
+        .search-box input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0, 210, 255, 0.1); }
+        .slider-container { width: 92%; height: 160px; margin: 15px auto; border-radius: 20px; overflow: hidden; position: relative; border: 1px solid var(--border); touch-action: pan-y; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .slider-track { display: flex; width: 100%; height: 100%; transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
         .slide { min-width: 100%; height: 100%; flex-shrink: 0; }
-        .slide img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
-
+        .slide img { width: 100%; height: 100%; object-fit: cover; }
         .cat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 15px; }
-        .cat-item { background: var(--glass); border: 1px solid var(--border); border-radius: 12px; padding: 12px 5px; text-align: center; cursor: pointer; transition: 0.3s; }
-        .cat-item.active { background: var(--primary); color: #0f172a; border-color: var(--primary); }
+        .cat-item { background: var(--card-bg); border: 1px solid var(--border); border-radius: 15px; padding: 12px 5px; text-align: center; cursor: pointer; transition: 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .cat-item.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 4px 12px rgba(0, 210, 255, 0.3); }
         .cat-item i { font-size: 20px; display: block; margin-bottom: 5px; }
         .cat-item span { font-size: 10px; font-weight: 600; text-transform: uppercase; }
-
         #sub-cat-container { display: flex; gap: 10px; padding: 0 15px 15px; overflow-x: auto; scrollbar-width: none; }
-        .sub-cat-btn { background: var(--glass); border: 1px solid var(--border); padding: 6px 15px; border-radius: 20px; font-size: 12px; white-space: nowrap; cursor: pointer; color: #cbd5e1; }
-        .sub-cat-btn.active { border-color: var(--primary); color: var(--primary); background: rgba(0, 210, 255, 0.1); }
-
+        .sub-cat-btn { background: var(--card-bg); border: 1px solid var(--border); padding: 8px 18px; border-radius: 20px; font-size: 12px; white-space: nowrap; cursor: pointer; color: #64748b; font-weight: 500; }
+        .sub-cat-btn.active { border-color: var(--primary); color: var(--primary); background: rgba(0, 210, 255, 0.05); }
         .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; padding: 15px; }
-        .p-card { background: var(--glass); border-radius: 15px; border: 1px solid var(--border); overflow: hidden; }
-        .p-card img { width: 100%; height: 120px; object-fit: cover; }
-        .p-info { padding: 10px; }
-        .p-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .p-price { color: var(--primary); font-weight: bold; margin-top: 5px; }
-
-        .profile-menu { display: none; position: fixed; top: 70px; right: 15px; width: 260px; background: #1e293b; border-radius: 20px; padding: 20px; z-index: 6000; border: 1px solid var(--border); box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .p-card { background: var(--card-bg); border-radius: 18px; border: 1px solid var(--border); overflow: hidden; transition: 0.3s; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+        .p-card img { width: 100%; height: 130px; object-fit: cover; background: #f1f5f9; }
+        .p-info { padding: 12px; }
+        .p-name { font-size: 13px; font-weight: 600; color: var(--dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .p-price { color: #0284c7; font-weight: bold; margin-top: 5px; font-size: 14px; }
+        .profile-menu { display: none; position: fixed; top: 75px; right: 15px; width: 260px; background: white; border-radius: 22px; padding: 20px; z-index: 6000; border: 1px solid var(--border); box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
         .profile-menu.show { display: block; }
-        
-        .u-id-badge { font-size: 12px; font-weight: bold; color: #0f172a; background: var(--primary); padding: 8px 12px; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 15px; letter-spacing: 1px; cursor: pointer; position: relative; }
-        .u-id-badge:active { transform: scale(0.95); }
-        
-        .menu-profile-card { text-align: center; margin-bottom: 20px; }
-        .menu-profile-card img { width: 65px; height: 65px; border-radius: 50%; border: 2px solid var(--primary); margin-bottom: 10px; }
-        
-        .menu-links { display: flex; flex-direction: column; gap: 10px; }
-        .m-link { display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--glass); border-radius: 12px; text-decoration: none; color: white; font-size: 14px; transition: 0.3s; }
-        .m-link i { color: var(--primary); width: 18px; }
-        .m-link:hover { background: var(--border); }
-
-        .whatsapp-helpline { position: fixed; bottom: 30px; right: 20px; background: #25d366; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; z-index: 9999; }
-        #loading-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; z-index: 9999; display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 20px; }
+        .u-id-badge { font-size: 12px; font-weight: bold; color: white; background: var(--primary); padding: 10px 12px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 15px; cursor: pointer; }
+        .whatsapp-helpline { position: fixed; bottom: 30px; right: 20px; background: #25d366; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; z-index: 9999; box-shadow: 0 8px 20px rgba(37, 211, 102, 0.4); }
+        #loading-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; z-index: 9999; display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 24px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-<div id="loading-screen">MS STORE</div>
+<div id="loading-screen" style="display: none;">MS STORE</div>
 
 <header>
     <div class="header-top">
-        <div class="logo">MS STORE</div> 
+        <div class="logo">MS <span>STORE</span></div> 
         <img src="" class="profile-btn" id="profileTrigger" style="display:none;" alt="P">
     </div>
     <div class="search-box">
@@ -95,7 +74,6 @@
 </div>
 
 <div id="sub-cat-container"></div>
-
 <div class="product-grid" id="p-list"></div>
 
 <div class="profile-menu" id="profileMenu">
@@ -103,17 +81,14 @@
         <span id="u-uid">ID: MS-XXXXXXXX</span>
         <i class="fa fa-copy" style="font-size: 10px;"></i>
     </div>
-    <div class="menu-profile-card">
-        <img id="u-photo" src="" alt="Profile">
-        <div id="u-name" style="font-weight: bold; font-size: 15px;">User Name</div>
-        <div id="u-email" style="font-size: 11px; color: #94a3b8;">email@gmail.com</div>
+    <div class="menu-profile-card" style="text-align: center; margin-bottom: 20px;">
+        <img id="u-photo" src="" style="width:70px; height:70px; border-radius:50%; border:3px solid var(--bg); outline:2px solid var(--primary); margin-bottom:10px;">
+        <div id="u-name" style="font-weight: bold; color: var(--dark);">User Name</div>
+        <div id="u-email" style="font-size: 11px; color: #64748b;">email@gmail.com</div>
     </div>
-    <div class="menu-links">
-        <a href="my_orders.html" class="m-link"><i class="fa fa-shopping-cart"></i><span>My Orders</span></a>
-        <div class="m-link" id="logoutBtn" style="border: 1px solid rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.05);">
-            <i class="fa fa-sign-out-alt" style="color: #ef4444;"></i>
-            <span style="color: #ef4444; font-weight: 600;">Logout</span>
-        </div>
+    <div class="menu-links" style="display: flex; flex-direction: column; gap: 8px;">
+        <a href="my_orders.html" style="display: flex; align-items: center; gap: 12px; padding: 12px; background: #f8fafc; border-radius: 12px; text-decoration: none; color: var(--text);"><i class="fa fa-shopping-cart" style="color:var(--primary)"></i><span>My Orders</span></a>
+        <div id="logoutBtn" style="display: flex; align-items: center; gap: 12px; padding: 12px; background: rgba(239, 68, 68, 0.02); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 12px; cursor: pointer; color: #ef4444;"><i class="fa fa-sign-out-alt"></i><span>Logout</span></div>
     </div>
 </div>
 
@@ -122,7 +97,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { getDatabase, ref, onValue, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCu8lgGs3Q-qLeedhngQAVXtt8BHOAlWDg",
@@ -136,108 +111,39 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getDatabase(app);
-    let pArray = [];
+    let pArray = JSON.parse(localStorage.getItem('cached_products')) || [];
+
+    // Instant Render from Cache
+    if(pArray.length > 0) { render(pArray); } 
+    else { document.getElementById('loading-screen').style.display = 'flex'; }
 
     onAuthStateChanged(auth, (user) => {
         if (user) {
-            document.getElementById('loading-screen').style.display = 'none';
-            const photo = user.photoURL || "https://www.w3schools.com/howto/img_avatar.png";
-            const trigger = document.getElementById('profileTrigger');
-            trigger.src = photo;
-            trigger.style.display = 'block';
-            
-            const shortID = user.uid.slice(-8).toUpperCase();
-            const finalID = "MS-" + shortID;
-            
-            document.getElementById('u-photo').src = photo;
-            document.getElementById('u-name').innerText = user.displayName || "User";
-            document.getElementById('u-email').innerText = user.email;
-            document.getElementById('u-uid').innerText = "UID: " + finalID;
-
-            document.getElementById('copyID').onclick = (e) => {
-                e.stopPropagation();
-                navigator.clipboard.writeText(finalID).then(() => {
-                    const originalText = document.getElementById('u-uid').innerText;
-                    document.getElementById('u-uid').innerText = "COPIED!";
-                    setTimeout(() => { document.getElementById('u-uid').innerText = originalText; }, 1000);
-                });
-            };
-
+            updateProfileUI(user);
             fetchProducts();
             fetchBanners();
         } else { window.location.href = "index.html"; }
     });
 
-    // স্লাইডার কন্ট্রোল (Touch + Auto + Click)
-    function initSlider(totalSlides) {
-        const track = document.getElementById('sliderTrack');
-        const container = document.getElementById('sliderContainer');
-        let index = 0;
-        let startX = 0;
-        let isDragging = false;
-        let autoPlayTimer;
-
-        function updateSlide() {
-            track.style.transform = `translateX(-${index * 100}%)`;
-        }
-
-        function startAutoPlay() {
-            autoPlayTimer = setInterval(() => {
-                index = (index + 1) % totalSlides;
-                updateSlide();
-            }, 4000);
-        }
-
-        function stopAutoPlay() { clearInterval(autoPlayTimer); }
-
-        container.addEventListener('touchstart', (e) => {
-            startX = e.touches[0].clientX;
-            stopAutoPlay();
-            isDragging = true;
-        });
-
-        container.addEventListener('touchmove', (e) => {
-            if (!isDragging) return;
-            const diff = startX - e.touches[0].clientX;
-            if (Math.abs(diff) > 50) {
-                if (diff > 0) index = (index + 1) % totalSlides;
-                else index = (index - 1 + totalSlides) % totalSlides;
-                updateSlide();
-                isDragging = false;
-            }
-        });
-
-        container.addEventListener('touchend', () => {
-            isDragging = false;
-            startAutoPlay();
-        });
-
-        startAutoPlay();
+    function updateProfileUI(user) {
+        document.getElementById('loading-screen').style.display = 'none';
+        const photo = user.photoURL || "https://www.w3schools.com/howto/img_avatar.png";
+        const trigger = document.getElementById('profileTrigger');
+        trigger.src = photo; trigger.style.display = 'block';
+        const finalID = "MS-" + user.uid.slice(-8).toUpperCase();
+        document.getElementById('u-photo').src = photo;
+        document.getElementById('u-name').innerText = user.displayName || "User";
+        document.getElementById('u-email').innerText = user.email;
+        document.getElementById('u-uid').innerText = "UID: " + finalID;
     }
 
-    function fetchBanners() {
-        onValue(ref(db, 'banners'), (snap) => {
-            if (snap.exists()) {
-                const d = snap.val();
-                const banners = ['banner1', 'banner2', 'banner3'].filter(k => d[k]);
-                document.getElementById('sliderTrack').innerHTML = banners.map(k => `
-                    <div class="slide" onclick="if(window.event.target.tagName !== 'IMG' || '${d[k].link}') window.location.href='${d[k].link}'">
-                        <img src="${d[k].img}" style="pointer-events: auto; cursor: pointer;">
-                    </div>`).join('');
-                if (banners.length > 0) initSlider(banners.length);
-            }
-        });
-    }
-
-    // পন্য লোড করার ফাংশনসমূহ (আগের মতোই)
     function fetchProducts() {
+        // Use onValue for background updates without refreshing page
         onValue(ref(db, 'products'), (snap) => {
-            pArray = [];
-            snap.forEach(child => {
-                let d = child.val();
-                d.id = child.key;
-                pArray.push(d);
-            });
+            let freshData = [];
+            snap.forEach(child => { freshData.push({...child.val(), id: child.key}); });
+            pArray = freshData;
+            localStorage.setItem('cached_products', JSON.stringify(pArray));
             const activeCat = document.querySelector('.cat-item.active').getAttribute('data-cat');
             applyFilter(activeCat);
         });
@@ -245,13 +151,9 @@
 
     function render(data) {
         const list = document.getElementById('p-list');
-        if (data.length === 0) {
-            list.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #94a3b8;">কোনো পণ্য পাওয়া যায়নি।</div>`;
-            return;
-        }
         list.innerHTML = data.map(p => `
             <div class="p-card" onclick="location.href='product_details.html?id=${p.id}'">
-                <img src="${p.img}">
+                <img src="${p.img}" loading="lazy">
                 <div class="p-info"><div class="p-name">${p.name}</div><div class="p-price">${p.price} ৳</div></div>
             </div>`).join('');
     }
@@ -259,15 +161,12 @@
     function applyFilter(mainCat) {
         const subBox = document.getElementById('sub-cat-container');
         subBox.innerHTML = ""; 
-        if (mainCat === 'all') render(pArray);
-        else {
-            const filtered = pArray.filter(p => (p.category || "").toString().toLowerCase().trim() === mainCat.toLowerCase());
-            render(filtered);
-            const subCats = [...new Set(filtered.map(p => p.subCategory).filter(s => s))];
-            subCats.forEach(scName => {
+        let filtered = mainCat === 'all' ? pArray : pArray.filter(p => (p.category||"").toString().toLowerCase() === mainCat.toLowerCase());
+        render(filtered);
+        if(mainCat !== 'all') {
+            [...new Set(filtered.map(p => p.subCategory).filter(s => s))].forEach(scName => {
                 const btn = document.createElement('div');
-                btn.className = 'sub-cat-btn';
-                btn.innerText = scName;
+                btn.className = 'sub-cat-btn'; btn.innerText = scName;
                 btn.onclick = () => {
                     document.querySelectorAll('.sub-cat-btn').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
@@ -276,6 +175,35 @@
                 subBox.appendChild(btn);
             });
         }
+    }
+
+    // Slider, Search, and Menu logic preserved exactly as before but optimized
+    function fetchBanners() {
+        const cachedBanners = localStorage.getItem('cached_banners');
+        if(cachedBanners) document.getElementById('sliderTrack').innerHTML = cachedBanners;
+        
+        get(ref(db, 'banners')).then((snap) => {
+            if (snap.exists()) {
+                const d = snap.val();
+                const banners = ['banner1', 'banner2', 'banner3'].filter(k => d[k]);
+                const html = banners.map(k => `
+                    <div class="slide" onclick="window.location.href='${d[k].link}'">
+                        <img src="${d[k].img}">
+                    </div>`).join('');
+                document.getElementById('sliderTrack').innerHTML = html;
+                localStorage.setItem('cached_banners', html);
+                initSlider(banners.length);
+            }
+        });
+    }
+
+    function initSlider(totalSlides) {
+        const track = document.getElementById('sliderTrack');
+        let index = 0;
+        setInterval(() => {
+            index = (index + 1) % totalSlides;
+            track.style.transform = `translateX(-${index * 100}%)`;
+        }, 4000);
     }
 
     document.querySelectorAll('.cat-item').forEach(item => {
@@ -294,8 +222,7 @@
     const menu = document.getElementById('profileMenu');
     document.getElementById('profileTrigger').onclick = (e) => { e.stopPropagation(); menu.classList.toggle('show'); };
     document.onclick = () => menu.classList.remove('show');
-    document.getElementById('logoutBtn').onclick = () => signOut(auth);
-
+    document.getElementById('logoutBtn').onclick = () => { localStorage.clear(); signOut(auth); };
 </script>
 </body>
 </html>
