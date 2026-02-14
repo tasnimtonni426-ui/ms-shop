@@ -54,6 +54,7 @@
         .pay-item b { font-size: 14px; color: var(--text); }
         .pay-item.due b { color: var(--cancelled); }
         .pay-item.paid b { color: var(--delivered); }
+        .pay-item.completed b { color: #10b981; }
 
         .help-text { margin-top: 12px; font-size: 11px; color: #94a3b8; padding-top: 8px; border-top: 1px dashed var(--border); }
     </style>
@@ -102,30 +103,34 @@
                     if(orderUID === user.uid) {
                         found = true;
                         const shortId = c.key.slice(-6).toUpperCase();
-                        
-                        // তারিখ ফরম্যাট
                         const d = o.timestamp ? new Date(o.timestamp).toLocaleDateString('en-GB') : "N/A";
 
-                        // লজিক ফিক্স:
-                        // মোট টাকা (টোটাল এমাউন্ট যেটা চেকআউটে ছিল)
-                        const totalFull = parseInt(o.totalAmount || o.totalPrice || 0);
-                        // ইউজার যে টাকাটা মাত্র পেমেন্ট করেছে (পেইড এমাউন্ট)
+                        // --- হিসাবের নিখুঁত লজিক ---
+                        const productPrice = parseInt(o.productPrice || o.price || 0);
+                        const deliveryCharge = parseInt(o.deliveryCharge || 0);
+                        const totalPayable = productPrice + deliveryCharge;
                         const userPaid = parseInt(o.paidAmount || o.payAmount || 0);
-                        // ডেলিভারি চার্জ
-                        const dCharge = parseInt(o.deliveryCharge || 0);
                         
-                        // বকেয়া হিসাব: যদি ইউজার শুধু ডেলিভারি চার্জ দেয়, তবে মেইন দাম বকেয়া থাকবে।
-                        // আমরা সরাসরি (Total - Paid) করছি যা সঠিক হিসাব দিবে।
-                        const dueAmount = totalFull - userPaid;
+                        let dueDisplay;
+                        let dueClass = "due";
+                        
+                        if (userPaid >= totalPayable) {
+                            dueDisplay = "COMPLETED";
+                            dueClass = "completed";
+                        } else {
+                            dueDisplay = "৳ " + (totalPayable - userPaid);
+                        }
 
                         ordersData.push({ 
                             ...o, 
                             shortId, 
                             displayDate: d,
-                            calcPaid: userPaid,
-                            calcDue: dueAmount,
-                            displayPrice: o.productPrice || o.price || 0,
-                            displaySize: o.productSize || o.size || o.selectedSize || 'N/A',
+                            productPrice,
+                            deliveryCharge,
+                            totalPayable,
+                            userPaid,
+                            dueDisplay,
+                            dueClass,
                             img: o.productImg || o.img || o.image || "" 
                         });
                     }
@@ -148,13 +153,13 @@
                                 <img src="${o.img}" class="product-img" onerror="this.src='https://placehold.co/100x100?text=No+Image'">
                                 <div class="product-details">
                                     <b>${o.productName}</b>
-                                    <span class="p-meta">Size: ${o.displaySize}</span>
-                                    <div class="p-price-tag">৳ ${o.displayPrice}</div>
+                                    <span class="p-meta">Size: ${o.productSize || o.size || 'N/A'}</span>
+                                    <div class="p-price-tag">৳ ${o.productPrice}</div>
                                 </div>
                             </div>
 
                             <div class="info-list">
-                                <small><i class="fa fa-truck"></i> Charge: ৳ ${o.deliveryCharge}</small>
+                                <small><i class="fa fa-tag"></i> Total Amount: ৳ ${o.totalPayable}</small>
                                 <small><i class="fa fa-calendar-alt"></i> Date: ${o.displayDate}</small>
                                 <small><i class="fa fa-map-marker-alt"></i> ${o.address || 'ঠিকানা নেই'}</small>
                             </div>
@@ -162,16 +167,16 @@
                             <div class="payment-box">
                                 <div class="pay-item paid">
                                     <span>PAID (পরিশোধিত)</span>
-                                    <b>৳ ${o.calcPaid}</b>
+                                    <b>৳ ${o.userPaid}</b>
                                 </div>
-                                <div class="pay-item due">
+                                <div class="pay-item ${o.dueClass}">
                                     <span>DUE (বকেয়া)</span>
-                                    <b>৳ ${o.calcDue}</b>
+                                    <b>${o.dueDisplay}</b>
                                 </div>
                             </div>
 
                             <div class="help-text">
-                                <i class="fa fa-info-circle"></i> TrxID: ${o.trxID || 'N/A'} | Method: ${o.paymentMethod || 'N/A'}
+                                <i class="fa fa-info-circle"></i> TrxID: ${o.trxID || 'N/A'} | Delivery: ৳ ${o.deliveryCharge}
                             </div>
                         </div>`;
                 });
