@@ -23,20 +23,20 @@
         .item-details { display: flex; flex-direction: column; gap: 8px; background: #f8fafc; padding: 10px; border-radius: 12px; border: 1px solid #edf2f7; }
         .item-details img { width: 100%; height: 80px; border-radius: 8px; object-fit: cover; }
         
-        .user-profile-box { background: #fff; border: 1.5px dashed var(--primary); padding: 8px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; text-align: center; }
-        .user-profile-box img { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--primary); margin-bottom: 5px; }
+        .user-profile-box { background: #fff; border: 1.5px dashed var(--primary); padding: 8px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; text-align: center; cursor: pointer; }
+        .user-profile-box img { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--primary); margin-bottom: 5px; background: #eee; }
         .user-profile-box b { font-size: 11px; color: var(--dark); display: block; overflow: hidden; text-overflow: ellipsis; width: 100%; }
         .user-profile-box span { font-size: 9px; color: #64748b; word-break: break-all; }
 
-        /* অ্যাড্রেস ও ডিটেইলস বক্স */
-        .info-box { background: #f8fafc; padding: 12px; border-radius: 12px; margin-top: 10px; border: 1px solid #edf2f7; }
-        .info-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; padding-bottom: 4px; border-bottom: 1px solid #e2e8f0; font-size: 12px; }
-        .info-row:last-child { border: none; }
-        .copy-btn { color: var(--primary); cursor: pointer; padding: 4px; font-size: 14px; }
+        /* অ্যাড্রেস বক্স (কপি আইকন মুক্ত) */
+        .info-box { background: #f8fafc; padding: 12px; border-radius: 12px; margin-top: 10px; border: 1px solid #edf2f7; cursor: pointer; position: relative; }
+        .info-box:active { background: #f1f5f9; }
+        .info-row { display: block; margin-bottom: 6px; font-size: 12px; color: var(--dark); }
+        .info-row i { color: var(--primary); width: 18px; }
 
         /* পেমেন্ট বক্স */
         .payment-info { background: #e0f2fe; padding: 12px; border-radius: 12px; margin-top: 10px; font-size: 12px; border: 1px solid #bae6fd; }
-        .trx-id-box { background: #fff; padding: 8px; border-radius: 8px; margin-top: 8px; border: 1px solid #0369a1; display: flex; justify-content: space-between; align-items: center; }
+        .trx-id-box { background: #fff; padding: 8px; border-radius: 8px; margin-top: 8px; border: 1px solid #0369a1; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         .trx-id-box b { color: var(--danger); font-size: 14px; }
 
         .actions { display: flex; gap: 10px; margin-top: 15px; }
@@ -71,6 +71,7 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
+    // ডেটা লোড করার প্রধান ফাংশন
     onValue(ref(db, 'orders'), async (snap) => {
         const list = document.getElementById('order-list');
         list.innerHTML = "";
@@ -80,17 +81,26 @@
             return;
         }
 
-        let ordersData = [];
-        snap.forEach(child => { ordersData.push({ id: child.key, ...child.val() }); });
+        // সব অর্ডার ডেটা অ্যারেতে নেওয়া
+        let ordersArray = [];
+        snap.forEach(child => {
+            ordersArray.push({ id: child.key, ...child.val() });
+        });
 
-        for (let o of ordersData.reverse()) {
-            // ইউজারের প্রোফাইল ডাটা ফেচ করা
-            const userSnap = await get(ref(db, 'users/' + o.uid));
-            const u = userSnap.exists() ? userSnap.val() : {};
+        // উল্টো দিক থেকে রেন্ডার (নতুন অর্ডার আগে)
+        for (let o of ordersArray.reverse()) {
+            // ইউজারের অরিজিনাল ডাটা ফেচ করা
+            const userRef = ref(db, 'users/' + o.uid);
+            const uSnap = await get(userRef);
+            const u = uSnap.exists() ? uSnap.val() : {};
 
             const totalPrice = parseFloat(o.price) || 0;
             const paid = parseFloat(o.paidAmount) || 0;
             const due = totalPrice - paid;
+
+            // ইউজার প্রোফাইল পিকচার ফিক্স
+            const userImg = u.photoURL || u.profilePic || u.image || 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
+            const userName = u.displayName || u.name || 'নাম নেই';
 
             list.innerHTML += `
                 <div class="order-card">
@@ -106,46 +116,35 @@
                             <small>দাম: ${totalPrice}৳ | সাইজ: ${o.size || 'N/A'}</small>
                         </div>
                         
-                        <div class="user-profile-box">
-                            <img src="${u.photoURL || 'https://cdn-icons-png.flaticon.com/512/149/149071.png'}">
-                            <b>${u.displayName || 'নাম নেই'}</b>
+                        <div class="user-profile-box" onclick="copyText('${o.uid}', 'User UID')">
+                            <img src="${userImg}">
+                            <b>${userName}</b>
                             <span>${u.email || 'ইমেইল নেই'}</span>
-                            <div style="margin-top:5px; font-size:9px; color:var(--primary); cursor:pointer" onclick="copyText('${o.uid}')">
+                            <div style="margin-top:5px; font-size:9px; color:var(--primary);">
                                 UID: ${o.uid ? o.uid.slice(0,8) : 'N/A'}... <i class="fa fa-copy"></i>
                             </div>
                         </div>
                     </div>
 
-                    <div class="info-box">
-                        <div class="info-row">
-                            <span><i class="fa fa-user"></i> ${o.userName}</span>
-                            <i class="fa fa-copy copy-btn" onclick="copyText('${o.userName}')"></i>
-                        </div>
-                        <div class="info-row">
-                            <span><i class="fa fa-phone"></i> ${o.phone}</span>
-                            <i class="fa fa-copy copy-btn" onclick="copyText('${o.phone}')"></i>
-                        </div>
-                        <div class="info-row">
-                            <span><i class="fa fa-map-marker-alt"></i> ${o.district || 'জেলা'}, ${o.upazila || 'উপজেলা'}</span>
-                            <i class="fa fa-copy copy-btn" onclick="copyText('${o.district}, ${o.upazila}')"></i>
-                        </div>
-                        <div class="info-row" style="border:none">
-                            <span style="font-size:11px; color:#64748b;">${o.address}</span>
-                            <i class="fa fa-copy copy-btn" onclick="copyText('${o.address}')"></i>
-                        </div>
+                    <div class="info-box" onclick="copyAddress('${o.userName}', '${o.phone}', '${o.district}', '${o.upazila}', '${o.address}')">
+                        <div class="info-row"><i class="fa fa-user"></i> ${o.userName}</div>
+                        <div class="info-row"><i class="fa fa-phone"></i> ${o.phone}</div>
+                        <div class="info-row"><i class="fa fa-map-marker-alt"></i> ${o.district || 'জেলা'}, ${o.upazila || 'উপজেলা'}</div>
+                        <div class="info-row" style="font-size:11px; color:#64748b;">${o.address}</div>
+                        <small style="position:absolute; bottom:5px; right:10px; font-size:9px; color:#cbd5e1;">Tap to copy address</small>
                     </div>
 
                     <div class="payment-info">
                         <div style="display:flex; justify-content:space-between">
-                            <span>পেমেন্ট: <b>${o.paymentMethod}</b></span>
+                            <span>পেমেন্ট: <b>${o.paymentMethod || 'N/A'}</b></span>
                             <span>পেইড: <b style="color:var(--success)">${paid}৳</b></span>
                         </div>
                         <div style="margin-top:5px">
                             বকেয়া টাকা: <b style="color:${due > 0 ? 'var(--danger)' : 'var(--success)'}">${due > 0 ? due + '৳' : '০৳ (Full Paid)'}</b>
                         </div>
-                        <div class="trx-id-box">
+                        <div class="trx-id-box" onclick="copyText('${o.trxID}', 'TrxID')">
                             <div><small>TrxID:</small> <br><b>${o.trxID || 'N/A'}</b></div>
-                            <i class="fa fa-copy copy-btn" style="font-size:18px" onclick="copyText('${o.trxID}')"></i>
+                            <i class="fa fa-copy" style="color:var(--primary)"></i>
                         </div>
                     </div>
 
@@ -159,21 +158,31 @@
         }
     });
 
-    window.copyText = (text) => {
+    // কপি ফাংশন
+    window.copyText = (text, label) => {
+        if(!text || text === 'undefined') return;
         navigator.clipboard.writeText(text).then(() => {
-            alert("কপি করা হয়েছে: " + text);
+            alert(label + " কপি করা হয়েছে!");
+        });
+    };
+
+    // অ্যাড্রেস কপি করার স্পেশাল ফাংশন
+    window.copyAddress = (name, phone, dist, upa, addr) => {
+        const fullAddr = `নাম: ${name}\nফোন: ${phone}\nঠিকানা: ${dist}, ${upa}, ${addr}`;
+        navigator.clipboard.writeText(fullAddr).then(() => {
+            alert("পুরো ঠিকানা কপি করা হয়েছে!");
         });
     };
 
     window.markComplete = (id) => {
         if(confirm("অর্ডারটি কি ডেলিভারি হয়ে গেছে?")) {
-            update(ref(db, 'orders/' + id), { status: 'completed' }).then(() => alert("আপডেট হয়েছে!"));
+            update(ref(db, 'orders/' + id), { status: 'completed' });
         }
     };
 
     window.deleteOrder = (id) => {
         if(confirm("ডিলিট করতে চান?")) {
-            remove(ref(db, 'orders/' + id)).then(() => alert("ডিলিট হয়েছে!"));
+            remove(ref(db, 'orders/' + id));
         }
     };
 </script>
