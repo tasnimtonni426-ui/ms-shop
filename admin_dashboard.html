@@ -3,214 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Admin Panel - Premium Dashboard</title>
+    <title>Admin Dashboard | MS STORE</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { 
-            --primary: #0ea5e9; 
-            --secondary: #6366f1; 
-            --dark: #0f172a; 
-            --danger: #ef4444; 
-            --bg: #f8fafc; 
-            --success: #10b981;
-            --surface: #ffffff;
-            --border: #e2e8f0;
-        }
-
+        :root { --primary: #0ea5e9; --dark: #0f172a; --bg: #f8fafc; --surface: #ffffff; --border: #e2e8f0; }
         * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #1e293b; }
 
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background: var(--bg); 
-            margin: 0; 
-            padding: 15px; 
-            color: #1e293b; 
+        .header { margin-bottom: 30px; text-align: center; }
+        .header h1 { font-size: 24px; font-weight: 800; color: var(--dark); margin: 0; }
+        .header p { color: #64748b; font-size: 14px; margin-top: 5px; }
+
+        /* Stats Grid */
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
+        .stat-card { background: var(--surface); padding: 20px; border-radius: 24px; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); }
+        .stat-card i { font-size: 20px; color: var(--primary); margin-bottom: 10px; display: block; }
+        .stat-card b { font-size: 24px; display: block; color: var(--dark); }
+        .stat-card span { font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase; }
+
+        /* Menu Grid */
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .menu-item { 
+            background: var(--surface); padding: 25px 15px; border-radius: 28px; text-align: center;
+            border: 1px solid var(--border); transition: 0.3s; cursor: pointer; text-decoration: none;
+            display: flex; flex-direction: column; align-items: center; gap: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.04);
         }
+        .menu-item:active { transform: scale(0.95); }
+        .menu-item i { font-size: 32px; }
+        .menu-item span { font-weight: 700; font-size: 14px; color: var(--dark); }
 
-        /* Header Style */
-        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-        .admin-header h2 { font-size: 20px; font-weight: 700; margin: 0; color: var(--dark); }
+        /* Colors for icons */
+        .c-orders { color: #6366f1; }
+        .c-products { color: #0ea5e9; }
+        .c-banners { color: #f59e0b; }
+        .c-users { color: #10b981; }
 
-        /* Stats Section */
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .stat-box { 
-            background: var(--surface); padding: 20px; border-radius: 24px; text-align: left; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid var(--border);
-            position: relative; overflow: hidden;
-        }
-        .stat-box b { font-size: 28px; display: block; color: var(--dark); margin-bottom: 5px; }
-        .stat-box span { font-size: 13px; font-weight: 600; color: #64748b; text-transform: uppercase; }
-        .stat-box i { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); font-size: 40px; opacity: 0.1; color: var(--primary); }
-
-        /* Nav Buttons */
-        .nav-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
-        .nav-btn { 
-            border: none; padding: 18px; border-radius: 20px; font-weight: 700; cursor: pointer; 
-            display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 10px;
-            font-size: 14px; transition: 0.3s; color: white;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-        }
-        .btn-orders { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
-        .btn-users { background: linear-gradient(135deg, #0ea5e9, #06b6d4); }
-
-        /* Card System */
-        .card { 
-            background: var(--surface); padding: 24px; border-radius: 28px; 
-            margin-bottom: 25px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.04);
-            border: 1px solid var(--border);
-        }
-        h3 { margin-top: 0; color: var(--dark); font-size: 18px; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
-        h3::before { content: ''; width: 4px; height: 18px; background: var(--primary); border-radius: 10px; }
-
-        /* Form Inputs */
-        label { font-size: 12px; font-weight: 700; color: #64748b; margin-left: 5px; display: block; margin-top: 10px; }
-        input, textarea, select { 
-            width: 100%; padding: 14px 16px; margin: 8px 0; 
-            border: 1.5px solid var(--border); border-radius: 14px; 
-            background: #fcfdfe; font-size: 14px; transition: 0.3s;
-            color: var(--dark); font-family: inherit;
-        }
-        input:focus, textarea:focus { border-color: var(--primary); background: #fff; outline: none; }
-
-        .btn-main { 
-            background: var(--dark); color: white; border: none; padding: 16px; 
-            width: 100%; border-radius: 16px; font-weight: 700; cursor: pointer; 
-            font-size: 15px; margin-top: 15px; transition: 0.3s;
-        }
-        .btn-main:active { transform: translateY(2px); }
-
-        /* Banner Management Styles */
-        .banner-item { background: #f8fafc; border-radius: 20px; padding: 15px; margin-bottom: 15px; border: 1px solid var(--border); }
-        .banner-preview { width: 100%; height: 100px; border-radius: 12px; object-fit: cover; background: #eee; margin-bottom: 10px; }
-        .banner-row { display: flex; gap: 10px; }
-        .save-banner-btn { background: var(--success); color: white; border: none; padding: 10px 15px; border-radius: 10px; font-weight: 700; cursor: pointer; margin-top: 5px; font-size: 12px; }
-
-        /* Product List */
-        .p-item { 
-            display: flex; align-items: center; gap: 15px; background: #fff; 
-            padding: 12px; border-radius: 18px; margin-bottom: 12px; 
-            border: 1px solid var(--border);
-        }
-        .p-item img { width: 55px; height: 55px; border-radius: 12px; object-fit: cover; }
-        .action-btns-wrap { display: flex; gap: 6px; }
-        .action-btn { border: none; width: 38px; height: 38px; border-radius: 12px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; }
-        .btn-edit { background: #e0f2fe; color: #0369a1; }
-        .btn-del { background: #fee2e2; color: #b91c1c; }
-
-        .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--dark); color: white; padding: 12px 24px; border-radius: 16px; display: none; z-index: 9999; }
-        #auth-loader { position: fixed; inset: 0; background: white; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10000; }
+        #auth-loader { position: fixed; inset: 0; background: white; display: flex; justify-content: center; align-items: center; z-index: 10000; }
         .spinner { width: 40px; height: 40px; border: 4px solid #f1f5f9; border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
-    <div id="auth-loader">
-        <div class="spinner"></div>
-        <p style="font-weight: 600; margin-top: 15px;">অ্যাডমিন প্রোফাইল যাচাই হচ্ছে...</p>
-    </div>
-    
-    <div class="toast" id="toast"></div>
+    <div id="auth-loader"><div class="spinner"></div></div>
 
-    <div class="admin-header">
-        <h2>Dashboard ⚡</h2>
-        <div style="font-size: 12px; font-weight: 700; color: var(--primary); background: #e0f2fe; padding: 5px 12px; border-radius: 20px;">ADMIN MODE</div>
+    <div class="header">
+        <h1>Admin Central</h1>
+        <p>Welcome back, Administrator</p>
     </div>
 
     <div class="stat-grid">
-        <div class="stat-box">
+        <div class="stat-card">
             <i class="fa fa-box-open"></i><b id="p-total">0</b><span>Products</span>
         </div>
-        <div class="stat-box">
+        <div class="stat-card">
             <i class="fa fa-receipt"></i><b id="o-total">0</b><span>Orders</span>
         </div>
     </div>
 
-    <div class="nav-grid">
-        <button class="nav-btn btn-orders" onclick="window.location.href='orders.html'"><i class="fa fa-shopping-basket"></i>Orders</button>
-        <button class="nav-btn btn-users" onclick="window.location.href='user_details.html'"><i class="fa fa-users"></i>Users</button>
-    </div>
-
-    <!-- স্লাইডার ম্যানেজমেন্ট সেকশন -->
-    <div class="card">
-        <h3>🖼️ Slider Management</h3>
-        <div id="banner-list">
-            <!-- Banner 1 -->
-            <div class="banner-item">
-                <img id="prev-banner1" class="banner-preview" src="https://via.placeholder.com/400x150?text=Banner+1">
-                <input type="text" id="img-banner1" placeholder="Image URL (Banner 1)">
-                <input type="text" id="link-banner1" placeholder="Click Link (Optional)">
-                <button class="save-banner-btn" onclick="saveBanner('banner1')">Update Banner 1</button>
-            </div>
-            <!-- Banner 2 -->
-            <div class="banner-item">
-                <img id="prev-banner2" class="banner-preview" src="https://via.placeholder.com/400x150?text=Banner+2">
-                <input type="text" id="img-banner2" placeholder="Image URL (Banner 2)">
-                <input type="text" id="link-banner2" placeholder="Click Link (Optional)">
-                <button class="save-banner-btn" onclick="saveBanner('banner2')">Update Banner 2</button>
-            </div>
-            <!-- Banner 3 -->
-            <div class="banner-item">
-                <img id="prev-banner3" class="banner-preview" src="https://via.placeholder.com/400x150?text=Banner+3">
-                <input type="text" id="img-banner3" placeholder="Image URL (Banner 3)">
-                <input type="text" id="link-banner3" placeholder="Click Link (Optional)">
-                <button class="save-banner-btn" onclick="saveBanner('banner3')">Update Banner 3</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="card" id="form-card">
-        <h3 id="form-title">📦 Product Management</h3>
-        <input type="hidden" id="edit-id"> 
-        
-        <label>প্রোডাক্টের নাম</label>
-        <input type="text" id="p-name" placeholder="Nike Air Max 2024">
-        
-        <div style="display: flex; gap: 10px;">
-            <div style="flex:1;">
-                <label>মেইন ক্যাটাগরি</label>
-                <select id="p-main-category" onchange="updateSubCats()">
-                    <option value="" disabled selected>Select</option>
-                    <option value="Sports">Sports</option>
-                    <option value="Electronics">Electronics</option>
-                    <option value="Fashion">Fashion</option>
-                </select>
-            </div>
-            <div style="flex:1;">
-                <label>সাব-ক্যাটাগরি</label>
-                <select id="p-category"><option value="" disabled selected>Select Main</option></select>
-            </div>
-        </div>
-
-        <div style="display: flex; gap: 10px;">
-            <div style="flex:1;">
-                <label>মূল্য (৳)</label>
-                <input type="number" id="p-price" placeholder="0">
-            </div>
-            <div style="flex:1;">
-                <label>স্টক</label>
-                <input type="number" id="p-stock" placeholder="50">
-            </div>
-        </div>
-
-        <label>ছবির ইউআরএল</label>
-        <input type="text" id="p-img" placeholder="https://image-link.com">
-        
-        <label>প্রোডাক্ট বিবরণ</label>
-        <textarea id="p-desc" placeholder="Product details..." rows="3"></textarea>
-        
-        <button class="btn-main" id="uploadBtn">Publish Product</button>
-        <button class="btn-main" id="updateBtn" style="display:none; background: var(--secondary);">Save Changes</button>
-    </div>
-
-    <div class="card">
-        <h3>🔥 Inventory Management</h3>
-        <div id="admin-product-list">লোড হচ্ছে...</div>
+    <div class="menu-grid">
+        <a href="orders.html" class="menu-item">
+            <i class="fa fa-shopping-cart c-orders"></i>
+            <span>Order Requests</span>
+        </a>
+        <a href="manage_products.html" class="menu-item">
+            <i class="fa fa-boxes-stacked c-products"></i>
+            <span>Manage Products</span>
+        </a>
+        <a href="banners.html" class="menu-item">
+            <i class="fa fa-images c-banners"></i>
+            <span>Slider Setup</span>
+        </a>
+        <a href="user_details.html" class="menu-item">
+            <i class="fa fa-users c-users"></i>
+            <span>User Directory</span>
+        </a>
     </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, onValue, push, remove, update, get, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
     const firebaseConfig = {
@@ -229,120 +102,11 @@
     onAuthStateChanged(auth, (user) => {
         if (user) {
             document.getElementById('auth-loader').style.display = 'none';
-            initDashboard();
-            fetchBanners();
-        } else {
-            window.location.href = "login.html";
-        }
+            // স্ট্যাটাস আপডেট
+            onValue(ref(db, 'products'), s => document.getElementById('p-total').innerText = s.exists() ? Object.keys(s.val()).length : 0);
+            onValue(ref(db, 'orders'), s => document.getElementById('o-total').innerText = s.exists() ? Object.keys(s.val()).length : 0);
+        } else { window.location.href = "login.html"; }
     });
-
-    function showToast(msg) {
-        const toast = document.getElementById('toast');
-        toast.innerText = msg; toast.style.display = 'block';
-        setTimeout(() => toast.style.display = 'none', 3000);
-    }
-
-    // --- ব্যানার ফাংশন ---
-    function fetchBanners() {
-        get(ref(db, 'banners')).then(snap => {
-            if (snap.exists()) {
-                const d = snap.val();
-                ['banner1', 'banner2', 'banner3'].forEach(k => {
-                    if (d[k]) {
-                        document.getElementById('img-'+k).value = d[k].img || "";
-                        document.getElementById('link-'+k).value = d[k].link || "";
-                        document.getElementById('prev-'+k).src = d[k].img || "https://via.placeholder.com/400x150";
-                    }
-                });
-            }
-        });
-    }
-
-    window.saveBanner = (id) => {
-        const img = document.getElementById('img-'+id).value.trim();
-        const link = document.getElementById('link-'+id).value.trim();
-        if (!img) return showToast("ছবির লিঙ্ক আবশ্যক!");
-        
-        update(ref(db, 'banners/' + id), { img, link }).then(() => {
-            showToast(id.toUpperCase() + " আপডেট হয়েছে!");
-            document.getElementById('prev-'+id).src = img;
-        });
-    };
-
-    function initDashboard() {
-        onValue(ref(db, 'products'), (snap) => {
-            const list = document.getElementById('admin-product-list');
-            list.innerHTML = ""; let count = 0;
-            snap.forEach(c => {
-                count++; const p = c.val();
-                list.innerHTML += `<div class="p-item">
-                    <img src="${p.img}" onerror="this.src='https://via.placeholder.com/50'">
-                    <div class="p-info"><b>${p.name}</b><small>${p.price} ৳</small></div>
-                    <div class="action-btns-wrap">
-                        <button class="action-btn btn-edit" onclick="window.editProduct('${c.key}')"><i class="fa fa-pen"></i></button>
-                        <button class="action-btn btn-del" onclick="window.deleteItem('${c.key}')"><i class="fa fa-trash"></i></button>
-                    </div>
-                </div>`;
-            });
-            document.getElementById('p-total').innerText = count;
-        });
-
-        onValue(ref(db, 'orders'), (snap) => {
-            document.getElementById('o-total').innerText = snap.exists() ? Object.keys(snap.val()).length : 0;
-        });
-    }
-
-    window.updateSubCats = () => {
-        const main = document.getElementById('p-main-category').value;
-        const sub = document.getElementById('p-category');
-        const options = { 'Sports':['Jersey','Boots', 'Equipment'], 'Electronics':['Gadget','Mobile', 'Accessories'], 'Fashion':['Men','Women', 'Shoes'] };
-        sub.innerHTML = '<option value="" disabled selected>Select Sub</option>';
-        if(options[main]) options[main].forEach(s => { sub.innerHTML += `<option value="${s}">${s}</option>`; });
-    };
-
-    function getFormData() {
-        const name = document.getElementById('p-name').value;
-        const mainCat = document.getElementById('p-main-category').value;
-        const subCat = document.getElementById('p-category').value;
-        const price = document.getElementById('p-price').value;
-        const stock = document.getElementById('p-stock').value;
-        const img = document.getElementById('p-img').value;
-        const desc = document.getElementById('p-desc').value;
-        if(!name || !price || !img || !mainCat) { showToast("সব তথ্য দিন!"); return null; }
-        return { name, category: mainCat, subCategory: subCat, price: parseInt(price), stock: parseInt(stock) || 0, img, description: desc };
-    }
-
-    document.getElementById('uploadBtn').onclick = () => {
-        const data = getFormData();
-        if(data) push(ref(db, 'products'), data).then(() => { showToast("পাবলিশ সফল!"); location.reload(); });
-    };
-
-    window.editProduct = (id) => {
-        get(ref(db, 'products/' + id)).then(snap => {
-            const p = snap.val();
-            document.getElementById('edit-id').value = id;
-            document.getElementById('p-name').value = p.name;
-            document.getElementById('p-main-category').value = p.category;
-            window.updateSubCats();
-            document.getElementById('p-category').value = p.subCategory;
-            document.getElementById('p-price').value = p.price;
-            document.getElementById('p-stock').value = p.stock || 0;
-            document.getElementById('p-img').value = p.img;
-            document.getElementById('p-desc').value = p.description || "";
-            document.getElementById('uploadBtn').style.display = 'none';
-            document.getElementById('updateBtn').style.display = 'block';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
-    };
-
-    document.getElementById('updateBtn').onclick = () => {
-        const id = document.getElementById('edit-id').value;
-        const data = getFormData();
-        if(data) update(ref(db, 'products/' + id), data).then(() => { showToast("আপডেট সফল!"); location.reload(); });
-    };
-
-    window.deleteItem = (id) => { if(confirm("ডিলিট করবেন?")) remove(ref(db, 'products/'+id)); };
-
 </script>
 </body>
-                    </html>
+</html>
