@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Products | Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --primary: #0ea5e9; --dark: #0f172a; --bg: #f8fafc; --surface: #ffffff; --border: #e2e8f0; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); margin: 0; padding: 15px; padding-bottom: 50px; }
+        .top-bar { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+        .back-btn { font-size: 20px; color: var(--dark); cursor: pointer; text-decoration: none; }
+        
+        .card { background: var(--surface); padding: 20px; border-radius: 24px; border: 1px solid var(--border); margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        h3 { margin-top: 0; font-size: 18px; color: var(--dark); }
+        
+        input, textarea, select { width: 100%; padding: 12px; margin: 8px 0; border: 1.5px solid var(--border); border-radius: 12px; outline: none; }
+        input:focus { border-color: var(--primary); }
+        
+        .btn-main { background: var(--dark); color: white; border: none; padding: 15px; width: 100%; border-radius: 14px; font-weight: 700; cursor: pointer; }
+        
+        .p-item { display: flex; align-items: center; gap: 12px; padding: 10px; border-bottom: 1px solid #f1f5f9; }
+        .p-item img { width: 50px; height: 50px; border-radius: 10px; object-fit: cover; }
+        .p-info { flex: 1; }
+        .p-info b { font-size: 14px; display: block; }
+        .action-btns { display: flex; gap: 5px; }
+        .action-btn { border: none; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; }
+        .btn-edit { background: #e0f2fe; color: #0ea5e9; }
+        .btn-del { background: #fee2e2; color: #ef4444; }
+        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--dark); color: white; padding: 10px 20px; border-radius: 30px; display: none; }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <a href="admin.html" class="back-btn"><i class="fa fa-arrow-left"></i></a>
+        <h2 style="margin:0; font-size: 18px;">Manage Inventory</h2>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <div class="card">
+        <h3 id="form-title">🚀 Add New Product</h3>
+        <input type="hidden" id="edit-id"> 
+        <input type="text" id="p-name" placeholder="Product Name">
+        <div style="display: flex; gap: 10px;">
+            <select id="p-main-category" onchange="updateSubCats()">
+                <option value="" disabled selected>Category</option>
+                <option value="Sports">Sports</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Fashion">Fashion</option>
+            </select>
+            <select id="p-category"><option value="" disabled selected>Sub-Cat</option></select>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <input type="number" id="p-price" placeholder="Price (৳)">
+            <input type="number" id="p-stock" placeholder="Stock">
+        </div>
+        <input type="text" id="p-img" placeholder="Image URL">
+        <textarea id="p-desc" placeholder="Product Description..." rows="2"></textarea>
+        <button class="btn-main" id="uploadBtn">Publish Product</button>
+        <button class="btn-main" id="updateBtn" style="display:none; background: #6366f1;">Save Update</button>
+    </div>
+
+    <div class="card">
+        <h3>📦 Inventory List</h3>
+        <div id="admin-product-list">Loading...</div>
+    </div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, onValue, push, remove, update, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCu8lgGs3Q-qLeedhngQAVXtt8BHOAlWDg",
+        authDomain: "ms-sp-97f78.firebaseapp.com",
+        databaseURL: "https://ms-sp-97f78-default-rtdb.firebaseio.com",
+        projectId: "ms-sp-97f78",
+        storageBucket: "ms-sp-97f78.appspot.com",
+        appId: "1:880638162029:web:b99af5b5518b3e16a13b64"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // প্রোডাক্ট লোড
+    onValue(ref(db, 'products'), (snap) => {
+        const list = document.getElementById('admin-product-list');
+        list.innerHTML = "";
+        if(snap.exists()){
+            snap.forEach(c => {
+                const p = c.val();
+                list.innerHTML += `<div class="p-item">
+                    <img src="${p.img}">
+                    <div class="p-info"><b>${p.name}</b><small>${p.price} ৳</small></div>
+                    <div class="action-btns">
+                        <button class="action-btn btn-edit" onclick="window.editProduct('${c.key}')"><i class="fa fa-pen"></i></button>
+                        <button class="action-btn btn-del" onclick="window.deleteItem('${c.key}')"><i class="fa fa-trash"></i></button>
+                    </div>
+                </div>`;
+            });
+        } else { list.innerHTML = "No products found."; }
+    });
+
+    window.updateSubCats = () => {
+        const main = document.getElementById('p-main-category').value;
+        const sub = document.getElementById('p-category');
+        const opt = { 'Sports':['Jersey','Boots', 'Equipment'], 'Electronics':['Gadget','Mobile', 'Accessories'], 'Fashion':['Men','Women', 'Shoes'] };
+        sub.innerHTML = '<option value="" disabled selected>Sub-Cat</option>';
+        if(opt[main]) opt[main].forEach(s => sub.innerHTML += `<option value="${s}">${s}</option>`);
+    };
+
+    function showToast(m) { const t = document.getElementById('toast'); t.innerText = m; t.style.display='block'; setTimeout(()=>t.style.display='none', 3000); }
+
+    document.getElementById('uploadBtn').onclick = () => {
+        const d = { name: document.getElementById('p-name').value, category: document.getElementById('p-main-category').value, subCategory: document.getElementById('p-category').value, price: parseInt(document.getElementById('p-price').value), stock: parseInt(document.getElementById('p-stock').value), img: document.getElementById('p-img').value, description: document.getElementById('p-desc').value };
+        if(!d.name || !d.price) return alert("Fill Name and Price!");
+        push(ref(db, 'products'), d).then(() => { showToast("Published!"); location.reload(); });
+    };
+
+    window.editProduct = (id) => {
+        get(ref(db, 'products/' + id)).then(s => {
+            const p = s.val();
+            document.getElementById('edit-id').value = id;
+            document.getElementById('p-name').value = p.name;
+            document.getElementById('p-main-category').value = p.category;
+            window.updateSubCats();
+            document.getElementById('p-category').value = p.subCategory;
+            document.getElementById('p-price').value = p.price;
+            document.getElementById('p-stock').value = p.stock || 0;
+            document.getElementById('p-img').value = p.img;
+            document.getElementById('p-desc').value = p.description || "";
+            document.getElementById('uploadBtn').style.display = 'none';
+            document.getElementById('updateBtn').style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    };
+
+    document.getElementById('updateBtn').onclick = () => {
+        const id = document.getElementById('edit-id').value;
+        const d = { name: document.getElementById('p-name').value, category: document.getElementById('p-main-category').value, subCategory: document.getElementById('p-category').value, price: parseInt(document.getElementById('p-price').value), stock: parseInt(document.getElementById('p-stock').value), img: document.getElementById('p-img').value, description: document.getElementById('p-desc').value };
+        update(ref(db, 'products/' + id), d).then(() => { showToast("Updated!"); location.reload(); });
+    };
+
+    window.deleteItem = (id) => { if(confirm("Delete this?")) remove(ref(db, 'products/'+id)); };
+</script>
+</body>
+</html>
