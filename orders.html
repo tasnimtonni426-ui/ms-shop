@@ -16,10 +16,6 @@
         .search-container input { width: 100%; padding: 12px 40px 12px 15px; border-radius: 12px; border: 1.5px solid #e2e8f0; outline: none; box-sizing: border-box; font-size: 14px; }
         .search-container i { position: absolute; right: 15px; top: 15px; color: #64748b; }
 
-        .filter-tabs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 15px; margin-top: 10px; scrollbar-width: none; }
-        .tab { white-space: nowrap; padding: 8px 15px; background: white; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.05); color: #64748b; }
-        .tab.active { background: var(--dark); color: white; }
-
         .order-card { background: white; border-radius: 20px; padding: 15px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-left: 5px solid var(--primary); position: relative; }
         .order-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
         .order-id { font-weight: bold; color: var(--dark); font-size: 13px; }
@@ -38,7 +34,6 @@
         .user-profile-box { background: #fff; border: 1.5px dashed var(--primary); padding: 8px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; text-align: center; cursor: pointer; }
         .user-profile-box img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--primary); background: #eee; }
         .user-profile-box b { font-size: 10px; color: var(--dark); margin-top: 4px; }
-        .user-profile-box span { font-size: 8px; color: #64748b; word-break: break-all; }
 
         .info-box { background: #f8fafc; padding: 12px; border-radius: 12px; margin-top: 10px; border: 1px solid #edf2f7; cursor: pointer; }
         .info-row { display: block; margin-bottom: 4px; font-size: 12px; color: var(--dark); }
@@ -58,9 +53,6 @@
         .status-select { flex: 1; padding: 10px; border-radius: 10px; border: 1.5px solid #e2e8f0; font-size: 12px; outline: none; background: #f8fafc; }
         .btn-call { background: #e0f2fe; color: #0369a1; padding: 10px; border-radius: 10px; text-decoration: none; }
         .btn-delete { background: #fee2e2; color: #dc2626; padding: 10px; border-radius: 10px; border: none; cursor: pointer; }
-        
-        .cancel-reason-box { margin-top: 10px; display: none; }
-        .cancel-reason-box input { width: 100%; padding: 8px; border-radius: 8px; border: 1px solid var(--danger); font-size: 11px; box-sizing: border-box; }
     </style>
 </head>
 <body>
@@ -94,7 +86,6 @@
     const db = getDatabase(app);
 
     let allOrders = [];
-    let currentFilter = 'all';
 
     onValue(ref(db, 'orders'), async (snap) => {
         allOrders = [];
@@ -124,7 +115,7 @@
             const due = total - paid;
             const date = o.timestamp ? new Date(o.timestamp).toLocaleString('bn-BD', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A';
 
-            // ইউজার আইডি ফরম্যাট: MS + Last 8 characters of UID (Uppercase)
+            // এখানে ইউজার আইডি ফরম্যাট তৈরি করা হয়েছে: MS + Last 8 characters of Original UID
             const formattedUID = o.uid ? `MS-${o.uid.slice(-8).toUpperCase()}` : 'N/A';
 
             list.innerHTML += `
@@ -144,7 +135,7 @@
                             <small>সাইজ: ${o.size || 'N/A'}</small>
                         </div>
                         
-                        <div class="user-profile-box" onclick="copyTxt('${o.uid}', 'Original UID')">
+                        <div class="user-profile-box" onclick="copyTxt('${formattedUID}', 'Customer ID')">
                             <img src="${u.photoURL || u.profilePic || 'https://cdn-icons-png.flaticon.com/512/149/149071.png'}">
                             <b>${u.displayName || u.name || 'User'}</b>
                             <small style="font-size:9px; color:var(--primary); font-weight:bold; margin-top:3px;">
@@ -153,7 +144,7 @@
                         </div>
                     </div>
 
-                    <div class="info-box" onclick="copyFullAddr('${o.userName}', '${o.phone}', '${o.district}', '${o.upazila}', '${o.address}')">
+                    <div class="info-box" onclick="copyFullAddr('${o.userName}', '${o.phone}', '${o.address}')">
                         <div class="info-row"><i class="fa fa-user"></i> ${o.userName}</div>
                         <div class="info-row"><i class="fa fa-phone"></i> ${o.phone}</div>
                         <div class="info-row" style="font-size:10px; color:gray;"><i class="fa fa-map-marker-alt"></i> ${o.address}</div>
@@ -194,12 +185,13 @@
         }
     }
 
-    // আগের উইন্ডো ফাংশনগুলো (searchOrders, filterOrders, handleStatus, etc.) এখানে বহাল থাকবে
     window.copyTxt = (txt, label) => {
-        navigator.clipboard.writeText(txt).then(() => alert(label + " copied!"));
+        navigator.clipboard.writeText(txt).then(() => {
+            alert(label + " copied: " + txt);
+        });
     };
 
-    window.copyFullAddr = (name, phone, dist, upa, addr) => {
+    window.copyFullAddr = (name, phone, addr) => {
         const full = `Name: ${name}\nPhone: ${phone}\nAddress: ${addr}`;
         navigator.clipboard.writeText(full).then(() => alert("Address copied!"));
     };
@@ -210,6 +202,16 @@
     
     window.handleStatus = (id, val) => {
         update(ref(db, 'orders/' + id), { status: val });
+    };
+
+    window.searchOrders = () => {
+        const val = document.getElementById('searchInput').value.toLowerCase();
+        const filtered = allOrders.filter(o => 
+            o.id.toLowerCase().includes(val) || 
+            o.phone.includes(val) || 
+            o.userName.toLowerCase().includes(val)
+        );
+        renderOrders(filtered);
     };
 </script>
 
