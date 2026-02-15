@@ -24,9 +24,9 @@
         #splash-screen {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
-            background: #001a2c; /* হুবহু ম্যানিফেস্টের কালার */
+            background: #001a2c; 
             display: flex; justify-content: center; align-items: center;
-            z-index: 2147483647; /* সর্বোচ্চ লেভেলের জিল-ইন্ডেক্স */
+            z-index: 2147483647; 
             opacity: 1;
             visibility: visible;
             transition: opacity 0.5s ease-out;
@@ -35,17 +35,16 @@
         .splash-content { text-align: center; }
 
         .splash-logo {
-            width: 140px; 
-            height: 140px;
+            width: 160px; /* লোগোর সাইজ */
+            height: auto;
             object-fit: contain; 
-            border-radius: 20px;
-            filter: drop-shadow(0 10px 30px rgba(0,0,0,0.5));
+            filter: drop-shadow(0 10px 30px rgba(0, 210, 255, 0.3));
             animation: ytArrival 1.6s cubic-bezier(0.19, 1, 0.22, 1) forwards;
             opacity: 0;
         }
 
         .splash-loader-line {
-            width: 40px; height: 2px;
+            width: 50px; height: 2px;
             background: rgba(255,255,255,0.05);
             margin: 25px auto 0;
             overflow: hidden; border-radius: 10px;
@@ -59,7 +58,7 @@
         }
 
         @keyframes ytArrival {
-            0% { transform: scale(1.6); opacity: 0; }
+            0% { transform: scale(1.8); opacity: 0; }
             40% { opacity: 1; }
             100% { transform: scale(1); opacity: 1; }
         }
@@ -71,39 +70,39 @@
 
         .hide-splash { opacity: 0 !important; visibility: hidden !important; }
 
-        /* --- Original Styles (Unchanged) --- */
+        /* --- মূল স্টাইল --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Outfit', sans-serif;
-            background: #001a2c; /* ডিফল্ট কালার সরাসরি সেট করা */
+            background: #001a2c; 
             color: white;
             min-height: 100vh;
             overflow-x: hidden;
         }
 
-        /* গ্রেডিয়েন্টটি আলাদা ক্লাসে রাখা হয়েছে যাতে লোডিং-এ সমস্যা না হয় */
         .gradient-bg {
             background: radial-gradient(circle at top right, #003d5b, #001a2c, #000a12);
         }
 
         nav {
-            padding: 25px 5%;
+            padding: 15px 5%;
             display: flex;
             justify-content: space-between;
             align-items: center;
             position: fixed;
             width: 100%;
             z-index: 1000;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(15px);
+            background: rgba(0, 26, 44, 0.7);
         }
 
-        .logo {
-            font-size: 26px;
-            font-weight: 900;
-            color: var(--accent);
-            letter-spacing: 2px;
-            text-shadow: 0 0 20px rgba(0, 210, 255, 0.5);
+        /* নেভিগেশন বারের লোগো স্টাইল */
+        .nav-logo-img {
+            height: 40px;
+            width: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 0 10px rgba(0, 210, 255, 0.2));
         }
 
         .hero {
@@ -199,6 +198,7 @@
             border-radius: 24px;
             border: 1px solid var(--border);
             transition: 0.4s;
+            text-align: center;
         }
 
         .f-card:hover { background: rgba(255,255,255,0.07); transform: translateY(-10px); }
@@ -227,7 +227,7 @@
 
     <div id="splash-screen">
         <div class="splash-content">
-            <img src="https://i.postimg.cc/cCkXGkPH/FB-IMG-1770094555781.jpg" class="splash-logo" alt="MS STORE">
+            <img src="https://i.postimg.cc/rwR0pgVs/1771167225635-removebg-preview.png" class="splash-logo" alt="MS STORE">
             <div class="splash-loader-line">
                 <div class="splash-loader-fill"></div>
             </div>
@@ -236,7 +236,9 @@
 
     <div class="gradient-bg">
         <nav>
-            <div class="logo">MS STORE</div>
+            <div class="logo">
+                <img src="https://i.postimg.cc/rwR0pgVs/1771167225635-removebg-preview.png" alt="MS STORE" class="nav-logo-img">
+            </div>
             <div class="admin-nav">
                 <div class="three-dots-btn" id="menuToggle"><i class="fa fa-ellipsis-v"></i></div>
                 <div class="admin-dropdown" id="dropdownMenu">
@@ -289,12 +291,10 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
     <script>
-        // সাদা ঝলক এড়াতে এই স্ক্রিপ্টটি দ্রুত কাজ করবে
         window.addEventListener('load', function() {
             const splash = document.getElementById('splash-screen');
             setTimeout(() => {
                 splash.classList.add('hide-splash');
-                // অ্যানিমেশন শেষে পুরোপুরি সরিয়ে ফেলা
                 setTimeout(() => splash.style.display = 'none', 600);
             }, 2000); 
         });
@@ -361,4 +361,5 @@
         window.onclick = () => dropdown.classList.remove('show');
     </script>
 </body>
-</html>
+    </html>
+    
