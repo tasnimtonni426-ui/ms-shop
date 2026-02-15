@@ -28,7 +28,6 @@
 
         * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
 
-        /* Smooth Card Animation */
         @keyframes pageFade {
             from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
@@ -66,7 +65,6 @@
         .product-meta b { font-size: 14px; color: var(--text-main); display: block; margin-bottom: 2px; line-height: 1.3; }
         .product-meta span { font-size: 12px; color: var(--text-muted); }
 
-        /* Billing Table Style */
         .billing-box { 
             background: #f8fafc; 
             border-radius: 8px; 
@@ -79,7 +77,6 @@
         .bill-label { color: var(--text-muted); font-weight: 500; }
         .bill-value { color: var(--text-main); font-weight: 700; }
 
-        /* TrxID Copy Style */
         .trx-box { 
             background: #fff; 
             border: 1px solid #e2e8f0; 
@@ -186,18 +183,21 @@
     function renderOrderCard(list, o, key) {
         const shortId = key.slice(-6).toUpperCase();
         
-        // --- ১০০% নিখুঁত ক্যালকুলেশন ফিক্স ---
-        const delivery = parseInt(o.deliveryCharge || 0); // ডেলিভারি চার্জ
-        const rawPriceFromDB = parseInt(o.productPrice || o.price || 0); // ডেটাবেসে থাকা ভ্যালু
+        // --- লজিক ফিক্স: প্রোডাক্ট প্রাইস এবং ডেলিভারি চার্জ পৃথকীকরণ ---
+        const delivery = parseInt(o.deliveryCharge || 0); 
+        const rawPrice = parseInt(o.productPrice || o.price || 0); 
         
-        // যদি ডেটাবেসে দাম এবং ডেলিভারি চার্জ যোগ করা থাকে, তবে বিয়োগ করে আসল দাম বের করি
-        // আর যদি যোগ করা না থাকে, তবে সরাসরি দেখাবো। 
-        // আপনার কথা অনুযায়ী productPrice-এ যেহেতু সব যোগ হয়ে দেখাচ্ছে, তাই বিয়োগ লজিক ব্যবহার করা হলো।
-        const baseProductPrice = rawPriceFromDB - delivery; 
-        const totalBill = rawPriceFromDB; // মোট বিল (দাম + ডেলিভারি)
+        // যদি ডাটাবেস থেকে আসা প্রাইসটি ডেলিভারি চার্জসহ হয়, তবে তা বিয়োগ করে মেইন প্রাইস বের করা হবে। 
+        // আর যদি আপনি ডাটাবেসে মেইন প্রাইস আলাদা সেভ করেন, তবে এই লজিকটি সরাসরি কাজ করবে।
+        let basePrice = rawPrice;
         
-        const paid = parseInt(o.paidAmount || o.payAmount || 0); // কত টাকা দিয়েছে
-        const due = totalBill - paid; // বকেয়া টাকা
+        // যদি মোট প্রাইস ডেলিভারি চার্জের চেয়ে বেশি হয় এবং আপনি নিশ্চিত থাকেন যে 'rawPrice' এ ডেলিভারি ইনক্লুডেড ছিল:
+        // basePrice = rawPrice - delivery; 
+        // (উপরে আপনার রিকোয়েস্ট অনুযায়ী: প্রোডাক্ট প্রাইসের জায়গায় শুধু মেইন দাম থাকবে)
+
+        const total = basePrice + delivery; 
+        const paid = parseInt(o.paidAmount || o.payAmount || 0); 
+        const due = total - paid; 
 
         list.innerHTML += `
             <div class="order-card">
@@ -216,11 +216,11 @@
 
                 <div class="billing-box">
                     <div class="bill-row">
-                        <span class="bill-label">Product Price (পণ্যের দাম):</span>
-                        <span class="bill-value">৳ ${baseProductPrice}</span>
+                        <span class="bill-label">Product Price:</span>
+                        <span class="bill-value">৳ ${basePrice}</span>
                     </div>
                     <div class="bill-row">
-                        <span class="bill-label">Delivery Charge (ডেলিভারি):</span>
+                        <span class="bill-label">Delivery Charge:</span>
                         <span class="bill-value">৳ ${delivery}</span>
                     </div>
                     
