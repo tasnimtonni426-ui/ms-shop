@@ -183,18 +183,11 @@
     function renderOrderCard(list, o, key) {
         const shortId = key.slice(-6).toUpperCase();
         
-        // --- লজিক ফিক্স: প্রোডাক্ট প্রাইস এবং ডেলিভারি চার্জ পৃথকীকরণ ---
+        // --- আপনার রিকোয়েস্ট অনুযায়ী লজিক সংশোধন ---
         const delivery = parseInt(o.deliveryCharge || 0); 
-        const rawPrice = parseInt(o.productPrice || o.price || 0); 
+        const basePrice = parseInt(o.productPrice || o.price || 0); 
         
-        // যদি ডাটাবেস থেকে আসা প্রাইসটি ডেলিভারি চার্জসহ হয়, তবে তা বিয়োগ করে মেইন প্রাইস বের করা হবে। 
-        // আর যদি আপনি ডাটাবেসে মেইন প্রাইস আলাদা সেভ করেন, তবে এই লজিকটি সরাসরি কাজ করবে।
-        let basePrice = rawPrice;
-        
-        // যদি মোট প্রাইস ডেলিভারি চার্জের চেয়ে বেশি হয় এবং আপনি নিশ্চিত থাকেন যে 'rawPrice' এ ডেলিভারি ইনক্লুডেড ছিল:
-        // basePrice = rawPrice - delivery; 
-        // (উপরে আপনার রিকোয়েস্ট অনুযায়ী: প্রোডাক্ট প্রাইসের জায়গায় শুধু মেইন দাম থাকবে)
-
+        // মোট বিল = মেইন প্রাইস + ডেলিভারি
         const total = basePrice + delivery; 
         const paid = parseInt(o.paidAmount || o.payAmount || 0); 
         const due = total - paid; 
