@@ -28,6 +28,12 @@
 
         * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
 
+        /* Smooth Card Animation */
+        @keyframes pageFade {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         body { font-family: 'Roboto', sans-serif; background: var(--bg); color: var(--text-main); margin: 0; padding-bottom: 80px; }
         
         header { background: var(--primary); padding: 15px 16px; display: flex; align-items: center; gap: 15px; position: sticky; top: 0; z-index: 1000; color: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
@@ -36,39 +42,68 @@
 
         .container { padding: 12px; }
 
-        .order-card { background: var(--surface); border-radius: 8px; padding: 15px; margin-bottom: 12px; border: 1px solid var(--border); box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .order-card { 
+            background: var(--surface); 
+            border-radius: 12px; 
+            padding: 16px; 
+            margin-bottom: 16px; 
+            border: 1px solid var(--border); 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            animation: pageFade 0.5s ease-out;
+        }
 
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid #f1f5f9; }
-
-        .order-id { font-size: 13px; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 6px; }
-
-        .status-badge { padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #f1f5f9; }
+        .order-id { font-size: 13px; font-weight: 700; color: var(--text-main); }
+        
+        .status-badge { padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
         .status-badge.Pending { background: #fff7ed; color: var(--pending); }
         .status-badge.Shipped { background: #eff6ff; color: var(--shipped); }
         .status-badge.Delivered { background: #ecfdf5; color: var(--delivered); }
         .status-badge.Cancelled { background: #fef2f2; color: var(--cancelled); }
 
-        .product-info { display: flex; gap: 12px; margin-bottom: 15px; }
-        .product-img { width: 70px; height: 70px; border-radius: 6px; object-fit: cover; background: #f8fafc; border: 1px solid #f1f5f9; }
-        .product-meta { flex: 1; }
-        .product-meta b { font-size: 14px; color: var(--text-main); display: block; margin-bottom: 4px; }
-        .product-meta span { font-size: 12px; color: var(--text-muted); display: block; }
-        .product-meta .price { font-size: 15px; font-weight: 700; color: var(--primary); margin-top: 5px; }
+        .product-info { display: flex; gap: 15px; margin-bottom: 15px; align-items: center; }
+        .product-img { width: 65px; height: 65px; border-radius: 8px; object-fit: cover; background: #f8fafc; border: 1px solid #f1f5f9; }
+        .product-meta b { font-size: 15px; color: var(--text-main); display: block; margin-bottom: 4px; line-height: 1.3; }
+        .product-meta span { font-size: 12px; color: var(--text-muted); }
 
-        .details-grid { display: grid; grid-template-columns: 1fr; gap: 8px; background: #f8fafc; padding: 12px; border-radius: 6px; margin-bottom: 12px; font-size: 12px; color: var(--text-muted); }
+        /* Billing Table Style */
+        .billing-box { 
+            background: #f8fafc; 
+            border-radius: 8px; 
+            padding: 12px; 
+            margin-bottom: 15px; 
+            border: 1px solid #edf2f7; 
+        }
+        .bill-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; }
+        .bill-row:last-child { margin-bottom: 0; }
+        .bill-label { color: var(--text-muted); font-weight: 500; }
+        .bill-value { color: var(--text-main); font-weight: 700; }
 
-        .payment-summary { display: flex; justify-content: space-between; padding-top: 10px; border-top: 1px dashed var(--border); }
+        /* TrxID Copy Style */
+        .trx-box { 
+            background: #fff; 
+            border: 1px solid #e2e8f0; 
+            padding: 8px 12px; 
+            border-radius: 6px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .trx-box:active { background: #edf2ff; }
+        .trx-label { font-size: 11px; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 6px; }
+        .trx-id-text { font-size: 12px; font-weight: 700; color: var(--text-main); font-family: monospace; }
+
+        .payment-summary { display: flex; justify-content: space-between; padding-top: 12px; border-top: 1px dashed var(--border); }
         .pay-col { display: flex; flex-direction: column; }
         .pay-col label { font-size: 10px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
-        .pay-col b { font-size: 14px; }
+        .pay-col b { font-size: 15px; }
 
-        /* পেমেন্ট মেথড ডিজাইন */
-        .pay-method-badge { background: #1e293b; color: #fff; padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-left: 5px; }
-
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 8px 0; z-index: 2000; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 10px 0; z-index: 2000; }
         .nav-item { text-align: center; color: var(--text-muted); font-size: 20px; flex: 1; cursor: pointer; text-decoration: none; }
         .nav-item.active { color: var(--primary); }
-        .nav-item span { display: block; font-size: 10px; margin-top: 3px; font-weight: 500; }
+        .nav-item span { display: block; font-size: 10px; margin-top: 4px; font-weight: 600; }
 
         #loading-screen { position: fixed; inset: 0; background: #fff; z-index: 10000; display: flex; align-items: center; justify-content: center; }
         .loader { width: 30px; height: 30px; border: 3px solid #eee; border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
@@ -117,7 +152,6 @@
         if (user) {
             fetchOrders(user.uid);
         } else {
-            // যদি ইউজার লগইন না থাকে, তবে ইনডেক্সে পাঠিয়ে দাও
             window.location.href = "index.html";
         }
     });
@@ -140,7 +174,6 @@
             if(!found) {
                 list.innerHTML = "<p style='text-align:center; padding-top:50px;'>কোনো অর্ডার পাওয়া যায়নি।</p>";
             } else {
-                // নতুন অর্ডার উপরে দেখানোর জন্য
                 ordersArray.reverse().forEach(order => {
                     renderOrderCard(list, order, order.key);
                 });
@@ -151,55 +184,64 @@
 
     function renderOrderCard(list, o, key) {
         const shortId = key.slice(-6).toUpperCase();
-        
-        // --- পেমেন্ট লজিক ---
-        const productPrice = parseInt(o.productPrice || o.price || 0);
-        const deliveryCharge = parseInt(o.deliveryCharge || 0);
-        const totalAmount = productPrice + deliveryCharge;
-        const userPaid = parseInt(o.paidAmount || o.payAmount || 0);
-        
-        let dueDisplay;
-        let dueColor = "var(--cancelled)";
-        
-        if (userPaid >= totalAmount) {
-            dueDisplay = "COMPLETED";
-            dueColor = "var(--delivered)";
-        } else {
-            dueDisplay = "৳ " + (totalAmount - userPaid);
-        }
+        const basePrice = parseInt(o.productPrice || o.price || 0);
+        const delivery = parseInt(o.deliveryCharge || 0);
+        const total = basePrice + delivery;
+        const paid = parseInt(o.paidAmount || o.payAmount || 0);
+        const due = total - paid;
 
         list.innerHTML += `
             <div class="order-card">
                 <div class="card-header">
-                    <div class="order-id">#${shortId} <span class="pay-method-badge">${o.paymentMethod || 'COD'}</span></div>
+                    <div class="order-id">ORDER ID: #${shortId}</div>
                     <div class="status-badge ${o.status}">${o.status}</div>
                 </div>
+
                 <div class="product-info">
-                    <img src="${o.productImg || o.img || 'https://placehold.co/100'}" class="product-img" onerror="this.src='https://placehold.co/100'">
+                    <img src="${o.productImg || o.img}" class="product-img" onerror="this.src='https://placehold.co/100'">
                     <div class="product-meta">
                         <b>${o.productName}</b>
                         <span>Size: ${o.productSize || o.size || 'N/A'}</span>
-                        <div class="price">৳ ${productPrice}</div>
                     </div>
                 </div>
-                <div class="details-grid">
-                    <div><i class="fa fa-truck"></i> Delivery Charge: ৳ ${deliveryCharge}</div>
-                    <div><i class="fa fa-fingerprint"></i> TrxID: ${o.trxID || 'N/A'}</div>
+
+                <div class="billing-box">
+                    <div class="bill-row">
+                        <span class="bill-label">Product Price:</span>
+                        <span class="bill-value">৳ ${basePrice}</span>
+                    </div>
+                    <div class="bill-row">
+                        <span class="bill-label">Delivery Charge:</span>
+                        <span class="bill-value">৳ ${delivery}</span>
+                    </div>
+                    <div class="trx-box" onclick="copyTrx('${o.trxID || 'N/A'}')">
+                        <span class="trx-label">
+                            <i class="fa fa-wallet"></i> ${o.paymentMethod || 'COD'}
+                        </span>
+                        <span class="trx-id-text">${o.trxID || 'N/A'} <i class="fa fa-copy" style="font-size:10px; opacity:0.5; margin-left:5px;"></i></span>
+                    </div>
                 </div>
+
                 <div class="payment-summary">
                     <div class="pay-col">
-                        <label>PAID</label>
-                        <b style="color:var(--delivered)">৳ ${userPaid}</b>
+                        <label>Paid (পরিশোধিত)</label>
+                        <b style="color:var(--delivered)">৳ ${paid}</b>
                     </div>
                     <div class="pay-col" style="text-align:right">
-                        <label>DUE</label>
-                        <b style="color:${dueColor}">${dueDisplay}</b>
+                        <label>Due (বকেয়া)</label>
+                        <b style="color:${due > 0 ? 'var(--cancelled)' : 'var(--delivered)'}">${due > 0 ? '৳ '+due : 'COMPLETED'}</b>
                     </div>
                 </div>
             </div>`;
     }
 
-    // সার্ভিস ওয়ার্কার রেজিস্টার (লুপ ফিক্সড)
+    window.copyTrx = (id) => {
+        if(id === 'N/A' || !id) return;
+        navigator.clipboard.writeText(id).then(() => {
+            alert("Transaction ID Copied!");
+        });
+    };
+
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('sw.js').catch(err => console.log(err));
@@ -207,4 +249,4 @@
     }
 </script>
 </body>
-</html>
+    </html>
