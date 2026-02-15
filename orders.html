@@ -6,7 +6,7 @@
     <title>Admin - Order Management</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* আপনার দেওয়া স্টাইলগুলো এখানে অপরিবর্তিত থাকবে */
+        /* আপনার পুরনো স্টাইলগুলো এখানে থাকবে */
         :root { --primary: #00d2ff; --dark: #0f172a; --bg: #f1f5f9; --success: #2ecc71; --danger: #e74c3c; }
         body { font-family: 'Poppins', sans-serif; background: var(--bg); margin: 0; padding: 15px; }
         header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
@@ -36,13 +36,11 @@
         .pay-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 11px; }
         .pay-item { display: flex; justify-content: space-between; border-bottom: 1px dashed #cbd5e1; padding: 3px 0; }
         .pay-item b { color: var(--dark); }
-        .method-badge { background: var(--primary); color: white; padding: 2px 8px; border-radius: 5px; font-size: 10px; }
-        .type-badge { background: #64748b; color: white; padding: 2px 8px; border-radius: 5px; font-size: 10px; }
         .trx-id-box { background: #fff; padding: 8px; border-radius: 8px; margin-top: 8px; border: 1px solid #0369a1; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 12px; }
         .actions { display: flex; gap: 8px; margin-top: 15px; align-items: center; }
         .status-select { flex: 1; padding: 10px; border-radius: 10px; border: 1.5px solid #e2e8f0; font-size: 12px; outline: none; background: #f8fafc; }
-        .btn-call { background: #e0f2fe; color: #0369a1; padding: 10px; border-radius: 10px; text-decoration: none; }
-        .btn-delete { background: #fee2e2; color: #dc2626; padding: 10px; border-radius: 10px; border: none; cursor: pointer; }
+        .btn-call { background: #e0f2fe; color: #0369a1; padding: 10px; border-radius: 10px; text-decoration: none; display: flex; align-items: center; justify-content: center; width: 45px; }
+        .btn-delete { background: #fee2e2; color: #dc2626; padding: 10px; border-radius: 10px; border: none; cursor: pointer; width: 45px; }
     </style>
 </head>
 <body>
@@ -53,7 +51,7 @@
 </header>
 
 <div class="search-container">
-    <input type="text" id="searchInput" placeholder="সার্চ করুন..." onkeyup="searchOrders()">
+    <input type="text" id="searchInput" placeholder="অর্ডার আইডি বা মোবাইল নম্বর দিয়ে সার্চ..." onkeyup="window.searchOrders()">
     <i class="fa fa-search"></i>
 </div>
 
@@ -77,26 +75,58 @@
 
     let allOrders = [];
 
-    // ডাটা রেন্ডার করার ফাংশন
+    // --- গ্লোবাল ফাংশন শুরু ---
+
+    window.handleStatus = (id, val) => {
+        const orderRef = ref(db, 'orders/' + id);
+        update(orderRef, { status: val })
+        .then(() => alert("স্ট্যাটাস আপডেট হয়েছে: " + val))
+        .catch((e) => alert("ভুল হয়েছে: " + e.message));
+    };
+
+    window.deleteOrder = (id) => {
+        if(confirm("আপনি কি নিশ্চিতভাবে এই অর্ডারটি ডিলিট করতে চান?")){
+            const orderRef = ref(db, 'orders/' + id);
+            remove(orderRef)
+            .then(() => alert("অর্ডার ডিলিট হয়েছে!"))
+            .catch((e) => alert("ডিলিট করা যায়নি: " + e.message));
+        }
+    };
+
+    window.searchOrders = () => {
+        const val = document.getElementById('searchInput').value.toLowerCase();
+        const filtered = allOrders.filter(o => 
+            o.id.toLowerCase().includes(val) || 
+            (o.phone && o.phone.includes(val)) || 
+            (o.userName && o.userName.toLowerCase().includes(val))
+        );
+        renderOrders(filtered);
+    };
+
+    window.copyTxt = (txt, label) => {
+        navigator.clipboard.writeText(txt).then(() => alert(label + " কপি হয়েছে!"));
+    };
+
+    // --- গ্লোবাল ফাংশন শেষ ---
+
+    onValue(ref(db, 'orders'), async (snap) => {
+        allOrders = [];
+        if(snap.exists()){
+            const temp = [];
+            snap.forEach(child => { temp.push({ id: child.key, ...child.val() }); });
+            allOrders = temp.reverse();
+            renderOrders();
+        } else {
+            document.getElementById('order-list').innerHTML = "কোনো অর্ডার পাওয়া যায়নি।";
+        }
+    });
+
     async function renderOrders(filteredData = null) {
         const list = document.getElementById('order-list');
         list.innerHTML = "";
-        const dataToRender = filteredData || allOrders;
+        const data = filteredData || allOrders;
         
-        if (dataToRender.length === 0) {
-            list.innerHTML = "কোনো অর্ডার পাওয়া যায়নি।";
-            return;
-        }
-
-        for (let o of dataToRender) {
-            const uSnap = await get(ref(db, 'users/' + o.uid));
-            const u = uSnap.exists() ? uSnap.val() : {};
-
-            const pPrice = parseFloat(o.productPrice) || parseFloat(o.price) || 0;
-            const dCharge = parseFloat(o.deliveryCharge) || 0;
-            const total = pPrice + dCharge;
-            const paid = parseFloat(o.paidAmount) || 0;
-            const due = total - paid;
+        for (let o of data) {
             const date = o.timestamp ? new Date(o.timestamp).toLocaleString('bn-BD') : 'N/A';
             const formattedUID = o.uid ? `MS-${o.uid.slice(-8).toUpperCase()}` : 'N/A';
 
@@ -109,32 +139,25 @@
                         </div>
                         <span class="status-badge ${o.status || 'pending'}">${o.status || 'pending'}</span>
                     </div>
+                    
                     <div class="main-info-grid">
                         <div class="item-details">
-                            <img src="${o.productImg || ''}">
-                            <b>${o.productName}</b>
+                            <img src="${o.productImg || ''}" onerror="this.src='https://via.placeholder.com/70'">
+                            <b>${o.productName || 'Product'}</b>
                             <small>সাইজ: ${o.size || 'N/A'}</small>
                         </div>
-                        <div class="user-profile-box" onclick="copyTxt('${formattedUID}', 'Customer ID')">
-                            <img src="${u.photoURL || u.profilePic || 'https://cdn-icons-png.flaticon.com/512/149/149071.png'}">
-                            <b>${u.displayName || u.name || 'User'}</b>
-                            <small>${formattedUID} <i class="fa fa-copy"></i></small>
+                        <div class="user-profile-box" onclick="window.copyTxt('${formattedUID}', 'কাস্টমার আইডি')">
+                            <b>${formattedUID}</b>
+                            <small>ট্যাপ করুন কপি করতে</small>
                         </div>
                     </div>
-                    <div class="info-box" onclick="copyFullAddr('${o.userName}', '${o.phone}', '${o.address}')">
-                        <div class="info-row"><i class="fa fa-user"></i> ${o.userName}</div>
-                        <div class="info-row"><i class="fa fa-phone"></i> ${o.phone}</div>
-                        <div class="info-row"><i class="fa fa-map-marker-alt"></i> ${o.address}</div>
+
+                    <div class="info-box">
+                        <div class="info-row"><i class="fa fa-user"></i> ${o.userName || 'N/A'}</div>
+                        <div class="info-row"><i class="fa fa-phone"></i> ${o.phone || 'N/A'}</div>
+                        <div class="info-row" style="font-size:10px; color:gray;"><i class="fa fa-map-marker-alt"></i> ${o.address || 'N/A'}</div>
                     </div>
-                    <div class="payment-summary-card">
-                        <div class="pay-grid">
-                            <div class="pay-item">মোট বিল: <b>${total}৳</b></div>
-                            <div class="pay-item">পেইড: <b style="color:var(--success)">${paid}৳</b></div>
-                        </div>
-                        <div class="trx-id-box">
-                            <span>TrxID: <b>${o.trxID || 'N/A'}</b></span>
-                        </div>
-                    </div>
+
                     <div class="actions">
                         <a href="tel:${o.phone}" class="btn-call"><i class="fa fa-phone"></i></a>
                         <select class="status-select" onchange="window.handleStatus('${o.id}', this.value)">
@@ -145,53 +168,11 @@
                         </select>
                         <button class="btn-delete" onclick="window.deleteOrder('${o.id}')"><i class="fa fa-trash"></i></button>
                     </div>
-                </div>`;
+                </div>
+            `;
         }
     }
-
-    // অর্ডার ডেটা লোড করা
-    onValue(ref(db, 'orders'), (snap) => {
-        allOrders = [];
-        if(snap.exists()){
-            snap.forEach(child => { allOrders.push({ id: child.key, ...child.val() }); });
-            allOrders.reverse();
-            renderOrders();
-        }
-    });
-
-    // গ্লোবাল ফাংশন হিসেবে সেট করা (যাতে onclick কাজ করে)
-    window.handleStatus = (id, val) => {
-        update(ref(db, 'orders/' + id), { status: val })
-        .then(() => alert("Status updated to: " + val))
-        .catch(err => alert("Error: " + err.message));
-    };
-
-    window.deleteOrder = (id) => {
-        if(confirm("আপনি কি নিশ্চিতভাবে এই অর্ডারটি ডিলিট করতে চান?")){
-            remove(ref(db, 'orders/' + id))
-            .then(() => alert("Order deleted successfully!"))
-            .catch(err => alert("Error: " + err.message));
-        }
-    };
-
-    window.searchOrders = () => {
-        const val = document.getElementById('searchInput').value.toLowerCase();
-        const filtered = allOrders.filter(o => 
-            o.id.toLowerCase().includes(val) || 
-            o.phone.includes(val) || 
-            o.userName.toLowerCase().includes(val)
-        );
-        renderOrders(filtered);
-    };
-
-    window.copyTxt = (txt, label) => {
-        navigator.clipboard.writeText(txt).then(() => alert(label + " copied!"));
-    };
-    
-    window.copyFullAddr = (name, phone, addr) => {
-        navigator.clipboard.writeText(`Name: ${name}\nPhone: ${phone}\nAddress: ${addr}`).then(() => alert("Address copied!"));
-    };
-
 </script>
+
 </body>
 </html>
