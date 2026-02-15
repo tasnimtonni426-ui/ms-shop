@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MS STORE | Professional Home</title>
+    <title>MS STORE | Premium Experience</title>
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#2563eb">
@@ -23,79 +23,111 @@
             --text-muted: #64748b;
         }
 
-        * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+        * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; outline: none; }
         
-        @keyframes pageFade {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        /* Smooth Page Animations */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
 
         body { 
             font-family: 'Roboto', sans-serif; 
             margin: 0; background: var(--bg); color: var(--text-main); 
             padding-bottom: 70px; overflow-x: hidden;
-            animation: pageFade 0.5s ease-out;
         }
 
-        header { background: var(--primary); padding: 12px 16px; position: sticky; top: 0; z-index: 1000; }
+        /* Header */
+        header { background: var(--primary); padding: 12px 16px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         .logo { font-size: 20px; font-weight: 700; color: white; letter-spacing: 0.5px; }
 
         .search-box { position: relative; width: 100%; }
         .search-box i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
         .search-box input { 
-            width: 100%; padding: 10px 15px 10px 40px; border-radius: 6px; 
-            border: none; background: #fff; font-size: 14px; outline: none;
+            width: 100%; padding: 11px 15px 11px 40px; border-radius: 8px; 
+            border: none; background: #fff; font-size: 14px; transition: 0.3s;
         }
 
-        .slider-container { width: 100%; height: 180px; overflow: hidden; position: relative; background: #eee; touch-action: pan-y; margin-bottom: 5px; }
-        .slider-track { display: flex; height: 100%; width: 100%; transition: transform 0.4s ease-out; }
-        .slide { min-width: 100%; height: 100%; flex-shrink: 0; }
+        /* Slider */
+        .slider-container { width: 92%; margin: 15px auto; height: 180px; border-radius: 15px; overflow: hidden; position: relative; background: #eee; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .slider-track { display: flex; height: 100%; width: 100%; transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+        .slide { min-width: 100%; height: 100%; }
         .slide img { width: 100%; height: 100%; object-fit: cover; }
 
-        .section-title { padding: 15px 16px 5px; font-size: 15px; font-weight: 700; color: var(--text-main); }
+        .section-title { padding: 15px 16px 5px; font-size: 16px; font-weight: 700; }
         
-        .cat-grid { display: flex; justify-content: space-between; padding: 10px 16px; background: white; overflow-x: auto; gap: 15px; scrollbar-width: none; }
+        /* Categories */
+        .cat-grid { display: flex; padding: 10px 16px; background: white; overflow-x: auto; gap: 15px; scrollbar-width: none; }
         .cat-grid::-webkit-scrollbar { display: none; }
-        .cat-item { min-width: 70px; text-align: center; cursor: pointer; transition: 0.2s; }
-        .cat-icon-box { width: 50px; height: 50px; background: #f0f4f8; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; color: var(--text-muted); font-size: 20px; }
-        .cat-item.active .cat-icon-box { background: var(--primary); color: white; }
+        .cat-item { min-width: 75px; text-align: center; cursor: pointer; transition: 0.3s; }
+        .cat-icon-box { width: 55px; height: 55px; background: #f0f4f8; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; color: var(--text-muted); font-size: 22px; transition: 0.3s; }
+        .cat-item.active .cat-icon-box { background: var(--primary); color: white; transform: scale(1.1); }
         .cat-item span { font-size: 11px; font-weight: 600; }
 
-        #sub-cat-container { display: flex; gap: 8px; padding: 5px 16px 15px; overflow-x: auto; scrollbar-width: none; background: white; }
-        .sub-cat-btn { background: #f1f5f9; border: 1px solid var(--border); padding: 6px 15px; border-radius: 20px; font-size: 12px; white-space: nowrap; color: var(--text-main); font-weight: 500; transition: 0.3s; }
+        #sub-cat-container { display: flex; gap: 8px; padding: 10px 16px; overflow-x: auto; scrollbar-width: none; background: white; border-bottom: 1px solid #f1f5f9; }
+        .sub-cat-btn { background: #f1f5f9; border: 1px solid var(--border); padding: 7px 18px; border-radius: 20px; font-size: 12px; white-space: nowrap; color: var(--text-main); font-weight: 500; transition: 0.3s; }
         .sub-cat-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
 
-        .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 10px; }
-        .p-card { background: white; border-radius: 8px; overflow: hidden; border: 1px solid #eee; transition: 0.3s; }
-        .p-card img { width: 100%; height: 140px; object-fit: contain; padding: 10px; }
-        .p-info { padding: 10px; border-top: 1px solid #f8f8f8; }
-        .p-name { font-size: 13px; color: var(--text-main); height: 36px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.4; }
-        .p-price { font-size: 15px; font-weight: 700; color: #e11d48; margin-top: 5px; }
+        /* Products */
+        .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 12px; animation: fadeIn 0.6s ease-out; }
+        .p-card { background: white; border-radius: 12px; overflow: hidden; border: 1px solid #eee; transition: 0.3s; position: relative; }
+        .p-card:active { transform: scale(0.96); }
+        .p-card img { width: 100%; height: 150px; object-fit: contain; padding: 10px; }
+        .p-info { padding: 12px; }
+        .p-name { font-size: 13px; color: var(--text-main); font-weight: 500; height: 38px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+        .p-price { font-size: 16px; font-weight: 700; color: #e11d48; margin-top: 6px; }
 
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 8px 0; z-index: 2000; }
-        .nav-item { text-align: center; color: var(--text-muted); font-size: 20px; flex: 1; cursor: pointer; }
+        /* Bottom Nav */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 10px 0; z-index: 2000; box-shadow: 0 -2px 10px rgba(0,0,0,0.03); }
+        .nav-item { text-align: center; color: var(--text-muted); font-size: 20px; flex: 1; transition: 0.3s; }
         .nav-item.active { color: var(--primary); }
-        .nav-item span { display: block; font-size: 10px; margin-top: 3px; font-weight: 500; }
+        .nav-item span { display: block; font-size: 10px; margin-top: 4px; font-weight: 600; }
 
-        /* Profile Menu Styles */
-        .profile-menu { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999; }
-        .profile-content { position: absolute; right: 0; top: 0; bottom: 0; width: 300px; background: white; padding: 20px; overflow-y: auto; }
-        .u-id-badge { background: #f1f5f9; padding: 10px; border-radius: 8px; margin-bottom: 20px; font-size: 12px; font-weight: bold; text-align: center; cursor: pointer; border: 1px dashed var(--primary); }
+        /* Profile Menu */
+        .profile-menu { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9999; backdrop-filter: blur(3px); }
+        .profile-content { 
+            position: absolute; right: 0; top: 0; bottom: 0; width: 310px; 
+            background: white; padding: 25px; animation: slideRight 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
+            border-radius: 25px 0 0 25px;
+        }
         
-        .edit-input-group { margin-bottom: 15px; text-align: left; }
-        .edit-input-group label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 5px; }
-        .edit-input-group input { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; }
-        .save-btn { width: 100%; background: var(--primary); color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .u-id-badge { background: #eff6ff; padding: 12px; border-radius: 12px; margin-bottom: 25px; font-size: 13px; font-weight: 700; color: var(--primary); text-align: center; cursor: pointer; border: 1px dashed var(--primary); transition: 0.3s; }
+        .u-id-badge:active { transform: scale(0.95); background: var(--primary); color: white; }
 
-        #loading-screen { position: fixed; inset: 0; background: #fff; z-index: 10000; display: flex; align-items: center; justify-content: center; }
-        .loader { width: 30px; height: 30px; border: 3px solid #eee; border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        .menu-profile-card { text-align: center; margin-bottom: 25px; }
+        .u-photo-wrapper { position: relative; width: 90px; height: 90px; margin: 0 auto 15px; }
+        #u-photo { width: 100%; height: 100%; border-radius: 50%; border: 3px solid var(--primary); object-fit: cover; }
+        
+        .name-edit-box { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 5px; }
+        #u-name { font-weight: 700; font-size: 19px; color: var(--text-main); }
+        .edit-icon { color: var(--primary); font-size: 16px; cursor: pointer; padding: 5px; }
+
+        #u-email { font-size: 13px; color: var(--text-muted); }
+
+        .edit-mode-input { 
+            width: 100%; padding: 10px; border: 2px solid var(--primary); 
+            border-radius: 8px; margin-bottom: 10px; display: none; 
+            text-align: center; font-weight: 600;
+        }
+
+        .menu-links a, .logout-trigger { 
+            padding: 15px; border-radius: 12px; display: flex; align-items: center; 
+            gap: 15px; text-decoration: none; color: var(--text-main); 
+            font-weight: 600; margin-bottom: 8px; transition: 0.3s;
+            background: #f8fafc;
+        }
+        .logout-trigger { color: #e11d48; cursor: pointer; background: #fff1f2; }
+
+        #loading-screen { position: fixed; inset: 0; background: #fff; z-index: 10000; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+        .loader { width: 35px; height: 35px; border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-<div id="loading-screen"><div class="loader"></div></div>
+<div id="loading-screen">
+    <div class="loader"></div>
+    <p style="margin-top:15px; font-weight:700; color:var(--primary)">MS STORE</p>
+</div>
 
 <header>
     <div class="header-top">
@@ -104,7 +136,7 @@
     </div>
     <div class="search-box">
         <i class="fa fa-search"></i>
-        <input type="text" id="searchInput" placeholder="Search for products...">
+        <input type="text" id="searchInput" placeholder="Search products...">
     </div>
 </header>
 
@@ -115,51 +147,46 @@
 <div class="section-title">Categories</div>
 <div class="cat-grid" id="main-cat-grid">
     <div class="cat-item active" data-cat="all"><div class="cat-icon-box"><i class="fa fa-th-large"></i></div><span>All</span></div>
-    <div class="cat-item" data-cat="sports"><div class="cat-icon-box"><i class="fa fa-baseball-bat-ball"></i></div><span>Sports</span></div>
-    <div class="cat-item" data-cat="electronics"><div class="cat-icon-box"><i class="fa fa-mobile-screen"></i></div><span>Gadgets</span></div>
+    <div class="cat-item" data-cat="sports"><div class="cat-icon-box"><i class="fa fa-trophy"></i></div><span>Sports</span></div>
+    <div class="cat-item" data-cat="electronics"><div class="cat-icon-box"><i class="fa fa-laptop"></i></div><span>Gadgets</span></div>
     <div class="cat-item" data-cat="fashion"><div class="cat-icon-box"><i class="fa fa-shirt"></i></div><span>Fashion</span></div>
 </div>
 
 <div id="sub-cat-container"></div>
 
-<div class="section-title">Products For You</div>
+<div class="section-title" id="display-title">Flash Sale</div>
 <div class="product-grid" id="p-list"></div>
 
 <div class="bottom-nav">
-    <div class="nav-item active" onclick="location.reload()"><i class="fa fa-home"></i><span>Home</span></div>
-    <div class="nav-item" id="openAccount"><i class="fa fa-user"></i><span>Account</span></div>
-    <div class="nav-item" onclick="location.href='my_orders.html'"><i class="fa fa-box"></i><span>Orders</span></div>
-    <div class="nav-item" onclick="location.href='https://wa.me/8801319474450'"><i class="fab fa-whatsapp"></i><span>Support</span></div>
+    <div class="nav-item active" onclick="location.reload()"><i class="fa fa-house"></i><span>Home</span></div>
+    <div class="nav-item" id="openAccount"><i class="fa fa-circle-user"></i><span>Account</span></div>
+    <div class="nav-item" onclick="location.href='my_orders.html'"><i class="fa fa-bag-shopping"></i><span>Orders</span></div>
+    <div class="nav-item" onclick="location.href='https://wa.me/8801319474450'"><i class="fa-brands fa-whatsapp"></i><span>Support</span></div>
 </div>
 
+<!-- Account Sidebar -->
 <div class="profile-menu" id="profileMenu">
     <div class="profile-content">
-        <div style="text-align: right; margin-bottom: 10px;"><i class="fa fa-times" id="closeMenu" style="font-size: 20px; cursor:pointer;"></i></div>
+        <div style="text-align: right; margin-bottom: 10px;"><i class="fa fa-xmark" id="closeMenu" style="font-size: 24px; cursor:pointer; color: var(--text-muted);"></i></div>
         
-        <div class="u-id-badge" id="u-uid" onclick="copyUID()">UID: MS-XXXXXXXX (Click to Copy)</div>
+        <div class="u-id-badge" id="u-uid" onclick="copyUID()">UID: MS-XXXXXX (Tap to Copy)</div>
 
-        <div class="menu-profile-card" style="text-align: center; margin-bottom: 20px;">
-            <img id="u-photo" src="" style="width:80px; height:80px; border-radius:50%; border: 2px solid var(--primary); object-fit: cover; margin-bottom: 10px;">
-            <div id="u-name" style="font-weight: bold; font-size: 18px;">User Name</div>
-            <div id="u-email" style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">email@gmail.com</div>
+        <div class="menu-profile-card">
+            <div class="u-photo-wrapper">
+                <img id="u-photo" src="" alt="Profile">
+            </div>
+            
+            <div class="name-edit-box">
+                <div id="u-name">User Name</div>
+                <i class="fa-solid fa-pen-to-square edit-icon" id="editNameBtn"></i>
+            </div>
+            <input type="text" id="nameInput" class="edit-mode-input">
+            <div id="u-email">user@gmail.com</div>
         </div>
 
-        <div style="border-top: 1px solid #eee; padding-top: 15px;">
-            <div style="font-weight: bold; font-size: 14px; margin-bottom: 15px;">Edit Profile</div>
-            <div class="edit-input-group">
-                <label>Display Name</label>
-                <input type="text" id="edit-name" placeholder="Enter name">
-            </div>
-            <div class="edit-input-group">
-                <label>Profile Picture URL</label>
-                <input type="text" id="edit-photo" placeholder="Image URL">
-            </div>
-            <button class="save-btn" id="saveProfileBtn">Save Changes</button>
-        </div>
-
-        <div class="menu-links" style="margin-top: 20px;">
-            <a href="my_orders.html" style="padding: 12px 0; border-bottom: 1px solid #eee; display: block; text-decoration: none; color: #333;"><i class="fa fa-shopping-bag"></i> &nbsp; My Orders</a>
-            <div id="logoutBtn" style="color: #e11d48; cursor: pointer; padding: 12px 0;"><i class="fa fa-sign-out-alt"></i> &nbsp; Logout</div>
+        <div class="menu-links">
+            <a href="my_orders.html"><i class="fa fa-clock-rotate-left" style="color:var(--primary)"></i> My Orders</a>
+            <div class="logout-trigger" id="logoutBtn"><i class="fa fa-right-from-bracket"></i> Logout Account</div>
         </div>
     </div>
 </div>
@@ -195,45 +222,45 @@
 
     function updateProfileUI(user) {
         document.getElementById('loading-screen').style.display = 'none';
-        const photo = user.photoURL || "https://i.postimg.cc/cCkXGkPH/FB-IMG-1770094555781.jpg";
-        document.getElementById('u-photo').src = photo;
-        document.getElementById('u-name').innerText = user.displayName || "Customer";
+        // এখানে জিমেইল থেকে প্রোফাইল ছবি এবং নাম লোড হচ্ছে
+        document.getElementById('u-photo').src = user.photoURL || "https://i.postimg.cc/cCkXGkPH/FB-IMG-1770094555781.jpg";
+        document.getElementById('u-name').innerText = user.displayName || "User Name";
         document.getElementById('u-email').innerText = user.email;
         document.getElementById('u-uid').innerText = "UID: MS-" + user.uid.slice(-8).toUpperCase();
-        
-        // Populate edit fields
-        document.getElementById('edit-name').value = user.displayName || "";
-        document.getElementById('edit-photo').value = user.photoURL || "";
+        document.getElementById('nameInput').value = user.displayName || "";
     }
 
-    // Copy UID Function
+    // Copy UID
     window.copyUID = () => {
-        const uidText = document.getElementById('u-uid').innerText.split(' ')[1];
-        navigator.clipboard.writeText(uidText).then(() => {
-            alert("UID Copied: " + uidText);
+        const uid = document.getElementById('u-uid').innerText.split(' ')[1];
+        navigator.clipboard.writeText(uid).then(() => {
+            alert("UID Copied!");
         });
-    }
+    };
 
-    // Save Profile Changes
-    document.getElementById('saveProfileBtn').onclick = async () => {
-        const newName = document.getElementById('edit-name').value;
-        const newPhoto = document.getElementById('edit-photo').value;
-        const btn = document.getElementById('saveProfileBtn');
-        
-        try {
-            btn.innerText = "Saving...";
-            btn.disabled = true;
-            await updateProfile(auth.currentUser, {
-                displayName: newName,
-                photoURL: newPhoto
-            });
-            alert("Profile Updated Successfully!");
-            location.reload();
-        } catch (error) {
-            alert("Error updating profile: " + error.message);
-        } finally {
-            btn.innerText = "Save Changes";
-            btn.disabled = false;
+    // Edit Name Logic
+    const editBtn = document.getElementById('editNameBtn');
+    const nameDisplay = document.getElementById('u-name');
+    const nameInput = document.getElementById('nameInput');
+
+    editBtn.onclick = async () => {
+        if (nameInput.style.display === "none" || nameInput.style.display === "") {
+            nameInput.style.display = "block";
+            nameDisplay.style.display = "none";
+            editBtn.classList.replace('fa-pen-to-square', 'fa-check');
+            nameInput.focus();
+        } else {
+            const newName = nameInput.value.trim();
+            if (newName !== "") {
+                try {
+                    await updateProfile(auth.currentUser, { displayName: newName });
+                    nameDisplay.innerText = newName;
+                    alert("Name Updated!");
+                } catch (e) { alert("Error updating name"); }
+            }
+            nameInput.style.display = "none";
+            nameDisplay.style.display = "block";
+            editBtn.classList.replace('fa-check', 'fa-pen-to-square');
         }
     };
 
@@ -260,12 +287,19 @@
             </div>`).join('') : '<p style="grid-column: 1/-1; text-align:center; padding:20px; color:#64748b;">No products found</p>';
     }
 
+    // Category Logic Fired
     function applyFilter(mainCat) {
         const subBox = document.getElementById('sub-cat-container');
+        const displayTitle = document.getElementById('display-title');
         subBox.innerHTML = ""; 
         
-        let filtered = mainCat === 'all' ? pArray : pArray.filter(p => (p.category||"").toString().toLowerCase() === mainCat.toLowerCase());
+        // Case-insensitive filtering
+        let filtered = mainCat === 'all' ? pArray : pArray.filter(p => 
+            (p.category || "").toString().toLowerCase() === mainCat.toLowerCase()
+        );
+        
         render(filtered);
+        displayTitle.innerText = mainCat === 'all' ? "Flash Sale" : mainCat.toUpperCase();
 
         if(mainCat !== 'all') {
             const subCats = [...new Set(filtered.map(p => p.subCategory).filter(s => s))];
@@ -293,7 +327,7 @@
         let isDragging = false;
 
         function updateSlide() {
-            track.style.transition = "transform 0.4s ease-out";
+            track.style.transition = "transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)";
             track.style.transform = `translateX(-${index * 100}%)`;
         }
 
@@ -356,4 +390,4 @@
     }
 </script>
 </body>
-</html>
+    </html>
