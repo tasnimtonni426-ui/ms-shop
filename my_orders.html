@@ -53,17 +53,17 @@
         }
 
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #f1f5f9; }
-        .order-id { font-size: 13px; font-weight: 700; color: var(--text-main); }
+        .order-id { font-size: 12px; font-weight: 700; color: var(--text-main); }
         
-        .status-badge { padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+        .status-badge { padding: 5px 12px; border-radius: 20px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
         .status-badge.Pending { background: #fff7ed; color: var(--pending); }
         .status-badge.Shipped { background: #eff6ff; color: var(--shipped); }
         .status-badge.Delivered { background: #ecfdf5; color: var(--delivered); }
         .status-badge.Cancelled { background: #fef2f2; color: var(--cancelled); }
 
         .product-info { display: flex; gap: 15px; margin-bottom: 15px; align-items: center; }
-        .product-img { width: 65px; height: 65px; border-radius: 8px; object-fit: cover; background: #f8fafc; border: 1px solid #f1f5f9; }
-        .product-meta b { font-size: 15px; color: var(--text-main); display: block; margin-bottom: 4px; line-height: 1.3; }
+        .product-img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; background: #f8fafc; border: 1px solid #f1f5f9; }
+        .product-meta b { font-size: 14px; color: var(--text-main); display: block; margin-bottom: 2px; line-height: 1.3; }
         .product-meta span { font-size: 12px; color: var(--text-muted); }
 
         /* Billing Table Style */
@@ -83,15 +83,16 @@
         .trx-box { 
             background: #fff; 
             border: 1px solid #e2e8f0; 
-            padding: 8px 12px; 
+            padding: 10px 12px; 
             border-radius: 6px; 
             display: flex; 
             justify-content: space-between; 
             align-items: center;
             cursor: pointer;
+            margin-top: 5px;
             transition: 0.2s;
         }
-        .trx-box:active { background: #edf2ff; }
+        .trx-box:active { background: #edf2ff; transform: scale(0.98); }
         .trx-label { font-size: 11px; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 6px; }
         .trx-id-text { font-size: 12px; font-weight: 700; color: var(--text-main); font-family: monospace; }
 
@@ -100,7 +101,7 @@
         .pay-col label { font-size: 10px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
         .pay-col b { font-size: 15px; }
 
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 10px 0; z-index: 2000; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 8px 0; z-index: 2000; }
         .nav-item { text-align: center; color: var(--text-muted); font-size: 20px; flex: 1; cursor: pointer; text-decoration: none; }
         .nav-item.active { color: var(--primary); }
         .nav-item span { display: block; font-size: 10px; margin-top: 4px; font-weight: 600; }
@@ -172,7 +173,7 @@
             });
 
             if(!found) {
-                list.innerHTML = "<p style='text-align:center; padding-top:50px;'>কোনো অর্ডার পাওয়া যায়নি।</p>";
+                list.innerHTML = "<p style='text-align:center; padding-top:100px;'>কোনো অর্ডার পাওয়া যায়নি।</p>";
             } else {
                 ordersArray.reverse().forEach(order => {
                     renderOrderCard(list, order, order.key);
@@ -184,16 +185,18 @@
 
     function renderOrderCard(list, o, key) {
         const shortId = key.slice(-6).toUpperCase();
-        const basePrice = parseInt(o.productPrice || o.price || 0);
-        const delivery = parseInt(o.deliveryCharge || 0);
-        const total = basePrice + delivery;
-        const paid = parseInt(o.paidAmount || o.payAmount || 0);
-        const due = total - paid;
+        
+        // --- লজিক ফিক্স: মেইন প্রাইস এবং ডেলিভারি আলাদা করা ---
+        const basePrice = parseInt(o.productPrice || o.price || 0); // শুধু পণ্যের দাম
+        const delivery = parseInt(o.deliveryCharge || 0); // শুধু ডেলিভারি খরচ
+        const total = basePrice + delivery; // মোট বিল
+        const paid = parseInt(o.paidAmount || o.payAmount || 0); // কত পে করেছে
+        const due = total - paid; // বাকি বিল
 
         list.innerHTML += `
             <div class="order-card">
                 <div class="card-header">
-                    <div class="order-id">ORDER ID: #${shortId}</div>
+                    <div class="order-id">#${shortId}</div>
                     <div class="status-badge ${o.status}">${o.status}</div>
                 </div>
 
@@ -214,11 +217,14 @@
                         <span class="bill-label">Delivery Charge:</span>
                         <span class="bill-value">৳ ${delivery}</span>
                     </div>
+                    
                     <div class="trx-box" onclick="copyTrx('${o.trxID || 'N/A'}')">
                         <span class="trx-label">
                             <i class="fa fa-wallet"></i> ${o.paymentMethod || 'COD'}
                         </span>
-                        <span class="trx-id-text">${o.trxID || 'N/A'} <i class="fa fa-copy" style="font-size:10px; opacity:0.5; margin-left:5px;"></i></span>
+                        <span class="trx-id-text">
+                            ${o.trxID || 'N/A'} <i class="fa fa-copy" style="font-size:10px; opacity:0.5; margin-left:5px;"></i>
+                        </span>
                     </div>
                 </div>
 
@@ -229,7 +235,9 @@
                     </div>
                     <div class="pay-col" style="text-align:right">
                         <label>Due (বকেয়া)</label>
-                        <b style="color:${due > 0 ? 'var(--cancelled)' : 'var(--delivered)'}">${due > 0 ? '৳ '+due : 'COMPLETED'}</b>
+                        <b style="color:${due > 0 ? 'var(--cancelled)' : 'var(--delivered)'}">
+                            ${due > 0 ? '৳ '+due : 'COMPLETED'}
+                        </b>
                     </div>
                 </div>
             </div>`;
@@ -249,4 +257,4 @@
     }
 </script>
 </body>
-    </html>
+</html>
