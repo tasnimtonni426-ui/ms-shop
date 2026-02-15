@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banners | Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --primary: #0ea5e9; --dark: #0f172a; --bg: #f8fafc; --surface: #ffffff; --border: #e2e8f0; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); margin: 0; padding: 15px; }
+        .top-bar { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+        .back-btn { font-size: 20px; color: var(--dark); cursor: pointer; text-decoration: none; }
+        
+        .banner-card { background: var(--surface); padding: 15px; border-radius: 20px; border: 1px solid var(--border); margin-bottom: 20px; }
+        .prev-img { width: 100%; height: 120px; border-radius: 12px; object-fit: cover; background: #eee; margin-bottom: 12px; }
+        input { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid var(--border); border-radius: 10px; outline: none; }
+        .save-btn { background: #10b981; color: white; border: none; padding: 12px; width: 100%; border-radius: 10px; font-weight: 700; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <a href="admin.html" class="back-btn"><i class="fa fa-arrow-left"></i></a>
+        <h2 style="margin:0; font-size: 18px;">Slider Management</h2>
+    </div>
+
+    <div id="banner-controls">
+        <div class="banner-card">
+            <img id="prev-banner1" class="prev-img" src="">
+            <input type="text" id="img-banner1" placeholder="Image URL 1">
+            <input type="text" id="link-banner1" placeholder="Click Link (Optional)">
+            <button class="save-btn" onclick="saveBanner('banner1')">Update Banner 1</button>
+        </div>
+        <div class="banner-card">
+            <img id="prev-banner2" class="prev-img" src="">
+            <input type="text" id="img-banner2" placeholder="Image URL 2">
+            <input type="text" id="link-banner2" placeholder="Click Link (Optional)">
+            <button class="save-btn" onclick="saveBanner('banner2')">Update Banner 2</button>
+        </div>
+        <div class="banner-card">
+            <img id="prev-banner3" class="prev-img" src="">
+            <input type="text" id="img-banner3" placeholder="Image URL 3">
+            <input type="text" id="link-banner3" placeholder="Click Link (Optional)">
+            <button class="save-btn" onclick="saveBanner('banner3')">Update Banner 3</button>
+        </div>
+    </div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, update, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCu8lgGs3Q-qLeedhngQAVXtt8BHOAlWDg",
+        authDomain: "ms-sp-97f78.firebaseapp.com",
+        databaseURL: "https://ms-sp-97f78-default-rtdb.firebaseio.com",
+        projectId: "ms-sp-97f78",
+        storageBucket: "ms-sp-97f78.appspot.com",
+        appId: "1:880638162029:web:b99af5b5518b3e16a13b64"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    function loadBanners() {
+        get(ref(db, 'banners')).then(s => {
+            if(s.exists()){
+                const d = s.val();
+                ['banner1', 'banner2', 'banner3'].forEach(k => {
+                    if(d[k]) {
+                        document.getElementById('img-'+k).value = d[k].img || "";
+                        document.getElementById('link-'+k).value = d[k].link || "";
+                        document.getElementById('prev-'+k).src = d[k].img;
+                    }
+                });
+            }
+        });
+    }
+
+    window.saveBanner = (id) => {
+        const img = document.getElementById('img-'+id).value;
+        const link = document.getElementById('link-'+id).value;
+        update(ref(db, 'banners/'+id), { img, link }).then(() => { alert("Banner Updated!"); location.reload(); });
+    };
+
+    loadBanners();
+</script>
+</body>
+</html>
