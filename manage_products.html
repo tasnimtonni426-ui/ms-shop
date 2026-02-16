@@ -16,6 +16,11 @@
         input, textarea, select { width: 100%; padding: 12px; margin: 8px 0; border: 1.5px solid var(--border); border-radius: 12px; outline: none; box-sizing: border-box; font-family: inherit; transition: 0.3s; }
         input:focus, select:focus, textarea:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1); }
         .btn-main { background: var(--dark); color: white; border: none; padding: 15px; width: 100%; border-radius: 14px; font-weight: 700; cursor: pointer; font-size: 15px; transition: 0.3s; }
+        
+        /* কালার ইনপুট এরিয়া */
+        .color-input-wrapper { position: relative; display: flex; align-items: center; width: 100%; }
+        #color-preview { width: 25px; height: 25px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 5px rgba(0,0,0,0.2); position: absolute; right: 10px; background: #ccc; transition: 0.3s; }
+
         .p-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: white; border-radius: 16px; margin-bottom: 10px; border: 1px solid var(--border); }
         .p-item img { width: 55px; height: 55px; border-radius: 12px; object-fit: cover; background: #f1f5f9; }
         .p-info { flex: 1; }
@@ -58,7 +63,13 @@
             <input type="number" id="p-stock" placeholder="Stock Qty">
         </div>
 
-        <input type="text" id="p-sizes" placeholder="Sizes (যেমন: M, L, XL) - না থাকলে খালি রাখুন">
+        <div style="display: flex; gap: 10px;">
+            <input type="text" id="p-sizes" placeholder="Sizes (যেমন: M, L, XL)">
+            <div class="color-input-wrapper">
+                <input type="text" id="p-colors" placeholder="Color (Red, Blue, #000)" oninput="updateColorPreview(this.value)">
+                <div id="color-preview"></div>
+            </div>
+        </div>
         
         <input type="text" id="p-img" placeholder="Image URL">
         <textarea id="p-desc" placeholder="Brief description..." rows="2"></textarea>
@@ -93,11 +104,14 @@
     const db = getDatabase(app);
     const auth = getAuth(app);
 
-    // সিকিউরিটি চেক: ইউজার লগইন না থাকলে অ্যাকশন ব্লক হবে
+    // কালার প্রিভিউ আপডেট করার ফাংশন
+    window.updateColorPreview = (val) => {
+        const preview = document.getElementById('color-preview');
+        preview.style.backgroundColor = val;
+    };
+
     onAuthStateChanged(auth, (user) => {
-        if (!user) {
-            console.log("Not logged in");
-        }
+        if (!user) { console.log("Not logged in"); }
     });
 
     function showToast(msg) { 
@@ -129,7 +143,7 @@
                         <div class="p-info">
                             <b>${p.name}</b>
                             <small>৳ ${p.price}</small>
-                            <span>সাইজ: ${p.sizes || 'N/A'}</span>
+                            <span>${p.sizes ? 'Size: '+p.sizes : ''} ${p.colors ? '| Color: '+p.colors : ''}</span>
                         </div>
                         <div class="action-btns">
                             <button class="action-btn btn-edit" onclick="window.editProduct('${c.key}')"><i class="fa fa-pen"></i></button>
@@ -146,31 +160,35 @@
         const price = document.getElementById('p-price').value;
         const img = document.getElementById('p-img').value.trim();
         const sizes = document.getElementById('p-sizes').value.trim();
+        const colors = document.getElementById('p-colors').value.trim();
 
         if(!name || !price || !img) { alert("নাম, দাম এবং ইমেজ দিন!"); return null; }
 
-        return {
+        const data = {
             name,
             category: document.getElementById('p-main-category').value,
             subCategory: document.getElementById('p-category').value || "General",
             price: parseInt(price),
             stock: parseInt(document.getElementById('p-stock').value) || 0,
-            sizes: sizes || "N/A",
             img,
             description: document.getElementById('p-desc').value.trim() || ""
         };
+
+        // যদি সাইজ বা কালার খালি থাকে তবে ডাটাবেসে যাবে না
+        if(sizes) data.sizes = sizes;
+        if(colors) data.colors = colors;
+
+        return data;
     }
 
-    // এড প্রোডাক্ট
     document.getElementById('uploadBtn').onclick = function() {
         const data = getValidData();
         if(!data) return;
         push(ref(db, 'products'), data)
             .then(() => { showToast("Product Added!"); resetForm(); })
-            .catch(err => alert("Security Error: লগইন করা আছে কি? " + err.message));
+            .catch(err => alert("Error: " + err.message));
     };
 
-    // এডিট প্রোডাক্ট কল
     window.editProduct = (id) => {
         get(ref(db, 'products/' + id)).then(s => {
             if(s.exists()){
@@ -182,7 +200,9 @@
                 document.getElementById('p-category').value = p.subCategory;
                 document.getElementById('p-price').value = p.price;
                 document.getElementById('p-stock').value = p.stock || 0;
-                document.getElementById('p-sizes').value = (p.sizes === 'N/A') ? "" : p.sizes;
+                document.getElementById('p-sizes').value = p.sizes || "";
+                document.getElementById('p-colors').value = p.colors || "";
+                window.updateColorPreview(p.colors || "");
                 document.getElementById('p-img').value = p.img;
                 document.getElementById('p-desc').value = p.description || "";
                 
@@ -194,23 +214,21 @@
         });
     };
 
-    // আপডেট প্রোডাক্ট
     document.getElementById('updateBtn').onclick = function() {
         const id = document.getElementById('edit-id').value;
         const data = getValidData();
         if(id && data) {
             update(ref(db, 'products/' + id), data)
                 .then(() => { showToast("Updated Successfully!"); resetForm(); })
-                .catch(err => alert("Security Error: " + err.message));
+                .catch(err => alert("Error: " + err.message));
         }
     };
 
-    // ডিলিট প্রোডাক্ট
     window.deleteItem = (id) => { 
         if(confirm("আপনি কি নিশ্চিতভাবে ডিলিট করতে চান?")) {
             remove(ref(db, 'products/'+id))
                 .then(() => showToast("Removed!"))
-                .catch(err => alert("Security Error: " + err.message));
+                .catch(err => alert("Error: " + err.message));
         }
     };
 
@@ -220,6 +238,8 @@
         document.getElementById('p-price').value = "";
         document.getElementById('p-stock').value = "";
         document.getElementById('p-sizes').value = "";
+        document.getElementById('p-colors').value = "";
+        document.getElementById('color-preview').style.backgroundColor = "#ccc";
         document.getElementById('p-img').value = "";
         document.getElementById('p-desc').value = "";
         document.getElementById('form-title').innerText = "🚀 Add New Product";
@@ -228,4 +248,5 @@
     }
 </script>
 </body>
-</html>
+            </html>
+    
