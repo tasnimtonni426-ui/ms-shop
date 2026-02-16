@@ -39,60 +39,49 @@
             position: sticky; 
             top: 0; 
             z-index: 1000;
-            color: var(--text-main);
             border-bottom: 1px solid var(--border);
         }
-        header i { font-size: 20px; cursor: pointer; }
+        header i { font-size: 20px; cursor: pointer; color: var(--text-main); }
         header h2 { margin: 0; font-size: 16px; font-weight: 700; flex: 1; margin-left: 15px; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        .p-img-wrapper {
-            background: white;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .p-img {
-            max-width: 100%;
-            height: auto;
-            max-height: 400px;
-            object-fit: contain;
-        }
+        .p-img-wrapper { background: white; padding: 20px; display: flex; justify-content: center; align-items: center; }
+        .p-img { max-width: 100%; height: auto; max-height: 380px; object-fit: contain; }
 
         .main-card {
             background: var(--surface);
-            padding: 20px;
+            padding: 24px 20px;
             margin-top: -10px;
             border-radius: 24px 24px 0 0;
-            box-shadow: 0 -10px 20px rgba(0,0,0,0.02);
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.03);
         }
 
         .p-name { font-size: 22px; font-weight: 700; color: var(--text-main); line-height: 1.3; margin-bottom: 8px; }
-        .p-price { font-size: 24px; font-weight: 800; color: var(--price-color); margin-bottom: 20px; }
+        .p-price { font-size: 24px; font-weight: 800; color: var(--price-color); margin-bottom: 24px; }
 
-        /* Classic Selection Style */
-        .variant-section { margin-bottom: 20px; display: none; }
-        .section-label { font-size: 13px; font-weight: 700; color: var(--text-main); margin-bottom: 12px; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
+        .variant-section { margin-bottom: 24px; display: none; }
+        .section-label { font-size: 13px; font-weight: 700; color: var(--text-main); margin-bottom: 14px; display: block; text-transform: uppercase; letter-spacing: 0.8px; }
         
-        .variant-list { display: flex; gap: 10px; flex-wrap: wrap; }
+        .variant-list { display: flex; gap: 12px; flex-wrap: wrap; }
+        
+        /* Variants Buttons */
         .variant-btn { 
-            padding: 10px 18px; border: 1.5px solid var(--border); border-radius: 12px; 
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 16px; border: 1.5px solid var(--border); border-radius: 12px; 
             background: #fff; color: var(--text-main); cursor: pointer; font-size: 14px; font-weight: 600;
             transition: 0.2s ease;
         }
         .variant-btn.selected { border-color: var(--accent); background: #eff6ff; color: var(--accent); }
 
-        .desc-box {
-            font-size: 14px;
-            color: var(--text-muted);
-            line-height: 1.7;
-            white-space: pre-wrap;
-            margin-top: 10px;
+        /* Color Circle Preview inside button */
+        .color-dot {
+            width: 16px; height: 16px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.1);
         }
 
-        .review-section { padding: 20px; background: white; margin-top: 10px; }
+        .desc-box { font-size: 14px; color: var(--text-muted); line-height: 1.7; white-space: pre-wrap; margin-top: 10px; }
+
+        .review-section { padding: 20px; background: white; margin-top: 12px; }
         .rev-card { padding: 15px 0; border-bottom: 1px solid var(--border); }
-        .rev-user { font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+        .rev-user { font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; }
         .rev-text { font-size: 14px; color: var(--text-muted); margin-top: 6px; }
 
         .rev-input-box { display: flex; gap: 10px; margin-top: 20px; background: #f1f5f9; padding: 8px; border-radius: 14px; }
@@ -101,16 +90,13 @@
 
         .buy-footer { 
             position: fixed; bottom: 0; left: 0; width: 100%; 
-            background: white; padding: 15px 20px; 
-            display: flex; gap: 12px; 
-            border-top: 1px solid var(--border); 
-            z-index: 2000;
+            background: white; padding: 15px 20px; display: flex; gap: 12px; 
+            border-top: 1px solid var(--border); z-index: 2000;
         }
         .order-btn { 
-            flex: 1; background: var(--primary); color: white; 
-            text-align: center; padding: 16px; border-radius: 14px; 
-            font-weight: 700; font-size: 15px; border: none; cursor: pointer;
-            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
+            flex: 1; background: var(--primary); color: white; text-align: center; 
+            padding: 16px; border-radius: 14px; font-weight: 700; font-size: 15px; 
+            border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
         }
 
         #loading-screen { position: fixed; inset: 0; background: #fff; z-index: 10000; display: flex; align-items: center; justify-content: center; }
@@ -124,7 +110,7 @@
 
 <header>
     <i class="fa fa-chevron-left" onclick="history.back()"></i>
-    <h2>Product Details</h2>
+    <h2>Details</h2>
     <div style="display: flex; gap: 18px;">
         <i class="fa-regular fa-heart" id="favIcon" onclick="toggleFav()"></i>
         <i class="fa-solid fa-share-nodes" onclick="shareProduct()"></i>
@@ -139,25 +125,25 @@
     <div class="p-name" id="pName">Loading...</div>
     <div class="p-price" id="pPrice">$ 0.00</div>
 
-    <div class="variant-section" id="sizeContainer">
-        <span class="section-label">Select Size:</span>
-        <div class="variant-list" id="sizeList"></div>
-    </div>
-
     <div class="variant-section" id="colorContainer">
         <span class="section-label">Select Color:</span>
         <div class="variant-list" id="colorList"></div>
     </div>
+
+    <div class="variant-section" id="sizeContainer">
+        <span class="section-label">Select Size:</span>
+        <div class="variant-list" id="sizeList"></div>
+    </div>
     
-    <span class="section-label" style="margin-top: 25px;">Description:</span>
-    <div class="desc-box" id="pDesc">Loading product details...</div>
+    <span class="section-label" style="margin-top: 25px;">Product Description:</span>
+    <div class="desc-box" id="pDesc">Loading...</div>
 </div>
 
 <div class="review-section">
     <span class="section-label">Customer Reviews</span>
-    <div id="revList">Loading reviews...</div>
+    <div id="revList">Loading...</div>
     <div class="rev-input-box">
-        <input type="text" id="revInput" placeholder="Write a review...">
+        <input type="text" id="revInput" placeholder="Write a comment...">
         <button onclick="postReview()">Send</button>
     </div>
 </div>
@@ -200,32 +186,37 @@
                 document.getElementById('pName').innerText = p.name;
                 document.getElementById('pPrice').innerText = "৳ " + p.price;
                 document.getElementById('pImg').src = p.img;
-                document.getElementById('pDesc').innerText = p.description || "No description available.";
+                document.getElementById('pDesc').innerText = p.description || "Description not available.";
 
-                // Handle Sizes
-                if(p.sizes) {
-                    const sizeArr = p.sizes.split(',').map(s => s.trim());
-                    renderVariants('sizeContainer', 'sizeList', sizeArr, 'size');
-                }
-
-                // Handle Colors
-                if(p.colors) {
-                    const colorArr = p.colors.split(',').map(c => c.trim());
-                    renderVariants('colorContainer', 'colorList', colorArr, 'color');
-                }
+                if(p.colors) renderVariants('colorContainer', 'colorList', p.colors, 'color');
+                if(p.sizes) renderVariants('sizeContainer', 'sizeList', p.sizes, 'size');
             }
         });
 
-        function renderVariants(containerId, listId, items, type) {
+        function renderVariants(containerId, listId, dataString, type) {
             const container = document.getElementById(containerId);
             const list = document.getElementById(listId);
+            const items = dataString.split(',').map(i => i.trim());
+
             if(items.length > 0 && items[0] !== "") {
                 container.style.display = 'block';
                 list.innerHTML = "";
                 items.forEach(item => {
                     const btn = document.createElement('button');
                     btn.className = 'variant-btn';
-                    btn.innerText = item;
+                    
+                    // Add Color Dot if type is color
+                    if(type === 'color') {
+                        const dot = document.createElement('span');
+                        dot.className = 'color-dot';
+                        dot.style.backgroundColor = item.toLowerCase();
+                        btn.appendChild(dot);
+                    }
+
+                    const label = document.createElement('span');
+                    label.innerText = item;
+                    btn.appendChild(label);
+
                     btn.onclick = () => {
                         list.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('selected'));
                         btn.classList.add('selected');
@@ -243,7 +234,7 @@
             if(snap.exists()){
                 snap.forEach(child => {
                     const r = child.val();
-                    html += `<div class="rev-card"><div class="rev-user">${r.userName} <span style="font-weight:400; color:#94a3b8; font-size:11px; margin-left:auto;">#${r.userId}</span></div><div class="rev-text">${r.text}</div></div>`;
+                    html += `<div class="rev-card"><div class="rev-user">${r.userName} <span style="font-weight:400; color:#94a3b8; font-size:11px;">#${r.userId}</span></div><div class="rev-text">${r.text}</div></div>`;
                 });
                 list.innerHTML = html;
             } else { list.innerHTML = "<p style='font-size:13px; color:#94a3b8;'>No reviews yet.</p>"; }
@@ -252,37 +243,31 @@
 
     window.goToOrderPage = () => {
         if(!currentUser) { alert("Please login first!"); return; }
-        
         const sizeVisible = document.getElementById('sizeContainer').style.display === 'block';
         const colorVisible = document.getElementById('colorContainer').style.display === 'block';
-
         if(sizeVisible && !selectedSize) { alert("Please select a size!"); return; }
         if(colorVisible && !selectedColor) { alert("Please select a color!"); return; }
-
         window.location.href = `order_form.html?id=${productId}&size=${selectedSize}&color=${selectedColor}`;
     };
 
     window.postReview = () => {
         const text = document.getElementById('revInput').value;
-        if(!currentUser) { alert("Please login to post a review!"); return; }
+        if(!currentUser) { alert("Please login first!"); return; }
         if(!text.trim()) return;
         const newRevRef = push(ref(db, 'reviews/' + productId));
         set(newRevRef, { 
-            userName: currentUser.displayName || "Anonymous", 
+            userName: currentUser.displayName || "User", 
             userId: currentUser.uid.slice(-6).toUpperCase(), 
             text: text 
         }).then(() => { document.getElementById('revInput').value = ""; });
     };
 
     window.shareProduct = () => { navigator.share({ title: document.getElementById('pName').innerText, url: window.location.href }); };
-    
     window.toggleFav = () => { 
         const icon = document.getElementById('favIcon'); 
-        icon.classList.toggle('fa-regular'); 
-        icon.classList.toggle('fa-solid'); 
+        icon.classList.toggle('fa-regular'); icon.classList.toggle('fa-solid'); 
         icon.style.color = icon.classList.contains('fa-solid') ? '#ef4444' : 'inherit'; 
     };
 </script>
 </body>
-    </html>
-    
+</html>
