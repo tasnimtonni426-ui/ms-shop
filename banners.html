@@ -1,7 +1,7 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="bn">
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Banners | Admin</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700&display=swap" rel="stylesheet">
@@ -15,9 +15,7 @@
         .banner-card { background: var(--surface); padding: 15px; border-radius: 20px; border: 1px solid var(--border); margin-bottom: 20px; }
         .prev-img { width: 100%; height: 120px; border-radius: 12px; object-fit: cover; background: #eee; margin-bottom: 12px; }
         input { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid var(--border); border-radius: 10px; outline: none; box-sizing: border-box; }
-        input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15); }
-        .save-btn { background: #10b981; color: white; border: none; padding: 12px; width: 100%; border-radius: 10px; font-weight: 700; cursor: pointer; transition: background-color 0.3s; }
-        .save-btn:hover { background: #0c9c6f; }
+        .save-btn { background: #10b981; color: white; border: none; padding: 12px; width: 100%; border-radius: 10px; font-weight: 700; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -28,21 +26,21 @@
 
     <div id="banner-controls">
         <div class="banner-card">
-            <img id="prev-banner1" class="prev-img" src="https://via.placeholder.com/120/E2E8F0/94A3B8?text=No+Image">
+            <img id="prev-banner1" class="prev-img" src="https://via.placeholder.com/120?text=Preview">
             <input type="text" id="img-banner1" placeholder="Image URL 1">
-            <input type="text" id="link-banner1" placeholder="Click Link (optional)">
+            <input type="text" id="link-banner1" placeholder="Click Link (Optional)">
             <button class="save-btn" onclick="saveBanner('banner1')">Update Banner 1</button>
         </div>
         <div class="banner-card">
-            <img id="prev-banner2" class="prev-img" src="https://via.placeholder.com/120/E2E8F0/94A3B8?text=No+Image">
+            <img id="prev-banner2" class="prev-img" src="https://via.placeholder.com/120?text=Preview">
             <input type="text" id="img-banner2" placeholder="Image URL 2">
-            <input type="text" id="link-banner2" placeholder="Click Link (optional)">
+            <input type="text" id="link-banner2" placeholder="Click Link (Optional)">
             <button class="save-btn" onclick="saveBanner('banner2')">Update Banner 2</button>
         </div>
         <div class="banner-card">
-            <img id="prev-banner3" class="prev-img" src="https://via.placeholder.com/120/E2E8F0/94A3B8?text=No+Image">
+            <img id="prev-banner3" class="prev-img" src="https://via.placeholder.com/120?text=Preview">
             <input type="text" id="img-banner3" placeholder="Image URL 3">
-            <input type="text" id="link-banner3" placeholder="Click Link (optional)">
+            <input type="text" id="link-banner3" placeholder="Click Link (Optional)">
             <button class="save-btn" onclick="saveBanner('banner3')">Update Banner 3</button>
         </div>
     </div>
@@ -50,6 +48,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getDatabase, ref, update, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCu8lgGs3Q-qLeedhngQAVXtt8BHOAlWDg",
@@ -62,8 +61,16 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
+    const auth = getAuth(app);
 
-    // ব্যানার লোড করার ফাংশন
+    // ১. ব্রাউজার সেশন চেক করা (পারমিশন এরর বন্ধ করতে)
+    onAuthStateChanged(auth, (user) => {
+        if (!user) {
+            alert("Session expired! Please login again from the Dashboard.");
+            window.location.href = "login.html"; // লগইন না থাকলে রিডাইরেক্ট করবে
+        }
+    });
+
     function loadBanners() {
         get(ref(db, 'banners')).then(s => {
             if(s.exists()){
@@ -72,32 +79,33 @@
                     if(d[k]) {
                         document.getElementById('img-'+k).value = d[k].img || "";
                         document.getElementById('link-'+k).value = d[k].link || "";
-                        document.getElementById('prev-'+k).src = d[k].img || "https://via.placeholder.com/120/E2E8F0/94A3B8?text=No+Image";
+                        if(d[k].img) document.getElementById('prev-'+k).src = d[k].img;
                     }
                 });
             }
-        }).catch(err => console.error("Error loading banners:", err));
+        });
     }
 
-    // সেভ করার ফাংশনটি উইন্ডো গ্লোবাল স্কোপে এক্সপোর্ট করা হয়েছে
+    // ২. আপডেট ফাংশনকে গ্লোবাল করা যাতে বাটনে ক্লিক করলে কাজ করে
     window.saveBanner = (id) => {
         const img = document.getElementById('img-'+id).value.trim();
         const link = document.getElementById('link-'+id).value.trim();
-        
-        if(!img) {
-            alert("Please enter an image URL for " + id.replace('banner', 'Banner ') + ".");
-            return;
-        }
 
+        if(!img) { alert("Please enter Image URL"); return; }
+
+        // ৩. আপডেট রিকোয়েস্ট (লগইন করা থাকলে পারমিশন দিনে আসবে না)
         update(ref(db, 'banners/'+id), { img, link })
         .then(() => { 
-            alert(id.replace('banner', 'Banner ') + " Updated Successfully!"); 
-            document.getElementById('prev-'+id).src = img; // সাথে সাথে প্রিভিউ আপডেট
+            alert("Banner Updated Successfully!"); 
+            document.getElementById('prev-'+id).src = img;
         })
-        .catch(err => alert("Error updating banner: " + err.message));
+        .catch(err => {
+            console.error(err);
+            alert("Permission Error: Please make sure you are logged in as Admin.");
+        });
     };
 
-    loadBanners(); // পেজ লোড হওয়ার সাথে সাথে ব্যানারগুলো লোড করুন
+    loadBanners();
 </script>
 </body>
 </html>
