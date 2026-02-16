@@ -3,194 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Products | MS STORE Admin</title>
-    
+    <title>Manage Products | Admin</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <style>
-        :root { 
-            --primary: #0ea5e9; 
-            --dark: #0f172a; 
-            --bg: #f8fafc; 
-            --surface: #ffffff; 
-            --border: #e2e8f0; 
-            --danger: #ef4444;
-            --success: #10b981;
-        }
-
-        * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; outline: none; }
-        
-        @keyframes pageFade {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background: var(--bg); 
-            margin: 0; 
-            padding: 15px; 
-            padding-bottom: 50px; 
-            color: var(--dark);
-            animation: pageFade 0.5s ease-out;
-        }
-        
-        /* Top Bar */
+        :root { --primary: #0ea5e9; --dark: #0f172a; --bg: #f8fafc; --surface: #ffffff; --border: #e2e8f0; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); margin: 0; padding: 15px; padding-bottom: 50px; color: var(--dark); }
         .top-bar { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
-        .back-btn { 
-            font-size: 20px; color: var(--dark); cursor: pointer; text-decoration: none; 
-            width: 40px; height: 40px; display: flex; align-items: center; 
-            justify-content: center; background: white; border-radius: 50%; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
-        }
-        
-        /* Cards */
-        .card { 
-            background: var(--surface); 
-            padding: 20px; 
-            border-radius: 24px; 
-            border: 1px solid var(--border); 
-            margin-bottom: 20px; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02); 
-        }
-        h3 { margin-top: 0; font-size: 18px; color: var(--dark); margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
-
-        /* Form Inputs */
-        label { font-size: 12px; font-weight: 700; color: #64748b; margin-left: 5px; display: block; margin-top: 10px; }
-        input, textarea, select { 
-            width: 100%; padding: 12px; margin: 8px 0; 
-            border: 1.5px solid var(--border); border-radius: 12px; 
-            outline: none; box-sizing: border-box; font-family: inherit; 
-            transition: 0.3s; background: #fcfdfe;
-        }
-        input:focus, select:focus, textarea:focus { 
-            border-color: var(--primary); background: #fff; 
-            box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1); 
-        }
-        
-        .btn-main { 
-            background: var(--dark); color: white; border: none; padding: 15px; 
-            width: 100%; border-radius: 14px; font-weight: 700; cursor: pointer; 
-            font-size: 15px; transition: 0.3s; margin-top: 10px;
-        }
-        .btn-main:active { transform: scale(0.98); }
-        .btn-main:disabled { opacity: 0.6; cursor: not-allowed; }
-
-        /* Inventory List */
-        .p-item { 
-            display: flex; align-items: center; gap: 12px; padding: 12px; 
-            background: white; border-radius: 16px; margin-bottom: 10px; 
-            border: 1px solid var(--border); transition: 0.3s;
-            animation: pageFade 0.4s ease-out;
-        }
+        .back-btn { font-size: 20px; color: var(--dark); cursor: pointer; text-decoration: none; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: white; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .card { background: var(--surface); padding: 20px; border-radius: 24px; border: 1px solid var(--border); margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        h3 { margin-top: 0; font-size: 18px; color: var(--dark); margin-bottom: 15px; }
+        input, textarea, select { width: 100%; padding: 12px; margin: 8px 0; border: 1.5px solid var(--border); border-radius: 12px; outline: none; box-sizing: border-box; font-family: inherit; transition: 0.3s; }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1); }
+        .btn-main { background: var(--dark); color: white; border: none; padding: 15px; width: 100%; border-radius: 14px; font-weight: 700; cursor: pointer; font-size: 15px; transition: 0.3s; }
+        .p-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: white; border-radius: 16px; margin-bottom: 10px; border: 1px solid var(--border); }
         .p-item img { width: 55px; height: 55px; border-radius: 12px; object-fit: cover; background: #f1f5f9; }
         .p-info { flex: 1; }
-        .p-info b { font-size: 14px; display: block; color: var(--dark); margin-bottom: 2px; }
+        .p-info b { font-size: 14px; display: block; }
         .p-info small { color: var(--primary); font-weight: 700; }
-        
+        .p-info span { font-size: 10px; color: #64748b; display: block; margin-top: 2px; }
         .action-btns { display: flex; gap: 8px; }
-        .action-btn { 
-            border: none; width: 36px; height: 36px; border-radius: 10px; 
-            cursor: pointer; display: flex; align-items: center; 
-            justify-content: center; transition: 0.2s; 
-        }
+        .action-btn { border: none; width: 36px; height: 36px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .btn-edit { background: #e0f2fe; color: #0ea5e9; }
         .btn-del { background: #fee2e2; color: #ef4444; }
-
-        /* Toast & Loader */
-        .toast { 
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); 
-            background: var(--dark); color: white; padding: 12px 25px; 
-            border-radius: 30px; display: none; z-index: 2000; 
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1); font-weight: 600; 
-        }
-        #auth-loader { 
-            position: fixed; inset: 0; background: white; 
-            display: flex; flex-direction: column; align-items: center; 
-            justify-content: center; z-index: 10000; 
-        }
-        .spinner { 
-            width: 35px; height: 35px; border: 4px solid #f1f5f9; 
-            border-top: 4px solid var(--primary); border-radius: 50%; 
-            animation: spin 1s linear infinite; margin-bottom: 10px;
-        }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--dark); color: white; padding: 12px 25px; border-radius: 30px; display: none; z-index: 2000; box-shadow: 0 10px 20px rgba(0,0,0,0.1); font-weight: 600; }
     </style>
 </head>
 <body>
-
-    <!-- Auth Protection Screen -->
-    <div id="auth-loader">
-        <div class="spinner"></div>
-        <p style="font-weight: 600; color: #64748b;">নিরাপত্তা যাচাই হচ্ছে...</p>
-    </div>
-
     <div class="top-bar">
         <a href="admin.html" class="back-btn"><i class="fa fa-arrow-left"></i></a>
         <h2 style="margin:0; font-size: 18px; font-weight: 700;">Manage Inventory</h2>
     </div>
 
-    <div class="toast" id="toast"></div>
+    <div id="toast" class="toast"></div>
 
-    <!-- Product Form -->
     <div class="card">
         <h3 id="form-title">🚀 Add New Product</h3>
         <input type="hidden" id="edit-id"> 
         
-        <label>প্রোডাক্টের নাম</label>
-        <input type="text" id="p-name" placeholder="যেমন: Premium Leather Boots">
+        <input type="text" id="p-name" placeholder="Product Name">
         
         <div style="display: flex; gap: 10px;">
-            <div style="flex:1">
-                <label>মেইন ক্যাটাগরি</label>
-                <select id="p-main-category" onchange="window.updateSubCats()">
-                    <option value="" disabled selected>Select</option>
-                    <option value="Sports">Sports</option>
-                    <option value="Electronics">Electronics</option>
-                    <option value="Fashion">Fashion</option>
-                </select>
-            </div>
-            <div style="flex:1">
-                <label>সাব-ক্যাটাগরি</label>
-                <select id="p-category"><option value="" disabled selected>Sub-Category</option></select>
-            </div>
+            <select id="p-main-category" onchange="window.updateSubCats()">
+                <option value="" disabled selected>Main Category</option>
+                <option value="Sports">Sports</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Fashion">Fashion</option>
+            </select>
+            <select id="p-category"><option value="" disabled selected>Sub-Category</option></select>
         </div>
         
         <div style="display: flex; gap: 10px;">
-            <div style="flex:1">
-                <label>মূল্য (৳)</label>
-                <input type="number" id="p-price" placeholder="0">
-            </div>
-            <div style="flex:1">
-                <label>স্টক পরিমাণ</label>
-                <input type="number" id="p-stock" placeholder="0">
-            </div>
+            <input type="number" id="p-price" placeholder="Price (৳)">
+            <input type="number" id="p-stock" placeholder="Stock Qty">
         </div>
+
+        <input type="text" id="p-sizes" placeholder="Sizes (e.g. M, L, XL or 40, 42) - Optional">
         
-        <label>ছবির ইউআরএল (Direct Link)</label>
-        <input type="text" id="p-img" placeholder="https://example.com/image.jpg">
-        
-        <label>প্রোডাক্ট বিবরণ</label>
-        <textarea id="p-desc" placeholder="প্রোডাক্ট সম্পর্কে লিখুন..." rows="3"></textarea>
+        <input type="text" id="p-img" placeholder="Image URL">
+        <textarea id="p-desc" placeholder="Brief description..." rows="2"></textarea>
         
         <button class="btn-main" id="uploadBtn">Publish Product</button>
         <button class="btn-main" id="updateBtn" style="display:none; background: #6366f1;">Update Product</button>
     </div>
 
-    <!-- Inventory List -->
     <div class="card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
             <h3 style="margin:0;">📦 Inventory List</h3>
             <span id="product-count" style="font-size: 12px; font-weight: 700; color: var(--primary);">0 Items</span>
         </div>
-        <div id="admin-product-list">লোড হচ্ছে...</div>
+        <div id="admin-product-list">Loading...</div>
     </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getDatabase, ref, onValue, push, remove, update, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCu8lgGs3Q-qLeedhngQAVXtt8BHOAlWDg",
@@ -203,40 +90,21 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-    const auth = getAuth(app);
 
-    // ১. অ্যাডমিন অথেনটিকেশন চেক
-    onAuthStateChanged(auth, (user) => {
-        if (user && user.email === 'tasnimtonni426@gmail.com') {
-            document.getElementById('auth-loader').style.display = 'none';
-        } else {
-            alert("Unauthorized Access!");
-            window.location.href = "index.html";
-        }
-    });
-
-    // ২. টোস্ট নোটিফিকেশন
     function showToast(msg) { 
         const t = document.getElementById('toast'); 
-        t.innerText = msg; 
-        t.style.display='block'; 
+        t.innerText = msg; t.style.display='block'; 
         setTimeout(()=>t.style.display='none', 3000); 
     }
 
-    // ৩. সাব-ক্যাটেগরি ডাইনামিক লোড
     window.updateSubCats = () => {
         const main = document.getElementById('p-main-category').value;
         const sub = document.getElementById('p-category');
-        const options = { 
-            'Sports':['Jersey','Boots', 'Equipment', 'Others'], 
-            'Electronics':['Gadget','Mobile', 'Accessories', 'Audio'], 
-            'Fashion':['Men','Women', 'Shoes', 'Watches'] 
-        };
+        const options = { 'Sports':['Jersey','Boots', 'Equipment'], 'Electronics':['Gadget','Mobile', 'Accessories'], 'Fashion':['Men','Women', 'Shoes'] };
         sub.innerHTML = '<option value="" disabled selected>Sub-Category</option>';
         if(options[main]) options[main].forEach(s => sub.innerHTML += `<option value="${s}">${s}</option>`);
     };
 
-    // ৪. ইনভেন্টরি লিস্ট লোড (রিয়েল-টাইম)
     onValue(ref(db, 'products'), (snap) => {
         const list = document.getElementById('admin-product-list');
         const countBox = document.getElementById('product-count');
@@ -248,64 +116,48 @@
                 const p = c.val();
                 list.innerHTML += `
                     <div class="p-item">
-                        <img src="${p.img}" onerror="this.src='https://via.placeholder.com/60?text=No+Img'">
+                        <img src="${p.img}" onerror="this.src='https://via.placeholder.com/60'">
                         <div class="p-info">
                             <b>${p.name}</b>
                             <small>৳ ${p.price}</small>
+                            <span>সাইজ: ${p.sizes || 'N/A'}</span>
                         </div>
                         <div class="action-btns">
-                            <button class="action-btn btn-edit" onclick="window.editProduct('${c.key}')" title="Edit"><i class="fa fa-pen"></i></button>
-                            <button class="action-btn btn-del" onclick="window.deleteItem('${c.key}')" title="Delete"><i class="fa fa-trash"></i></button>
+                            <button class="action-btn btn-edit" onclick="window.editProduct('${c.key}')"><i class="fa fa-pen"></i></button>
+                            <button class="action-btn btn-del" onclick="window.deleteItem('${c.key}')"><i class="fa fa-trash"></i></button>
                         </div>
                     </div>`;
             });
             countBox.innerText = count + " Items";
-        } else { 
-            list.innerHTML = "<p style='text-align:center; color:#94a3b8;'>Inventory is empty.</p>";
-            countBox.innerText = "0 Items";
-        }
+        } else { list.innerHTML = "No products found."; countBox.innerText = "0 Items"; }
     });
 
-    // ৫. ডেটা ভ্যালিডেশন ফাংশন
-    function getProductData() {
+    function getValidData() {
         const name = document.getElementById('p-name').value.trim();
-        const mainCat = document.getElementById('p-main-category').value;
-        const subCat = document.getElementById('p-category').value;
         const price = document.getElementById('p-price').value;
-        const stock = document.getElementById('p-stock').value;
         const img = document.getElementById('p-img').value.trim();
-        const desc = document.getElementById('p-desc').value.trim();
+        const sizes = document.getElementById('p-sizes').value.trim();
 
-        if(!name || !price || !mainCat || !img) {
-            alert("সবগুলো তথ্য সঠিকভাবে পূরণ করুন!");
-            return null;
-        }
+        if(!name || !price || !img) { alert("নাম, দাম এবং ইমেজ দিন!"); return null; }
 
         return {
             name,
-            category: mainCat,
-            subCategory: subCat || "General",
+            category: document.getElementById('p-main-category').value,
+            subCategory: document.getElementById('p-category').value || "General",
             price: parseInt(price),
-            stock: parseInt(stock) || 0,
+            stock: parseInt(document.getElementById('p-stock').value) || 0,
+            sizes: sizes || "N/A", // সাইজ না দিলে N/A থাকবে
             img,
-            description: desc || ""
+            description: document.getElementById('p-desc').value.trim() || ""
         };
     }
 
-    // ৬. প্রোডাক্ট পাবলিশ
     document.getElementById('uploadBtn').onclick = function() {
-        const data = getProductData();
+        const data = getValidData();
         if(!data) return;
-
-        this.disabled = true;
-        push(ref(db, 'products'), data).then(() => {
-            showToast("✅ Product Added!");
-            resetForm();
-        }).catch(e => alert("Error: " + e.message))
-        .finally(() => this.disabled = false);
+        push(ref(db, 'products'), data).then(() => { showToast("Added!"); resetForm(); });
     };
 
-    // ৭. এডিট ফাংশন (Global Scope)
     window.editProduct = (id) => {
         get(ref(db, 'products/' + id)).then(s => {
             if(s.exists()){
@@ -316,11 +168,11 @@
                 window.updateSubCats(); 
                 document.getElementById('p-category').value = p.subCategory;
                 document.getElementById('p-price').value = p.price;
-                document.getElementById('p-stock').value = p.stock || 0;
+                document.getElementById('p-stock').value = p.stock;
+                document.getElementById('p-sizes').value = p.sizes === 'N/A' ? "" : p.sizes;
                 document.getElementById('p-img').value = p.img;
-                document.getElementById('p-desc').value = p.description || "";
-                
-                document.getElementById('form-title').innerText = "📝 Edit Product";
+                document.getElementById('p-desc').value = p.description;
+                document.getElementById('form-title').innerText = "📝 Update Product";
                 document.getElementById('uploadBtn').style.display = 'none';
                 document.getElementById('updateBtn').style.display = 'block';
                 window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -328,43 +180,26 @@
         });
     };
 
-    // ৮. আপডেট সেভ করা
     document.getElementById('updateBtn').onclick = function() {
         const id = document.getElementById('edit-id').value;
-        const data = getProductData();
-        if(!id || !data) return;
-
-        this.disabled = true;
-        update(ref(db, 'products/' + id), data).then(() => {
-            showToast("🔄 Product Updated!");
-            resetForm();
-        }).catch(e => alert("Error: " + e.message))
-        .finally(() => this.disabled = false);
+        const data = getValidData();
+        if(id && data) update(ref(db, 'products/' + id), data).then(() => { showToast("Updated!"); resetForm(); });
     };
 
-    // ৯. ডিলিট ফাংশন (Global Scope)
-    window.deleteItem = (id) => { 
-        if(confirm("আপনি কি নিশ্চিতভাবে এই প্রোডাক্টটি ডিলিট করতে চান?")) {
-            remove(ref(db, 'products/' + id))
-                .then(() => showToast("🗑️ Product Removed!"))
-                .catch(e => alert("Delete Error: " + e.message));
-        }
-    };
+    window.deleteItem = (id) => { if(confirm("Delete?")) remove(ref(db, 'products/'+id)); };
 
-    // ফরম রিসেট ফাংশন
     function resetForm() {
         document.getElementById('edit-id').value = "";
         document.getElementById('p-name').value = "";
         document.getElementById('p-price').value = "";
         document.getElementById('p-stock').value = "";
+        document.getElementById('p-sizes').value = "";
         document.getElementById('p-img').value = "";
         document.getElementById('p-desc').value = "";
-        document.getElementById('p-main-category').selectedIndex = 0;
-        document.getElementById('p-category').innerHTML = '<option value="" disabled selected>Sub-Category</option>';
         document.getElementById('form-title').innerText = "🚀 Add New Product";
         document.getElementById('uploadBtn').style.display = 'block';
         document.getElementById('updateBtn').style.display = 'none';
     }
 </script>
 </body>
-        </html>
+</html>
