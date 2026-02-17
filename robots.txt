@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://ms-storebd.github.io/ms-shop/sitemap.xml
